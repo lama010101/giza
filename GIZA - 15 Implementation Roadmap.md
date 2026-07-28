@@ -4,7 +4,7 @@
 **Status:** Working Specification
 **Last update:** 2026-07-28
 
-This document bridges the GIZA specification set (00–11) to executable work. It decomposes the project into 19 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform.
+This document bridges the GIZA specification set (00–11, 16) to executable work. It decomposes the project into 20 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. The Hydraulic-Acoustic System Hypothesis (*GIZA - 16*) is the first hypothesis plugin to be implemented and tested.
 
 It is the operational counterpart of the specifications. Where the numbered specifications define *what* and *why*, this document defines *how*, *in what order*, and *when a task is finished*. The companion document *GIZA - 99 Development Playbook* defines how development is conducted day to day and should be read alongside this roadmap.
 
@@ -133,11 +133,12 @@ The generation pipeline is established in M00 (task M00-T12) and wired into CI. 
 | M08.5 | Benchmark Scene | M04, M05, M06A | 13 |
 | M09 | Osiris Shaft Reconstruction | M05, M06A, M06B, M06.5, M07, M08, M03.5 | 30 |
 | M10 | Simulation Framework MVP | M05, M09 | 26 |
-| M11 | Great Pyramid Reconstruction | M09, M10, M06B, M06.5 | 30 |
-| M12 | Polish, Performance, Accessibility & Release | M09, M10, M11 | 18 |
-| **Total** | | | **426** |
+| M11 | Great Pyramid Reconstruction | M05, M05.5, M06A, M06B, M06.5, M07, M08, M03.5 | 30 |
+| M11.5 | Hydraulic-Acoustic Hypothesis Plugin | M05.5, M09, M10, M11 | 22 |
+| M12 | Polish, Performance, Accessibility & Release | M09, M10, M11, M11.5 | 18 |
+| **Total** | | | **448** |
 
-> The total exceeds the sum of any single critical path because the data/content track (M02, M03, M03.5), the asset/survey track (M06A, M06.5, M06B), the hypothesis track (M05.5), and the frontend track (M04–M08, M08.5) run in parallel after M01. M-1 (governance) precedes all code. M06 was split into M06A (tooling) and M06B (production) so that artists can begin producing reusable assets (rocks, limestone, granite, stairs, shafts) long before environment coding finishes. M05.5 (Hypothesis Framework) is the architectural centerpiece that makes GIZA a hypothesis exploration platform rather than a static reconstruction.
+> The total exceeds the sum of any single critical path because the data/content track (M02, M03, M03.5), the asset/survey track (M06A, M06.5, M06B), the hypothesis track (M05.5, M11.5), and the frontend track (M04–M08, M08.5) run in parallel after M01. M-1 (governance) precedes all code. M06 was split into M06A (tooling) and M06B (production) so that artists can begin producing reusable assets (rocks, limestone, granite, stairs, shafts) long before environment coding finishes. M05.5 (Hypothesis Framework) is the architectural centerpiece that makes GIZA a hypothesis exploration platform rather than a static reconstruction. M11.5 (Hydraulic-Acoustic Hypothesis Plugin) is the first hypothesis plugin, implementing the Great Pyramid as a coupled hydraulic-acoustic resonator (*GIZA - 16*).
 
 ---
 
@@ -191,7 +192,7 @@ evidence seeding)              │                            │
                  M12 Polish, Performance, Release
 ```
 
-Critical path: **M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10 → M11 → M12**
+Critical path: **M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10 → M11 → M11.5 → M12**
 
 Three tracks run in parallel after M01:
 
@@ -1348,6 +1349,81 @@ Write an acceptance test. Do NOT modify specs.
 
 ---
 
+### M11.5 — Hydraulic-Acoustic Hypothesis Plugin
+
+**Goal:** Implement the Hydraulic-Acoustic System Hypothesis as the first hypothesis plugin for the GIZA platform. This plugin tests the hypothesis that the Great Pyramid functioned as a coupled hydraulic-acoustic resonator driven by hydrostatic pressure from the Osiris Shaft. The plugin includes 7 predictions, per-object confidence, 4 linked simulations (hydraulic, acoustic, structural, thermal), visualization rules for 8 affected structures, and 8 experimental scenarios.
+
+**Spec ref:** 16 (entire), 11 §3–§9 (hypothesis framework integration), 06 §1.7–§1.17 (simulation modules)
+**Depends on:** M05.5, M09, M10, M11
+**Parallelizable with:** M12 (partially)
+**Estimate:** 22 points
+**AI-coder estimate:** ~35 files · ~6,500 LOC · 5 sessions · ~140k tokens
+**Documentation outputs:** `docs/hypotheses/hydraulic-acoustic.md` (plugin guide), `docs/simulations/hydraulic-acoustic-validation.md` (validation methodology)
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M11.5-T01 | Create hypothesis plugin package structure (`hypotheses/giza-hypothesis-hydraulic-acoustic/` with package.json, index.ts, hypothesis.json, predictions.json, visualization.json, config.schema.json, simulations/, bibliography.json) | 1 | M05.5 | 16 §18.8, 11 §6.2 | Package structure created; npm install works; plugin discovered by registry |
+| M11.5-T02 | Implement hypothesis.json (identity, assumptions, affected structures, confidence model from §18.1–§18.5) | 1 | T01 | 16 §18.1–§18.5 | hypothesis.json validates against M01-T05 schema; all fields from spec 16 populated |
+| M11.5-T03 | Implement predictions.json (7 predictions from §18.4 with status untested) | 1 | T02 | 16 §18.4 | 7 predictions stored; all status=untested; linked to hypothesis THEORY-GP-003 |
+| M11.5-T04 | Implement visualization.json (11 visualization rules from §18.7: water-level, highlight, flow-arrows, resonance-field, simulation-overlay for 8 affected structures) | 2 | T02 | 16 §18.7 | All 11 rules validate; overlays render correctly on Great Pyramid geometry; no base mesh modified |
+| M11.5-T05 | Implement hydraulic simulation binding (bind to SIM-HYDRAULIC-001 from M10; configure Osiris Shaft water column, conduit, subterranean chamber parameters from §4.2–§4.4) | 3 | T01, M10 | 16 §4.2–§4.4, §18.6 | Hydraulic simulation runs with Osiris Shaft as pressure source; water column, conduit flow, and chamber pressure computed |
+| M11.5-T06 | Implement acoustic simulation binding (bind to SIM-ACOUSTIC-001 from M10; configure Grand Gallery, Queen's Chamber, King's Chamber acoustic parameters from §4.6–§4.8) | 3 | T01, M10 | 16 §4.6–§4.8, §18.6 | Acoustic simulation runs; resonance frequencies discovered (not hardcoded); standing waves visualized |
+| M11.5-T07 | Implement structural simulation binding (bind to SIM-STRUCTURAL-001; configure King's Chamber granite properties: density, elastic modulus, damping, Young modulus, Poisson ratio from §4.8) | 2 | T01, M10 | 16 §4.8, §18.6 | Structural simulation runs; granite modal frequencies computed; vibration modes visualized |
+| M11.5-T08 | Implement thermal simulation module (new module: temperature, thermal expansion, air/water density effects from §5 Thermodynamics) | 2 | T01, M10 | 16 §5, 11 §9.2 | Thermal solver runs; temperature effects on water/air density computed; results feed into hydraulic and acoustic solvers |
+| M11.5-T09 | Implement coupled physics orchestration (run hydraulic → acoustic → structural → thermal in sequence with feedback; energy pathway from §3) | 3 | T05–T08 | 16 §3, §5 | Coupled simulation runs all 4 domains; energy transfers along the pathway: Osiris Shaft → conduit → subterranean → ascending → Grand Gallery → King's Chamber |
+| M11.5-T10 | Implement 8 experimental scenarios (A: Dry, B: Flooded lower, C: Oscillating shaft, D: Variable Nile, E: Artificial pumping, F: Blocked shafts, G: Different granite, H: Alternative geometries) | 2 | T09 | 16 §10 | All 8 scenarios run; each produces distinct simulation outputs; scenarios are selectable by user |
+| M11.5-T11 | Implement visualization overlays (pressure color maps, velocity fields, acoustic fields, resonance modes, streamlines, wave fronts, cross-sections, time-lapse from §13) | 2 | T04, T09 | 16 §13 | All visualization types render; overlays are additive; no base mesh modification; Scientific Evidence mode hides all |
+| M11.5-T12 | Implement prediction-simulation loop (run simulations → compare outputs against 7 predictions → assign status: confirmed/partially-confirmed/contradicted/inconclusive → recalculate confidence) | 2 | T03, T09 | 16 §14, 11 §9.5, 06 §1.26a | Prediction statuses updated after simulation runs; confidence recalculated; results saved with experiment |
+| M11.5-T13 | Implement user-controlled variable editor (water level, flow rate, pressure, temperature, rock density, air pressure, humidity, gravity, material properties, surface roughness, shaft obstruction, opening sizes from §11) | 1 | T09 | 16 §11 | All variables editable in Research mode; changes trigger simulation re-run; parameter provenance recorded |
+| M11.5-T14 | Implement validation methodology pipeline (Input → Simulation → Outputs → Compare with Hypothesis → Compare with Evidence → Confidence Score → Saved Experiment from §14) | 1 | T12 | 16 §14 | Full validation pipeline runs; every experiment is reproducible; saved experiments include all parameters and outputs |
+| M11.5-T15 | Write integration test (install plugin → activate → run coupled simulation → verify predictions updated → verify confidence recalculated → verify overlays render → run 8 scenarios → compare with Mainstream hypothesis) | 2 | T01–T14 | — | E2E test passes in CI; comparison with Mainstream hypothesis shows side-by-side results |
+
+#### AI-Coder Prompt for M11.5
+
+```
+Read GIZA - 16 Hydraulic-Acoustic System Hypothesis Specification.md in full
+and GIZA - 11 Hypothesis Framework.md (§3–§9).
+
+Implement the Hydraulic-Acoustic System Hypothesis as the first hypothesis
+plugin for the GIZA platform.
+
+Build:
+- Plugin package (hypotheses/giza-hypothesis-hydraulic-acoustic/)
+- hypothesis.json (identity THEORY-GP-003, 8 assumptions, 10 affected
+  structures, per-object confidence from §18.5)
+- predictions.json (7 predictions from §18.4, all status=untested)
+- visualization.json (11 rules: water-level, highlight, flow-arrows,
+  resonance-field, simulation-overlay for 8 structures)
+- Hydraulic simulation binding (Osiris Shaft water column → conduit →
+  subterranean chamber; parameters from §4.2–§4.4)
+- Acoustic simulation binding (Grand Gallery, Queen's Chamber, King's
+  Chamber; resonance discovery, not hardcoded; §4.6–§4.8)
+- Structural simulation binding (King's Chamber granite: density, elastic
+  modulus, damping, Young modulus, Poisson ratio; §4.8)
+- Thermal simulation module (temperature, thermal expansion, air/water
+  density; §5)
+- Coupled physics orchestration (hydraulic → acoustic → structural →
+  thermal with feedback; energy pathway from §3)
+- 8 experimental scenarios (A–H from §10)
+- Visualization overlays (pressure maps, velocity fields, acoustic
+  fields, resonance modes, streamlines, wave fronts, cross-sections,
+  time-lapse; §13)
+- Prediction-simulation loop (run → compare → assign status →
+  recalculate confidence; §14)
+- User-controlled variable editor (12 variables from §11)
+- Validation methodology pipeline (§14)
+- Integration test (install, activate, simulate, verify, compare)
+
+The geometry never changes. No frequency assumptions are hardcoded.
+The solver discovers them. The purpose is NOT to prove the hypothesis
+but to determine whether the proposed mechanisms are physically
+plausible. Do NOT modify specs.
+```
+
+---
+
 ### M12 — Polish, Performance, Accessibility & Release
 
 **Goal:** Final polish pass: accessibility, localization, offline support, performance optimization across platforms, and release readiness.
@@ -1409,13 +1485,13 @@ Do NOT modify specs.
 | Data | M01, M02, M03 | 51 |
 | Content pipeline | M03.5 | 10 |
 | Rendering | M04, M05, M08.5 | 29 |
-| Hypothesis | M05.5 | 15 |
+| Hypothesis | M05.5, M11.5 | 30 |
 | Asset | M06A, M06B | 22 |
 | Survey | M06.5 | 9 |
 | UI | M07, M08 | 27 |
 | Content/Environment | M09, M11 | 48 |
 | Simulation | M10 | 19 |
-| **Total** | | **261** |
+| **Total** | | **276** |
 
 ---
 
@@ -1441,8 +1517,9 @@ Do NOT modify specs.
 | M09 | 30 | 6.0 |
 | M10 | 26 | 5.2 |
 | M11 | 30 | 6.0 |
+| M11.5 | 22 | 4.4 |
 | M12 | 18 | 3.6 |
-| **Total** | **426** | **85.2** |
+| **Total** | **448** | **89.6** |
 
 With four parallel tracks after M01 (data/content M02→M03→M03.5; hypothesis M05.5; asset/survey M06A→M06.5→M06B; frontend M04→M05→{M07→M08, M08.5}), the effective critical-path duration is approximately **52 engineer-weeks** for a single agent, or ~16 weeks with four agents (one per track) plus integration. M06B (artist production) overlaps the frontend track so that reusable assets exist before M09. M05.5 (Hypothesis Framework) is the architectural centerpiece.
 
@@ -1516,3 +1593,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | 2026-07-28 | 0.1 Draft | Initial roadmap: 13 milestones, ~203 tasks, dependency graph, AI-coder prompts, GitHub structure, DoD |
 | 2026-07-28 | 0.2 Draft | Added M-1 Repository Governance; M03.5 Scientific Content Pipeline (≥100 seeded evidence records); split M06 into M06A (tooling) + M06.5 (survey acquisition) + M06B (asset production); added M08.5 Benchmark Scene; added AI-coder estimates (files/LOC/sessions/context) per milestone; added Definition of Scientific Done (§1.5); added documentation generation strategy (§1.6) and per-milestone Documentation outputs; added Risk Register (§8) and staged Release Strategy (§9); updated dependency graph, task index (245 tasks), and effort summary (400 points). Companion document *GIZA - 99 Development Playbook* added. |
 | 2026-07-28 | 0.3 Draft | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added M05.5 Hypothesis Framework Engine (15 tasks, 26 points) implementing the Hypothesis Framework spec (*GIZA - 11*): plugin architecture, predictions, per-object-per-hypothesis confidence, visualization rules, comparison framework, hypothesis selector UI, 3 sample plugins. Updated M01-T05 to full Hypothesis schema; added M01-T05a Prediction schema; updated M01-T09 for active hypotheses array. Updated M09 dependency to include M05.5. Updated task index (261 tasks), effort summary (426 points), critical path. |
+| 2026-07-28 | 0.4 Draft | Added M11.5 Hydraulic-Acoustic Hypothesis Plugin (15 tasks, 22 points) implementing the first hypothesis plugin (*GIZA - 16*): coupled hydraulic-acoustic resonator for the Great Pyramid, 7 predictions, 4 linked simulations (hydraulic, acoustic, structural, thermal), 8 experimental scenarios, visualization overlays, prediction-simulation loop, validation methodology. Updated M11 dependencies to include M05.5. Updated M12 dependencies to include M11.5. Updated task index (276 tasks), effort summary (448 points), critical path. |

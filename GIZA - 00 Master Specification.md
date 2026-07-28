@@ -47,7 +47,7 @@ It is intentionally short. Depth lives in the numbered specifications.
 | Field             | Value         |
 | ----------------- | ------------- |
 | Specification set | 0.3 Draft     |
-| Document count    | 15 (00–11, 15, 99, ADR-0001) |
+| Document count    | 16 (00–11, 15, 16, 99, ADR-0001) |
 | Status            | Working specification |
 | Last update       | 2026-07-28    |
 
@@ -74,6 +74,7 @@ giza/
 ├── GIZA - 10 Asset Production Pipeline.txt
 ├── GIZA - 11 Hypothesis Framework.md
 ├── GIZA - 15 Implementation Roadmap.md
+├── GIZA - 16 Hydraulic-Acoustic System Hypothesis Specification.md
 ├── GIZA - 99 Development Playbook.md
 ├── docs/
 │   └── adr/
@@ -93,7 +94,7 @@ GIZA - <NN> <Title>.<ext>
 
 * `NN` is a two-digit zero-padded number.
 * `00` is reserved for this master document.
-* `01`–`11` are the canonical numbered specifications.
+* `01`–`11` and `16` are the canonical numbered specifications.
 * `15` is the Implementation Roadmap (operational; bridges specs to executable work).
 * `99` is the Development Playbook (operational; defines how development is conducted).
 * Numbers `11`–`14` and `16`–`98` are reserved for future numbered specifications (see §11).
@@ -157,6 +158,10 @@ Defines the production pipeline for every 3D asset: directory structure, naming 
 ### 11 Hypothesis Framework
 
 Defines the Hypothesis Framework, the architectural centerpiece that elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. Covers the hypothesis data model and schema, plugin architecture, prediction framework, per-hypothesis confidence model, comparison framework, visualization rules engine, evidence sharing, pluggable simulation modules, terminology standard, and API endpoints. Extends the Theory concept from *05* §-13 and the theory-independence principle from *01* §7. Every archaeological object supports multiple simultaneous hypotheses; geometry never changes, only the interpretation changes.
+
+### 16 Hydraulic-Acoustic System Hypothesis Specification
+
+Defines the first hypothesis plugin to be implemented and tested on the GIZA platform: the Great Pyramid as a coupled hydraulic-acoustic resonator driven by hydrostatic pressure from the Osiris Shaft. Covers the central hypothesis, system components (water source, Osiris Shaft, underground conduit, subterranean chamber, ascending passage, Grand Gallery, Queen's Chamber, King's Chamber), coupled physics (hydraulics, acoustics, structural mechanics, thermodynamics, optional electromagnetics), resonance hypothesis, experimental scenarios, user-controlled variables, outputs, visualizations, validation methodology, comparison with other hypotheses, success criteria, and full integration with the Hypothesis Framework (*11*) including plugin identity, predictions, per-object confidence, linked simulations, and visualization rules.
 
 ---
 
@@ -267,6 +272,10 @@ Dependencies indicate which specification defines concepts that another specific
       ▼          ▼
 11 Hypothesis  07 Great Pyramid
 Framework
+      │
+      ▼
+16 Hydraulic-Acoustic
+System Hypothesis
 ```
 
 ### Dependency Notes
@@ -275,6 +284,7 @@ Framework
 * `02` depends on `01` and informs `04`.
 * `03` depends on `01` and `02`, and is the reference implementation for `04`.
 * `11` depends on `01`, `05`, `06`, and `08`. It is the architectural centerpiece that extends the Theory concept (*05* §-13) into a full hypothesis framework with plugins, predictions, per-hypothesis confidence, and comparison.
+* `16` depends on `01`, `03`, `06`, `07`, and `11`. It is the first hypothesis plugin specification, defining the Hydraulic-Acoustic System Hypothesis for the Great Pyramid. It consumes the Hypothesis Framework (*11*) and references the Osiris Shaft (*03*) and Great Pyramid (*07*) environments.
 * `04` depends on `01`, `02`, and `03`.
 * `05` depends on `01`.
 * `06` depends on `01`, `04`, and `05`.
@@ -494,7 +504,7 @@ The following documents are anticipated. Numbers are reserved.
 | 12     | Menkaure Pyramid Specification     | Planned   |
 | 13     | Sphinx Specification               | Planned   |
 | 14     | Causeways and Temples Specification| Planned   |
-| 16     | Construction Sequence Specification| Planned   |
+| 16     | Hydraulic-Acoustic System Hypothesis Specification | Published |
 | 17     | API Specification                  | Planned   |
 | 18     | Localization Specification         | Planned   |
 | 19     | Accessibility Specification        | Planned   |
@@ -505,10 +515,11 @@ The following documents are anticipated. Numbers are reserved.
 | 24     | Testing & QA Specification         | Planned   |
 | 25     | Plateau Topography Specification   | Planned   |
 | 26     | Khafre Pyramid Specification       | Planned   |
+| 27     | Construction Sequence Specification| Planned   |
 
-Number `11` was reassigned from "Khafre Pyramid Specification" (previously planned, never published) to "Hypothesis Framework" by editorial decision. Khafre is now planned at `26`. Per the numbering rules (§4), a published number is never reused; `11` was never published as Khafre, so reassignment is permitted.
+Number `11` was reassigned from "Khafre Pyramid Specification" (previously planned, never published) to "Hypothesis Framework" by editorial decision. Khafre is now planned at `26`. Number `16` was reassigned from "Construction Sequence Specification" (previously planned, never published) to "Hydraulic-Acoustic System Hypothesis Specification" by editorial decision. Construction Sequence is now planned at `27`. Per the numbering rules (§4), a published number is never reused; `11` and `16` were never published under their previous assignments, so reassignment is permitted.
 
-Number `15` is assigned to the *Implementation Roadmap* (operational document, not a numbered specification). Number `99` is assigned to the *Development Playbook* (operational document). Numbers `27`–`98` are reserved for future numbered specifications.
+Number `15` is assigned to the *Implementation Roadmap* (operational document, not a numbered specification). Number `99` is assigned to the *Development Playbook* (operational document). Numbers `28`–`98` are reserved for future numbered specifications.
 
 Architecture Decision Records are not numbered specifications; they live under `docs/adr/` and are indexed in `docs/adr/README.md`.
 
@@ -528,6 +539,7 @@ New specifications must:
 | 0.1     | 2026-07-28 | Initial working specification set (00–10)           |
 | 0.2     | 2026-07-28 | Added operational documents: *GIZA - 15 Implementation Roadmap* and *GIZA - 99 Development Playbook*. Added `docs/adr/` with ADR-0001 (GIZA-Core / GIZA-Content split, Proposed). Updated §3 (document count), §4 (repo organization, naming convention), §11 (15 reassigned to roadmap; Plateau Topography moved to 25; 99 reserved for playbook). No numbered specification 01–10 was modified. |
 | 0.3     | 2026-07-28 | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added *GIZA - 11 Hypothesis Framework* (new centerpiece specification). Updated §1 (project overview), §3 (doc count 15), §4 (repo org, naming), §5 (scope of 11), §7 (dependency graph), §8 (new principle 8.1 Hypothesis Exploration; 8.3 renamed to Hypothesis Independence; 8.5 confidence per-hypothesis), §9 (separation of responsibilities), §10 (terminology: Hypothesis, Prediction, Visualization rule, Interpretive object; terminology standard), §11 (11 = Hypothesis Framework Published; Khafre moved to 26). Modified specs 01, 02, 03, 04, 05, 06, 07, 08, 09, 10 to integrate the hypothesis framework. |
+| 0.4     | 2026-07-28 | Added *GIZA - 16 Hydraulic-Acoustic System Hypothesis Specification* — the first hypothesis plugin to be implemented and tested on the platform. Updated §3 (doc count 16), §4 (repo org, naming), §5 (scope of 16), §7 (dependency graph: 16 depends on 01, 03, 06, 07, 11), §11 (16 reassigned from Construction Sequence to Hydraulic-Acoustic Hypothesis; Construction Sequence moved to 27). |
 
 ### Per-Document Revision History
 

@@ -842,6 +842,7 @@ giza/
 ├── GIZA - 09 Sources & Bibliography Standard.txt  Citation rules, source reliability, DOI/ISBN/ORCID, licensing
 ├── GIZA - 10 Asset Production Pipeline.txt        Asset directory, naming, validation, glTF extras, publishing
 ├── GIZA - 11 Hypothesis Framework.md              Hypothesis framework: plugin architecture, predictions, per-hypothesis confidence, comparison
+├── GIZA - 16 Hydraulic-Acoustic System Hypothesis Specification.md  First hypothesis plugin: Great Pyramid as coupled hydraulic-acoustic resonator
 ├── GIZA - 15 Implementation Roadmap.md            Milestones M00–M12, tasks, dependency graph, AI-coder prompts
 └── GIZA - 99 Development Playbook.md              This document; operational guide for development
 ```
