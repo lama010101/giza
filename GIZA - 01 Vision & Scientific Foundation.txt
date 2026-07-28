@@ -1,0 +1,229 @@
+# GIZA Project Master Specification (PRD)
+
+## Volume 1 — Foundation & Osiris Shaft
+
+**Version:** 0.1 Draft
+**Status:** Working Specification
+**Purpose:** Master engineering and scientific specification for the GIZA interactive exploration platform.
+
+---
+
+# 1. Vision
+
+## 1.1 Mission
+
+Create the most scientifically rigorous, visually accurate, and technologically advanced interactive reconstruction of the Giza Plateau ever produced.
+
+The project is **not** intended to prove a particular theory.
+
+Instead, it provides a platform where users can explore:
+
+* archaeological evidence
+* published research
+* measured geometry
+* competing interpretations
+* engineering simulations
+
+Each hypothesis is presented transparently with its supporting and contradicting evidence.
+
+The application acts as a **scientific visualization engine**, not a documentary advocating a single conclusion.
+
+---
+
+# 2. Product Objectives
+
+The platform should allow users to:
+
+* explore reconstructed environments in real time
+* inspect every architectural element
+* access original sources
+* compare theories
+* visualize engineering simulations
+* understand uncertainty
+* distinguish evidence from interpretation
+
+The application must remain useful to:
+
+* archaeologists
+* engineers
+* historians
+* educators
+* museums
+* students
+* documentary creators
+* curious visitors
+
+---
+
+# 3. Core Principles
+
+## Principle 1
+
+Evidence is never altered.
+
+Observed data is immutable.
+
+---
+
+## Principle 2
+
+Interpretations are replaceable.
+
+Any hypothesis may be added or removed without modifying evidence.
+
+---
+
+## Principle 3
+
+Everything is sourced.
+
+Every statement links to one or more references.
+
+---
+
+## Principle 4
+
+Confidence is explicit.
+
+Nothing appears as "fact" unless directly measured.
+
+---
+
+## Principle 5
+
+Geometry first.
+
+Visual quality never overrides geometric accuracy.
+
+---
+
+# 4. Scientific Methodology
+
+The project separates information into four layers.
+
+```
+Observed Evidence
+
+↓
+
+Measured Reconstruction
+
+↓
+
+Interpretation
+
+↓
+
+Simulation
+```
+
+These layers never mix.
+
+---
+
+## Example
+
+Observed:
+
+> Granite block dimensions measured.
+
+Measured reconstruction:
+
+3D granite block.
+
+Interpretation:
+
+Counterweight.
+
+Simulation:
+
+Movement under hydraulic pressure.
+
+Each stage references the previous one.
+
+---
+
+# 5. Evidence Classification
+
+Every item belongs to one category.
+
+| Class | Description               |
+| ----- | ------------------------- |
+| E1    | Direct observation        |
+| E2    | Instrument measurement    |
+| E3    | Historical documentation  |
+| E4    | Photographic evidence     |
+| E5    | Peer-reviewed publication |
+| E6    | Reconstruction            |
+| E7    | Engineering inference     |
+| E8    | Speculative hypothesis    |
+
+---
+
+# 6. Confidence Scale
+
+Instead of binary True/False.
+
+Use continuous confidence.
+
+| Score | Meaning                           |
+| ----- | --------------------------------- |
+| 100   | Measured directly                 |
+| 95    | Multiple independent measurements |
+| 90    | Strong archaeological consensus   |
+| 80    | Highly probable                   |
+| 70    | Reasonable inference              |
+| 60    | Plausible                         |
+| 50    | Competing interpretations         |
+| 40    | Weak evidence                     |
+| 30    | Mostly speculative                |
+| 20    | Little supporting evidence        |
+| 10    | Hypothesis only                   |
+
+---
+
+# 7. Theory Independence
+
+One of the most important architectural decisions.
+
+Geometry exists independently.
+
+Theories are overlays.
+
+```
+Geometry
+
++
+
+Evidence
+
++
+
+Theory
+```
+
+Example:
+
+```
+King's Chamber
+
+Geometry
+    identical
+
+Theory A
+    Tomb
+
+Theory B
+    Machine
+
+Theory C
+    Ritual chamber
+
+Theory D
+    Acoustic resonator
+```
+
+Only the explanation changes.
+
+The geometry does not.
+

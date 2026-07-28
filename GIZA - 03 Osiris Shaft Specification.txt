@@ -1,0 +1,477 @@
+
+# 1. Osiris Shaft Reconstruction — Introduction
+
+## Purpose
+
+The Osiris Shaft serves as the first fully explorable environment and establishes the project's reconstruction methodology.
+
+It will be the reference implementation for:
+
+* evidence integration
+* geometry reconstruction
+* camera systems
+* interaction
+* scientific annotation
+* performance optimization
+
+Subsequent environments (e.g., the Great Pyramid) should follow the same architectural conventions.
+
+## Scope
+
+The reconstruction will include:
+
+* Surface entrance and surrounding plateau context.
+* Vertical shaft and descent path.
+* All three documented subterranean levels.
+* Water-filled lower chamber.
+* Central island and sarcophagus.
+* Northern conduit and accessible tunnel segments.
+* Modern exploration infrastructure (where present), clearly distinguished from ancient features.
+* Evidence hotspots linked to sources and confidence scores.
+
+The next section ("20. Osiris Shaft — Historical & Archaeological Specification") will begin the detailed reconstruction, covering chronology, dimensions, room-by-room geometry, material definitions, and evidence mapping before progressing to cameras, interactions, and implementation details.
+
+---
+
+# 2. Osiris Shaft — Historical & Archaeological Specification
+
+---
+
+# 2.1 Purpose of the Reconstruction
+
+The objective is to reproduce the Osiris Shaft as faithfully as possible from documented archaeological evidence while clearly identifying where interpretation begins.
+
+The reconstruction is **not** intended to depict a specific historical period as absolute fact. Instead, it represents the site's best-supported physical state, with the ability to switch between multiple chronological phases as future versions are developed.
+
+The initial MVP reconstructs the shaft as an archaeological site rather than as an imagined functioning installation.
+
+---
+
+# 2.2 Geographic Location
+
+The Osiris Shaft is located on the Giza Plateau, approximately south of the Great Pyramid, near the causeway traditionally associated with Khafre.
+
+The application should position the shaft within a geographically accurate terrain model of the plateau using a common survey coordinate system.
+
+Future versions will align the site with published topographic and laser survey datasets.
+
+---
+
+# 2.3 Chronology
+
+The chronology panel presents multiple interpretations rather than a single definitive timeline.
+
+| Period                       | Status          | Confidence |
+| ---------------------------- | --------------- | ---------: |
+| Old Kingdom activity         | Possible        |         55 |
+| Middle Kingdom modifications | Possible        |         50 |
+| Late Period funerary use     | Strong evidence |         90 |
+| Roman reuse                  | Documented      |         95 |
+| Modern excavation            | Documented      |        100 |
+
+Each period can be enabled as a visualization layer.
+
+Example:
+
+```
+Ancient
+
+↓
+
+Late Period
+
+↓
+
+Roman
+
+↓
+
+Modern Excavation
+```
+
+The geometry remains identical where evidence supports continuity; only occupation layers and movable objects change.
+
+---
+
+# 2.4 Primary Sources
+
+Every reconstruction element links to one or more source records.
+
+Example source categories:
+
+* Archaeological reports
+* Survey measurements
+* Expedition photographs
+* Published plans
+* Academic papers
+* Exploration videos
+* Laser scans (future)
+* Site photography
+
+Each source receives:
+
+```
+Source ID
+
+Title
+
+Authors
+
+Publication
+
+Year
+
+Type
+
+Reliability
+
+URL
+
+Notes
+```
+
+---
+
+# 2.5 Reconstruction Philosophy
+
+Every modeled object belongs to one of five classes.
+
+## Original Architecture
+
+Ancient stonework.
+
+Cannot be moved.
+
+---
+
+## Modern Installations
+
+Wooden walkways.
+
+Metal ladders.
+
+Lighting.
+
+Safety rails.
+
+Clearly distinguishable.
+
+---
+
+## Environmental Objects
+
+Water.
+
+Sediment.
+
+Dust.
+
+Humidity.
+
+---
+
+## Archaeological Finds
+
+Sarcophagus.
+
+Fragments.
+
+Pottery.
+
+Organic remains.
+
+---
+
+## Interpretive Objects
+
+Only visible when a theory requires them.
+
+Examples:
+
+* Hydraulic gates
+* Resonance chambers
+* Water flow indicators
+* Counterweights
+
+These never appear in Scientific Evidence mode.
+
+---
+
+# 2.6 Coordinate Reference
+
+Every room receives its own local coordinate system while remaining attached to the world coordinate system.
+
+Example
+
+```
+World
+
+└── Osiris Shaft
+
+      Level 1
+
+      Level 2
+
+      Level 3
+```
+
+Each node stores:
+
+```
+Position
+
+Rotation
+
+Scale
+
+Bounding box
+
+Survey reference
+```
+
+---
+
+# 2.7 Geometry Accuracy Levels
+
+Different parts of the shaft have different certainty.
+
+| Geometry            | Confidence |
+| ------------------- | ---------: |
+| Entrance shaft      |         98 |
+| Main chambers       |         96 |
+| Stair locations     |         92 |
+| Water level         |   Variable |
+| Rock fractures      |         80 |
+| Northern conduit    |         85 |
+| Hidden continuation |    Unknown |
+
+Future photogrammetry can replace lower-confidence geometry without affecting application logic.
+
+---
+
+# 2.8 Level 0 — Surface
+
+The reconstruction begins above ground.
+
+Visible elements include:
+
+* Limestone bedrock
+* Desert surface
+* Excavation perimeter
+* Entrance opening
+* Modern protective fencing (optional)
+* Visitor paths
+* Terrain undulations
+* Reference markers
+
+The purpose is to provide orientation before descent.
+
+---
+
+# 2.9 Level 1 Overview
+
+Level 1 serves primarily as the transition between the surface and deeper chambers.
+
+Characteristics:
+
+* Narrow vertical shaft
+* Rough limestone
+* Modern access infrastructure
+* Limited natural light
+* Increasing humidity
+
+Visual goals:
+
+* Immediate perception of depth
+* Scale awareness
+* Spatial confinement
+
+---
+
+# 2.10 Level 2 Overview
+
+Level 2 introduces larger excavated spaces.
+
+Primary objectives:
+
+* Demonstrate excavation geometry.
+* Show relationship between vertical and horizontal circulation.
+* Introduce evidence interaction.
+
+Environmental changes:
+
+* Lower temperature
+* Less ambient light
+* Higher humidity
+* More sediment
+
+---
+
+# 2.11 Level 3 Overview
+
+Level 3 is the centerpiece of the Osiris Shaft reconstruction.
+
+Principal elements:
+
+* Flooded chamber
+* Central island
+* Sarcophagus
+* Limestone walls
+* Water reflections
+* Northern conduit entrance
+
+The room should immediately communicate both archaeological significance and geological context without relying on narration.
+
+---
+
+# 2.12 Water System
+
+Water is modeled as an environmental feature, not evidence of a hydraulic function.
+
+Simulation parameters:
+
+| Parameter          | Initial Value |
+| ------------------ | ------------: |
+| Surface elevation  |  Configurable |
+| Transparency       |    Adjustable |
+| Turbidity          |    Adjustable |
+| Reflection quality |       Dynamic |
+| Refraction         |       Enabled |
+| Ripple simulation  |       Enabled |
+
+Future theory modules may simulate active hydraulic behavior, but the default state represents observed standing water.
+
+---
+
+# 2.13 Central Island
+
+The island is represented as exposed bedrock rising above the water level.
+
+Properties:
+
+```
+Static geometry
+
+Collision enabled
+
+Receives shadows
+
+Wet edges
+
+Sediment accumulation
+```
+
+Environmental decals should indicate historical water fluctuations where evidence exists.
+
+---
+
+# 2.14 Sarcophagus
+
+The sarcophagus is one of the highest-priority evidence objects.
+
+Metadata:
+
+```
+Object ID
+
+Historical classification
+
+Dimensions
+
+Material
+
+Confidence
+
+Bibliography
+
+Photographs
+
+3D references
+```
+
+Interaction options:
+
+* Rotate information panel
+* Highlight measurements
+* Compare photographs
+* Show excavation notes
+* Toggle reconstruction overlays
+
+The object itself is never movable.
+
+---
+
+# 2.15 Northern Conduit
+
+The conduit is treated with exceptional care because it is central to several competing interpretations.
+
+Default presentation:
+
+* Observed geometry only
+* Measured dimensions
+* Accessible extent
+* Survey references
+* No assumed continuation
+
+Optional overlays:
+
+* Known surveyed path
+* Geological projection
+* Hydraulic hypothesis
+* Alternative archaeological interpretations
+
+The application must visually distinguish between surveyed space and inferred continuation.
+
+---
+
+# 2.16 Geological Context
+
+The shaft is embedded within layered limestone.
+
+Geological visualization modes include:
+
+1. Photorealistic rock
+2. Simplified stratigraphy
+3. Cutaway geology
+4. Semi-transparent terrain
+5. Cross-sectional engineering view
+
+These modes share the same underlying geometry.
+
+---
+
+# 2.17 Environmental Rendering
+
+The environment should communicate age and underground conditions through physically based rendering rather than exaggerated visual effects.
+
+Features include:
+
+* Moisture gradients
+* Mineral staining
+* Calcite deposits (where documented)
+* Surface roughness variation
+* Soft dust accumulation
+* Subtle airborne particles
+* Localized dripping effects
+
+No decorative "fantasy cave" elements are permitted.
+
+---
+
+# 2.18 Lighting Strategy
+
+Lighting follows three operational modes:
+
+### Documentary Mode
+
+Balanced illumination approximating professional archaeological photography.
+
+### Exploration Mode
+
+Low ambient illumination with realistic darkness, supplemented by the user's virtual light source where appropriate.
+
+### Scientific Inspection Mode
+
+Even, neutral lighting that minimizes shadows to reveal geometry and surface details.
+
+Lighting parameters should be physically plausible and configurable without altering the underlying material properties.

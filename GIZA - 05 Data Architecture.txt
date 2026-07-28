@@ -1,0 +1,680 @@
+
+# 1. Data Architecture & Knowledge Engine
+
+This chapter defines the data model that separates **evidence**, **interpretation**, and **visualization**. The objective is that the rendering engine never contains archaeological knowledge directly; it only consumes structured data.
+
+---
+
+# -20. Architectural Philosophy
+
+The application is built around four independent domains:
+
+```text
+Evidence
+    ↓
+
+Knowledge
+    ↓
+
+Theory
+    ↓
+
+Visualization
+```
+
+Each layer can evolve independently.
+
+For example:
+
+* A new paper updates evidence.
+* Confidence scores are recalculated.
+* Theory evaluations update automatically.
+* The 3D scene immediately reflects the changes without code modifications.
+
+---
+
+# -19. Core Data Domains
+
+```text
+Evidence
+
+Sources
+
+Objects
+
+Locations
+
+Theories
+
+Simulations
+
+Annotations
+
+Media
+
+Users
+
+Bookmarks
+
+Measurements
+```
+
+Each domain has a unique identifier and version history.
+
+---
+
+# -18. Entity Relationship Overview
+
+```text
+Source
+   │
+   ├────────────┐
+   │            │
+Evidence     Media
+   │
+   │
+Object
+   │
+   ├─────── Location
+   │
+Theory
+   │
+Simulation
+```
+
+Objects never own evidence.
+
+Evidence references objects.
+
+---
+
+# -17. Evidence Schema
+
+```json
+{
+  "id": "EV-000143",
+  "title": "",
+  "description": "",
+  "category": "Measurement",
+  "confidence": 96,
+  "status": "Verified",
+  "sourceIds": [],
+  "locationId": "",
+  "objectIds": [],
+  "tags": [],
+  "created": "",
+  "updated": ""
+}
+```
+
+---
+
+# -16. Source Schema
+
+Every citation is stored once.
+
+```json
+{
+  "id":"SRC-0032",
+  "authors":[],
+  "title":"",
+  "publication":"",
+  "year":2025,
+  "doi":"",
+  "isbn":"",
+  "url":"",
+  "license":"",
+  "type":"Journal"
+}
+```
+
+Supported types
+
+* Book
+* Journal
+* Conference
+* Survey
+* Archaeological Report
+* Museum
+* Government
+* Video
+* Photograph
+* Personal Communication
+
+---
+
+# -15. Location Schema
+
+```json
+{
+  "id":"LOC-005",
+  "name":"Level 3",
+  "parent":"LOC-001",
+  "boundingBox":{},
+  "center":{},
+  "geometry":"mesh_uuid"
+}
+```
+
+Locations define spatial hierarchy only.
+
+---
+
+# -14. Object Schema
+
+Example
+
+```json
+{
+  "id":"OBJ-0012",
+  "name":"Granite Sarcophagus",
+  "type":"Artifact",
+  "mesh":"Sarcophagus.glb",
+  "location":"LOC-005",
+  "confidence":95,
+  "evidence":[]
+}
+```
+
+Objects never store theory information.
+
+---
+
+# -13. Theory Schema
+
+This is the heart of the platform.
+
+```json
+{
+  "id":"THEORY-001",
+  "name":"Hydraulic Interpretation",
+  "description":"",
+  "supports":[],
+  "contradicts":[],
+  "confidence":58,
+  "authors":[],
+  "references":[]
+}
+```
+
+Each theory is evaluated dynamically.
+
+---
+
+# -12. Simulation Schema
+
+Example
+
+```json
+{
+  "id":"SIM-008",
+  "name":"Water Flow",
+  "type":"Hydraulic",
+  "inputs":[],
+  "outputs":[],
+  "parameters":{},
+  "enabled":false
+}
+```
+
+Simulations remain independent of theories.
+
+A theory may reference one or more simulations.
+
+---
+
+# -11. Annotation Schema
+
+Annotations are user-generated or editorial.
+
+```json
+{
+  "id":"",
+  "type":"Research Note",
+  "author":"",
+  "text":"",
+  "location":"",
+  "visible":true
+}
+```
+
+Future versions support collaborative annotations.
+
+---
+
+# -10. Confidence Propagation
+
+Confidence should not be manually duplicated.
+
+Instead
+
+```text
+Evidence
+
+↓
+
+Object Confidence
+
+↓
+
+Theory Confidence
+
+↓
+
+Simulation Confidence
+```
+
+Changing one measurement automatically updates every dependent calculation.
+
+---
+
+# -9. Confidence Formula
+
+Initial proposal
+
+```
+Object Confidence
+
+=
+
+weighted average
+
++
+
+source reliability
+
++
+
+measurement quality
+
++
+
+consensus factor
+```
+
+Later versions may implement Bayesian updating instead of a weighted average.
+
+---
+
+# -8. Contradictory Evidence
+
+Evidence may support multiple theories.
+
+Example
+
+```text
+Evidence 34
+
+Supports Theory A
+
+Contradicts Theory B
+
+Neutral toward Theory C
+```
+
+The platform never hides contradictory evidence.
+
+---
+
+# -7. Evidence Network
+
+Rather than isolated records, evidence forms a graph.
+
+```text
+Source
+
+↓
+
+Evidence
+
+↓
+
+Objects
+
+↓
+
+Theories
+
+↓
+
+Simulations
+```
+
+This allows users to navigate naturally from observation to interpretation.
+
+---
+
+# -6. Knowledge Graph
+
+Internally the data behaves like a graph database.
+
+Example
+
+```text
+Granite Box
+
+↓
+
+Located in
+
+↓
+
+King's Chamber
+
+↓
+
+Inside
+
+↓
+
+Great Pyramid
+
+↓
+
+Associated with
+
+↓
+
+Hydraulic Theory
+```
+
+Although storage may use PostgreSQL, the logical model is graph-oriented.
+
+---
+
+# -5. Version Control
+
+Every entity is versioned.
+
+```text
+v1
+
+↓
+
+v2
+
+↓
+
+v3
+```
+
+Researchers may compare revisions.
+
+Nothing is permanently deleted.
+
+---
+
+# -4. Change Log
+
+Every modification records
+
+```text
+Who
+
+When
+
+Why
+
+Sources
+
+Affected Objects
+```
+
+Scientific transparency requires complete auditability.
+
+---
+
+# -3. API Design Principles
+
+The API is read-heavy.
+
+Clients rarely write archaeological data.
+
+Primary consumers
+
+* Web application
+* Mobile application
+* VR application
+* Documentary mode
+* Research tools
+
+---
+
+# -2. API Endpoints
+
+Examples
+
+```text
+GET /locations
+
+GET /objects
+
+GET /evidence
+
+GET /sources
+
+GET /theories
+
+GET /simulations
+
+GET /timeline
+
+GET /search
+```
+
+Administrative endpoints remain separate.
+
+---
+
+# -1. Search Engine
+
+Users may search by
+
+* object
+* author
+* publication
+* year
+* confidence
+* location
+* theory
+* evidence class
+* keyword
+
+Search returns relationships, not only documents.
+
+---
+
+# 0. Filters
+
+Examples
+
+Confidence
+
+```
+80–100
+```
+
+Period
+
+```
+Late Period
+```
+
+Category
+
+```
+Measurements
+```
+
+Theory
+
+```
+Hydraulic
+```
+
+Location
+
+```
+Level 3
+```
+
+Multiple filters combine using logical AND by default.
+
+---
+
+# 1. Citation Engine
+
+Every visible statement includes provenance.
+
+Hover example
+
+```
+Water depth
+
+Confidence
+
+94%
+
+Sources
+
+4
+
+View Publications
+```
+
+Selecting the citation opens the bibliography panel rather than an external browser by default.
+
+---
+
+# 2. Bibliography Engine
+
+Supports
+
+APA
+
+Chicago
+
+Harvard
+
+IEEE
+
+BibTeX export
+
+RIS export
+
+Researchers may download the complete bibliography for any scene or theory.
+
+---
+
+# 3. Timeline Engine
+
+Every evidence item includes temporal metadata.
+
+```text
+Discovery
+
+Publication
+
+Revision
+
+Current Status
+```
+
+Users can filter the application to show only knowledge available at a specific date, allowing historical reconstruction of scholarly understanding.
+
+---
+
+# 4. Localization
+
+All textual content is externalized.
+
+Supported initially
+
+* English
+* French
+
+Future
+
+* Arabic
+* German
+* Japanese
+* Spanish
+
+Scientific identifiers remain language-independent.
+
+---
+
+# 5. Offline Support
+
+Downloaded scene packages contain
+
+* Geometry
+* Textures
+* Evidence
+* Sources
+* Images
+* Bibliography
+* Metadata
+
+Large videos stream only when online.
+
+---
+
+# 6. Security Model
+
+Roles
+
+Visitor
+
+Researcher
+
+Editor
+
+Administrator
+
+Permissions are enforced at both API and client levels.
+
+---
+
+# 7. Extensibility
+
+The data model is intentionally site-agnostic.
+
+Future sites such as Saqqara, Dahshur, or Abu Rawash should reuse the same schemas with no structural changes.
+
+---
+
+# 8. Proposed Enhancement: Evidence Dependency Graph
+
+To strengthen scientific rigor, add explicit dependency tracking between evidence items.
+
+Example:
+
+```text
+Laser Scan
+      │
+      ├── validates Room Dimensions
+      │          │
+      │          └── supports 3D Geometry
+      │                     │
+      │                     └── influences Hydraulic Simulation
+      │
+Photographic Survey
+      └── validates Surface Condition
+```
+
+This enables users to understand not only *what* supports a theory, but *how* confidence propagates through the system.
+
+---
+
+# 9. Proposed Enhancement: Theory Comparison Matrix
+
+Rather than displaying theories independently, provide a side-by-side comparison against the same evidence set.
+
+| Evidence      | Mainstream |        Hydraulic |       Acoustic |       Hybrid |
+| ------------- | ---------: | ---------------: | -------------: | -----------: |
+| Sarcophagus   |          ✓ |                ? |              ✗ |            ✓ |
+| Water         |     Ritual |       Functional |        Neutral |   Functional |
+| North Conduit |   Drainage | Pressure Channel | Resonance Path | Undetermined |
+
+This matrix becomes one of the application's defining research features, allowing transparent comparison without privileging any interpretation.

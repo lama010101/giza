@@ -1,0 +1,2098 @@
+
+
+# 1. Technical Architecture Overview
+
+Frontend
+
+* React
+* React Three Fiber
+* Three.js
+* TypeScript
+
+Rendering
+
+* WebGL2
+* WebGPU-ready abstraction (future)
+
+Data
+
+* JSON evidence database
+* Spatial metadata
+* Citation database
+
+Physics
+
+* Rapier (interactive physics)
+* Custom hydraulic simulation module
+
+Audio
+
+* WebAudio API
+* Spatial audio
+
+---
+
+# 2. Project Folder Structure
+
+```text
+src/
+    app/
+    components/
+    ui/
+    scene/
+    systems/
+    shaders/
+    materials/
+    cameras/
+    physics/
+    audio/
+    evidence/
+    theories/
+    loaders/
+    hooks/
+    utils/
+
+assets/
+    textures/
+    hdr/
+    scans/
+    models/
+    terrain/
+    audio/
+
+docs/
+
+database/
+
+tests/
+```
+
+---
+
+# 3. Scene Graph Philosophy
+
+Every node has:
+
+* UUID
+* Name
+* Type
+* Metadata
+* References
+* Confidence
+* Parent
+* Children
+
+Example
+
+```text
+OsirisShaft
+
+    Entrance
+
+    Shaft
+
+        Stair
+
+        Chamber1
+
+        Chamber2
+
+        Chamber3
+
+            Sarcophagus
+
+            Water
+
+            Island
+
+            NorthConduit
+
+```
+
+---
+
+# 4. Coordinate System
+
+World origin:
+
+Center of Giza Plateau reference grid (to be finalized using survey data).
+
+Units:
+
+Meters
+
+Y axis
+
+Vertical
+
+X
+
+East-West
+
+Z
+
+North-South
+
+All imported models must preserve real-world scale.
+
+---
+
+# 5. Asset Standards
+
+Meshes
+
+* glTF 2.0
+
+Textures
+
+* KTX2 Basis Universal compression
+
+Materials
+
+* PBR Metallic-Roughness workflow
+
+Maximum texture resolution
+
+* 4K desktop
+* 2K mobile
+
+---
+
+
+# 6. Osiris Shaft — Engineering & Implementation Specification
+
+This chapter translates the archaeological reconstruction into a software architecture suitable for implementation in React Three Fiber (R3F) and Three.js. The objective is to keep scientific data, rendering, interaction, and simulations modular so that future environments (e.g., the Great Pyramid) reuse the same framework.
+
+---
+
+# 6.1 Scene Architecture
+
+The Osiris Shaft is treated as a self-contained scene module.
+
+```text
+Scene
+│
+├── Terrain
+├── Lighting
+├── Environment
+├── Cameras
+├── Navigation
+├── Archaeology
+├── Evidence
+├── Simulation
+├── UI Anchors
+└── Debug
+```
+
+Every subsystem communicates through a shared Scene Context rather than directly with one another.
+
+---
+
+# 6.2 React Component Hierarchy
+
+```text
+<App>
+
+    <SceneManager>
+
+        <OsirisScene>
+
+            <Terrain/>
+
+            <Environment/>
+
+            <LightingSystem/>
+
+            <CameraManager/>
+
+            <NavigationController/>
+
+            <Level0/>
+
+            <Level1/>
+
+            <Level2/>
+
+            <Level3/>
+
+            <EvidenceManager/>
+
+            <TheoryManager/>
+
+            <WaterSimulation/>
+
+            <AudioEnvironment/>
+
+            <DebugTools/>
+```
+
+Every major component loads independently.
+
+Nothing inside Level 3 should require Level 0 to remain in memory.
+
+---
+
+# 6.3 Scene Streaming
+
+Large scenes must stream dynamically.
+
+Initial load:
+
+```
+Terrain
+
+Surface
+
+Entrance
+
+UI
+```
+
+Only after descent:
+
+```
+Level 1
+```
+
+Later
+
+```
+Level 2
+```
+
+Finally
+
+```
+Level 3
+```
+
+Assets unload when sufficiently distant unless pinned by the user.
+
+---
+
+# 6.4 Scene Graph
+
+```text
+OsirisShaft
+
+├── Surface
+
+│      Terrain
+
+│      Entrance
+
+│      Signage
+
+│      Walkway
+
+├── Vertical Shaft
+
+│      Walls
+
+│      Rope
+
+│      Ladder
+
+│      Lighting
+
+├── Level1
+
+│      Chamber
+
+│      Stair
+
+├── Level2
+
+│      Chamber
+
+│      Stair
+
+├── Level3
+
+│      Water
+
+│      Island
+
+│      Sarcophagus
+
+│      NorthConduit
+
+│      GeologicalLayers
+
+│      EvidenceMarkers
+
+└── Cameras
+```
+
+Every node owns metadata.
+
+---
+
+# 6.5 Object Metadata
+
+Every renderable object contains:
+
+```json
+{
+  "uuid":"",
+  "name":"",
+  "category":"",
+  "confidence":95,
+  "evidenceIds":[],
+  "material":"",
+  "visible":true,
+  "interactive":false
+}
+```
+
+No hardcoded archaeological information exists inside rendering components.
+
+---
+
+# 6.6 Materials
+
+The project uses physically based rendering exclusively.
+
+Master materials include:
+
+```
+Dry Limestone
+
+Wet Limestone
+
+Granite
+
+Wood
+
+Steel
+
+Sediment
+
+Water
+
+Dust
+
+Sand
+```
+
+Every material derives from a common base shader.
+
+---
+
+# 6.7 Limestone Shader
+
+Inputs
+
+```
+Albedo
+
+Normal
+
+Roughness
+
+Ambient Occlusion
+
+Height
+
+Moisture Mask
+
+Calcite Mask
+```
+
+Procedural additions:
+
+* edge erosion
+* mineral streaks
+* micro cracks
+* dust accumulation
+
+No baked dirt textures.
+
+---
+
+# 6.8 Wet Surface System
+
+Wetness is computed procedurally.
+
+Variables
+
+```
+distance from water
+
+humidity
+
+dripping
+
+surface orientation
+```
+
+Output
+
+```
+roughness reduction
+
+specular increase
+
+darkened albedo
+```
+
+This allows future dynamic water levels.
+
+---
+
+# 6.9 Water Rendering
+
+Requirements
+
+Physically plausible.
+
+Not stylized.
+
+Features
+
+* planar reflections
+* screen-space reflections (desktop)
+* Fresnel
+* depth coloration
+* underwater attenuation
+* soft ripples
+* refraction
+
+Future
+
+GPU fluid simulation.
+
+---
+
+# 6.10 Fog
+
+Multiple fog volumes.
+
+Surface
+
+Minimal.
+
+Lower levels
+
+Humidity fog.
+
+Level 3
+
+Localized volumetric fog.
+
+Fog density must remain low enough to preserve scientific visibility.
+
+---
+
+# 6.11 Lighting Architecture
+
+Lighting is layered.
+
+```
+Ambient
+
++
+
+Directional
+
++
+
+Local
+
++
+
+Bounce
+
++
+
+Volumetric
+```
+
+Each layer can be enabled independently.
+
+---
+
+# 6.12 Shadow Strategy
+
+Desktop
+
+```
+Cascaded Shadow Maps
+```
+
+Mobile
+
+```
+Single directional map
+```
+
+Distant objects
+
+```
+Baked AO
+```
+
+---
+
+# 6.13 Camera Modes
+
+### Explorer
+
+Free movement.
+
+---
+
+### Guided
+
+Predetermined route.
+
+---
+
+### Documentary
+
+Smooth cinematic.
+
+---
+
+### Research
+
+Slow.
+
+Precise.
+
+Orthographic support.
+
+---
+
+### Inspection
+
+Object-centric.
+
+---
+
+# 6.14 Camera Controller
+
+Movement constraints
+
+Maximum speed
+
+Collision
+
+Slope limits
+
+Head bob optional
+
+Acceleration
+
+Inertia
+
+Field of view adjustable
+
+Near clip minimized to inspect narrow passages without clipping artifacts.
+
+---
+
+# 6.15 Documentary Camera Paths
+
+Example
+
+```
+Surface
+
+↓
+
+Entrance
+
+↓
+
+Vertical descent
+
+↓
+
+Level 1
+
+↓
+
+Level 2
+
+↓
+
+Level 3
+
+↓
+
+Island
+
+↓
+
+Sarcophagus
+
+↓
+
+North conduit
+```
+
+Camera splines stored separately from scene objects.
+
+---
+
+# 6.16 Evidence Hotspots
+
+Every hotspot exists as metadata.
+
+```
+Position
+
+Radius
+
+Priority
+
+Evidence IDs
+
+Title
+
+Description
+
+Images
+
+Publications
+
+Confidence
+```
+
+Clicking a hotspot never pauses rendering.
+
+---
+
+# 6.17 Interaction System
+
+Supported interactions
+
+Hover
+
+Focus
+
+Inspect
+
+Measure
+
+Bookmark
+
+Compare
+
+Hide Layer
+
+Cross Section
+
+Evidence View
+
+Theory View
+
+Everything uses raycasting.
+
+---
+
+# 6.18 Measurement Tool
+
+Researchers may measure
+
+distance
+
+angles
+
+height
+
+surface area
+
+volume
+
+Measurements never modify geometry.
+
+---
+
+# 6.19 Cross Section Mode
+
+Generates clipping planes.
+
+Examples
+
+```
+Vertical
+
+Horizontal
+
+Custom
+```
+
+Works entirely in GPU shaders.
+
+No duplicate geometry.
+
+---
+
+# 6.20 Evidence Overlay
+
+Evidence objects appear as halos.
+
+Color
+
+Green
+
+High confidence.
+
+Blue
+
+Measured.
+
+Orange
+
+Interpretation.
+
+Purple
+
+Simulation.
+
+Red
+
+Contradictory evidence.
+
+---
+
+# 6.21 Scene Layers
+
+```
+Geometry
+
+Modern Objects
+
+Water
+
+Geology
+
+Evidence
+
+Theory
+
+Simulation
+
+Annotations
+```
+
+Every layer independently toggleable.
+
+---
+
+# 6.22 Audio Environment
+
+Ambient sounds
+
+Water drip
+
+Echo
+
+Footsteps
+
+Wind (surface)
+
+Silence
+
+No cinematic music during exploration.
+
+Documentary mode may optionally include narration and soundtrack.
+
+---
+
+# 6.23 Navigation
+
+Supported
+
+Keyboard
+
+Mouse
+
+Touch
+
+Gamepad
+
+VR controller (future)
+
+Navigation logic independent of camera implementation.
+
+---
+
+# 6.24 Save State
+
+User session stores
+
+```
+Camera
+
+Bookmarks
+
+Visible layers
+
+Selected theory
+
+Measurements
+
+Notes
+
+Visited evidence
+```
+
+Geometry never stores user state.
+
+---
+
+# 6.25 Debug Mode
+
+Displays
+
+FPS
+
+Draw calls
+
+Triangles
+
+GPU memory
+
+Bounding boxes
+
+Normals
+
+Wireframe
+
+Collider meshes
+
+Streaming status
+
+Evidence IDs
+
+Confidence values
+
+This mode is intended for developers, researchers validating reconstructions, and QA.
+
+---
+
+# 6.26 Performance Targets
+
+| Platform         | Target    |
+| ---------------- | --------- |
+| Desktop High-End | 120 FPS   |
+| Desktop Standard | 60 FPS    |
+| Laptop           | 60 FPS    |
+| Tablet           | 60 FPS    |
+| Mobile High-End  | 60 FPS    |
+| Mobile Mid-Range | 30–45 FPS |
+| VR (future)      | 90 FPS    |
+
+Frame pacing is prioritized over peak frame rate.
+
+---
+
+# 6.27 Rendering Budget
+
+| Metric            |  Desktop |   Mobile |
+| ----------------- | -------: | -------: |
+| Visible triangles |    6–8 M |  1.5–2 M |
+| Draw calls        |    < 700 |    < 250 |
+| Texture memory    | ≤ 2.5 GB | ≤ 700 MB |
+| Materials         |    < 100 |     < 40 |
+| Dynamic lights    |      ≤ 8 |      ≤ 3 |
+| Reflection probes |     ≤ 12 |      ≤ 4 |
+
+These budgets apply to the entire loaded scene, not individual assets.
+
+---
+
+# 6.28 Asset Pipeline
+
+1. Survey data acquisition (photogrammetry, scans, CAD, published plans)
+2. High-resolution master modeling (Blender)
+3. Geometry validation against source measurements
+4. High-poly sculpt (where needed for erosion/weathering)
+5. Baking of normal and ambient occlusion maps
+6. Low-poly optimization
+7. UV unwrapping and texture atlas generation
+8. PBR texture authoring
+9. Export to glTF 2.0 with KTX2-compressed textures
+10. Automated validation (scale, pivots, metadata)
+11. Integration into R3F scene
+12. Regression testing for visual and performance consistency
+
+Each asset carries provenance metadata linking it back to the evidence database.
+
+---
+# 7. Rendering Engine & Advanced Graphics
+
+This chapter specifies the rendering pipeline and graphics architecture. The objective is **scientific visualization first, visual fidelity second**. Every graphical technique must improve the user's understanding of the site rather than simply increasing realism.
+
+---
+
+# 7.1 Rendering Philosophy
+
+The renderer is designed around three principles:
+
+1. **Geometric accuracy**
+2. **Material realism**
+3. **Performance scalability**
+
+The renderer should adapt automatically to the available hardware while maintaining visual consistency.
+
+---
+
+# 7.2 Rendering Pipeline
+
+```text
+Application State
+
+        ↓
+
+Scene Graph
+
+        ↓
+
+Visibility Manager
+
+        ↓
+
+LOD Manager
+
+        ↓
+
+Lighting Pipeline
+
+        ↓
+
+Material System
+
+        ↓
+
+Post Processing
+
+        ↓
+
+Final Frame
+```
+
+Every stage should be independently testable.
+
+---
+
+# 7.3 Rendering Profiles
+
+Four rendering profiles are supported.
+
+| Profile  | Target               |
+| -------- | -------------------- |
+| Ultra    | High-end desktop GPU |
+| High     | Gaming laptop        |
+| Standard | Average desktop      |
+| Mobile   | Phones & tablets     |
+
+Changing profile affects quality settings, not scientific content.
+
+---
+
+# 7.4 GPU Budget
+
+### Desktop
+
+* 2–3 ms Scene Update
+* 6–8 ms Rendering
+* 2 ms Post Processing
+
+Target:
+
+60 FPS
+
+---
+
+### High-End Desktop
+
+120 FPS
+
+---
+
+### Mobile
+
+30–60 FPS
+
+Dynamic scaling permitted.
+
+---
+
+# 7.5 Geometry Strategy
+
+Every model exists in multiple LODs.
+
+Example
+
+```text
+LOD0
+
+2,000,000 triangles
+
+↓
+
+LOD1
+
+700,000
+
+↓
+
+LOD2
+
+180,000
+
+↓
+
+LOD3
+
+40,000
+
+↓
+
+Billboard / Hidden
+```
+
+LOD transitions must be imperceptible.
+
+---
+
+# 7.6 Mesh Streaming
+
+Large environments are divided into spatial sectors.
+
+Example
+
+```text
+Sector
+
+↓
+
+Room
+
+↓
+
+Object
+
+↓
+
+Mesh
+```
+
+Only visible sectors remain resident in GPU memory.
+
+---
+
+# 7.7 Material Library
+
+Master materials
+
+```text
+Dry Limestone
+
+Wet Limestone
+
+Granite
+
+Basalt
+
+Sand
+
+Dust
+
+Wood
+
+Steel
+
+Bronze
+
+Water
+
+Glass
+
+UI Materials
+```
+
+Every scene derives from these master definitions.
+
+---
+
+# 7.8 PBR Standards
+
+Each material contains
+
+```text
+Albedo
+
+Normal
+
+Roughness
+
+Ambient Occlusion
+
+Metallic
+
+Height
+
+Opacity
+
+Emission (optional)
+```
+
+No custom material should bypass the master shader framework.
+
+---
+
+# 7.9 Procedural Surface Aging
+
+Rather than painting damage manually,
+
+aging is computed procedurally.
+
+Factors
+
+* humidity
+* erosion
+* orientation
+* height
+* exposure
+
+Result
+
+* dust
+* streaking
+* mineral deposits
+* darker moisture zones
+
+This allows future environmental simulations to alter appearance dynamically.
+
+---
+
+# 7.10 Water Rendering Pipeline
+
+The water shader should support:
+
+### Surface
+
+* Fresnel reflection
+* Refraction
+* Dynamic normal maps
+* Caustics (optional)
+
+### Volume
+
+* Depth absorption
+* Turbidity
+* Suspended particles
+
+### Interaction
+
+* Ripples
+* Object disturbance
+* Drips
+
+Future GPU-based shallow-water simulation can replace the simplified ripple model without changing the scene architecture.
+
+---
+
+# 7.11 Volumetric Effects
+
+Supported effects
+
+* Dust
+* Humidity
+* Mist
+* Light shafts
+* Localized fog
+* Fine particulate matter
+
+These effects should remain subtle and evidence-based.
+
+No theatrical smoke or exaggerated god rays.
+
+---
+
+# 7.12 Lighting Pipeline
+
+Lighting is physically inspired but artistically calibrated for legibility.
+
+Sources include:
+
+* Sunlight (surface)
+* Sky illumination
+* Torch / inspection light
+* Bounce lighting
+* Reflected light from water
+* Optional artificial lighting in documentary mode
+
+---
+
+# 7.13 Light Types
+
+| Type        | Usage                |
+| ----------- | -------------------- |
+| Directional | Surface sun          |
+| Hemisphere  | Ambient sky          |
+| Spot        | Flashlight           |
+| Point       | Documentary lighting |
+| Area        | Museum mode          |
+| Environment | HDR lighting         |
+
+The number of active dynamic lights is limited by the rendering profile.
+
+---
+
+# 7.14 Global Illumination
+
+Initial implementation:
+
+* Baked indirect lighting
+* Ambient occlusion
+* Reflection probes
+
+Future implementation:
+
+* Real-time global illumination using WebGPU where available.
+
+---
+
+# 7.15 Reflection System
+
+Reflection hierarchy
+
+```text
+Planar
+
+↓
+
+Reflection Probe
+
+↓
+
+Screen Space Reflection
+
+↓
+
+Environment Map
+```
+
+The renderer selects the highest-quality method available for each surface.
+
+---
+
+# 7.16 Shader Architecture
+
+All shaders derive from a common framework.
+
+```text
+Base Shader
+
+│
+
+├── Stone
+
+├── Water
+
+├── Metal
+
+├── Organic
+
+├── UI
+
+└── Debug
+```
+
+This minimizes duplication and simplifies maintenance.
+
+---
+
+# 7.17 Scientific Visualization Shaders
+
+These shaders exist only in Research Mode.
+
+Examples:
+
+* Confidence heatmap
+* Surface deviation
+* Moisture visualization
+* Geological layers
+* Stress simulation overlays
+* Acoustic pressure fields
+* Hydraulic flow vectors
+
+These overlays replace material shading rather than blending over it, ensuring clarity.
+
+---
+
+# 7.18 Cross-Section Rendering
+
+Cross-sections are implemented entirely in shaders.
+
+Capabilities:
+
+* Single clipping plane
+* Multiple clipping planes
+* Box clipping
+* Inverted clipping
+
+Cut surfaces may display:
+
+* Solid fill
+* Geological texture
+* Grid overlay
+
+---
+
+# 7.19 Terrain Rendering
+
+The plateau is rendered using tiled terrain.
+
+Layers include:
+
+* Bedrock
+* Sand
+* Excavation zones
+* Modern paths
+
+Future support:
+
+Satellite imagery overlays and LiDAR-derived terrain.
+
+---
+
+# 7.20 Post-Processing
+
+Default effects
+
+* Tone mapping
+* Gamma correction
+* Temporal anti-aliasing
+* Ambient occlusion
+* Bloom (minimal)
+* Sharpening
+
+Avoid excessive cinematic effects.
+
+No chromatic aberration or artificial lens dirt.
+
+---
+
+# 7.21 Color Management
+
+Rendering must use a linear workflow.
+
+Requirements:
+
+* Linear color space internally
+* Wide-gamut asset support
+* Consistent tone mapping across platforms
+
+All screenshots should match the in-application appearance.
+
+---
+
+# 7.22 Dynamic Quality Scaling
+
+If frame rate falls below target:
+
+1. Reduce shadow resolution.
+2. Lower reflection quality.
+3. Reduce volumetric sampling.
+4. Decrease particle density.
+5. Adjust LOD distances.
+
+Geometry fidelity should be reduced only as a last resort.
+
+---
+
+# 7.23 Screenshot & Publication Quality
+
+Publication mode supports:
+
+* 4K
+* 8K
+* Transparent background
+* Scale bar
+* North arrow
+* Caption block
+* Citation footer
+
+The exported image should be suitable for inclusion in academic presentations.
+
+---
+
+# 7.24 Debug Rendering
+
+Developer overlays include:
+
+* Wireframe
+* UV visualization
+* Normal vectors
+* Tangents
+* Light influence
+* Overdraw
+* LOD colors
+* Streaming regions
+* Physics colliders
+
+Each overlay is independently toggleable.
+
+---
+
+# 7.25 Validation Rendering
+
+To ensure reconstruction fidelity, add a dedicated comparison mode:
+
+```text
+Survey Photograph
+
+        │
+
+Split Screen
+
+        │
+
+3D Reconstruction
+```
+
+Or
+
+```text
+Laser Scan
+
+↓
+
+Point Cloud
+
+↓
+
+Mesh Overlay
+
+↓
+
+Deviation Heatmap
+```
+
+This allows researchers to quantify differences between the digital reconstruction and the measured source data.
+
+Deviation thresholds:
+
+| Difference | Color  |
+| ---------- | ------ |
+| < 1 cm     | Green  |
+| 1–5 cm     | Yellow |
+| > 5 cm     | Red    |
+
+This feature supports iterative refinement and provides objective validation of reconstruction quality.
+
+---
+
+# 7.26 Proposed Enhancement: Temporal Material Simulation
+
+Introduce time-aware material states.
+
+Instead of a single texture, materials expose environmental parameters:
+
+```text
+Humidity
+
+Temperature
+
+Dust
+
+Water Level
+
+Biological Growth
+
+Salt Deposition
+```
+
+Changing historical periods or environmental conditions updates material appearance procedurally without requiring separate texture sets.
+
+This enables realistic transitions between ancient occupation, abandonment, excavation, and modern presentation.
+
+---
+
+# 8. Simulation Framework
+
+This chapter defines the simulation subsystem. It is one of the most critical architectural components because it separates **physical simulation** from **archaeological interpretation**.
+
+A simulation demonstrates **what would happen if a set of assumptions were true**. It does **not** establish that those assumptions are historically correct.
+
+This distinction must remain explicit throughout the application.
+
+---
+
+# 8.1 Design Philosophy
+
+The simulation engine answers questions such as:
+
+* Could water have flowed through this conduit?
+* How would a chamber resonate at a given frequency?
+* What pressure would develop under these conditions?
+* How would sediment accumulate?
+* How would sound propagate through connected cavities?
+
+It does **not** answer:
+
+* Why the builders created the structure.
+* Whether a specific theory is historically correct.
+
+---
+
+# 8.2 Simulation Architecture
+
+```text
+Evidence
+      │
+
+Geometry
+      │
+
+Material Properties
+      │
+
+Simulation Parameters
+      │
+
+Physics Solver
+      │
+
+Visualization
+```
+
+Each stage is independent.
+
+---
+
+# 8.3 Simulation Categories
+
+The engine supports multiple simulation families.
+
+| Module         | Status  |
+| -------------- | ------- |
+| Hydraulic      | MVP     |
+| Acoustic       | MVP     |
+| Geological     | Phase 2 |
+| Structural     | Phase 2 |
+| Thermal        | Future  |
+| Atmospheric    | Future  |
+| Human Movement | Future  |
+
+Each module shares the same infrastructure.
+
+---
+
+# 8.4 Simulation Lifecycle
+
+```text
+Idle
+
+↓
+
+Parameter Selection
+
+↓
+
+Validation
+
+↓
+
+Simulation
+
+↓
+
+Visualization
+
+↓
+
+Analysis
+
+↓
+
+Export
+```
+
+The scene remains interactive throughout the simulation.
+
+---
+
+# 8.5 Parameter Sets
+
+Every simulation stores its complete configuration.
+
+Example:
+
+```json
+{
+  "simulation":"Hydraulic",
+  "waterLevel":18.4,
+  "flowRate":0.7,
+  "temperature":22,
+  "viscosity":"fresh_water",
+  "gravity":9.81
+}
+```
+
+Parameter sets are versioned and shareable.
+
+---
+
+# 8.6 Parameter Provenance
+
+Every parameter is classified.
+
+| Source       | Example               |
+| ------------ | --------------------- |
+| Measured     | Chamber dimensions    |
+| Published    | Limestone density     |
+| Estimated    | Roughness coefficient |
+| User-defined | Water level           |
+| Experimental | Resonance damping     |
+
+Users always know which parameters originate from measurements and which are assumptions.
+
+---
+
+# 8.7 Hydraulic Simulation
+
+The hydraulic engine models:
+
+* Standing water
+* Gravity flow
+* Pressure
+* Filling
+* Emptying
+* Surface elevation
+* Water velocity
+* Turbulence (simplified)
+* Conduit connectivity
+
+The MVP assumes incompressible Newtonian fluid behavior.
+
+---
+
+# 8.8 Hydraulic Inputs
+
+Required inputs include:
+
+```text
+Geometry
+
+Water Sources
+
+Water Level
+
+Material Roughness
+
+Gravity
+
+Flow Restrictions
+
+Boundary Conditions
+```
+
+All inputs are editable in Research Mode.
+
+---
+
+# 8.9 Hydraulic Outputs
+
+The engine computes:
+
+* Flow direction
+* Pressure field
+* Velocity vectors
+* Fill time
+* Drain time
+* Water volume
+* Estimated energy loss
+
+Outputs are timestamped and exportable.
+
+---
+
+# 8.10 Hydraulic Visualization
+
+Visualization layers include:
+
+* Animated streamlines
+* Velocity arrows
+* Pressure heatmaps
+* Water surface animation
+* Particle tracers
+
+Researchers may display multiple overlays simultaneously.
+
+---
+
+# 8.11 Hydraulic Validation
+
+Simulation results are compared against:
+
+* Measured water levels
+* Known chamber elevations
+* Survey geometry
+* Published geological constraints
+
+Any mismatch is reported rather than hidden.
+
+---
+
+# 8.12 Acoustic Simulation
+
+The acoustic engine evaluates:
+
+* Resonant frequencies
+* Standing waves
+* Reflection paths
+* Reverberation
+* Energy decay
+* Wave interference
+
+The initial implementation focuses on linear acoustics.
+
+---
+
+# 8.13 Acoustic Inputs
+
+Required parameters:
+
+* Geometry
+* Material absorption
+* Air temperature
+* Humidity
+* Source location
+* Frequency sweep
+
+---
+
+# 8.14 Acoustic Outputs
+
+Results include:
+
+* Frequency response
+* Pressure distribution
+* Resonance map
+* Reflection paths
+* Reverberation time (RT60)
+
+Future versions may support binaural rendering.
+
+---
+
+# 8.15 Acoustic Visualization
+
+Available visualizations:
+
+* Pressure isosurfaces
+* Color heatmaps
+* Animated wavefronts
+* Particle motion
+* Frequency spectrum
+
+Scientific units are displayed alongside visualizations.
+
+---
+
+# 8.16 Geological Simulation
+
+Phase 2 introduces geological analysis.
+
+Capabilities include:
+
+* Stratigraphic visualization
+* Rock property assignment
+* Fracture mapping
+* Groundwater layers
+* Excavation boundaries
+
+This module primarily supports context rather than prediction.
+
+---
+
+# 8.17 Structural Simulation
+
+Future structural analysis may evaluate:
+
+* Load distribution
+* Stress
+* Compression
+* Potential failure zones
+* Deformation
+
+This module should integrate with established finite-element software where practical rather than reimplementing advanced solvers.
+
+---
+
+# 8.18 Simulation Independence
+
+A single geometry supports multiple simulations.
+
+Example:
+
+```text
+Level 3
+
+├── Hydraulic
+├── Acoustic
+├── Geological
+└── Structural
+```
+
+No simulation modifies the underlying archaeological model.
+
+---
+
+# 8.19 Time Control
+
+Simulations support:
+
+* Pause
+* Resume
+* Step forward
+* Step backward (replay)
+* Variable speed
+
+Replay is based on recorded states rather than reversing the solver.
+
+---
+
+# 8.20 Comparison Mode
+
+Researchers can compare two simulations.
+
+Example:
+
+```text
+Hydraulic Model A
+
+│
+
+Side-by-Side
+
+│
+
+Hydraulic Model B
+```
+
+Differences are highlighted quantitatively.
+
+---
+
+# 8.21 Simulation Metadata
+
+Every run records:
+
+```text
+Simulation ID
+
+Software Version
+
+Date
+
+Parameters
+
+Author
+
+Geometry Version
+
+Theory Context
+
+Random Seed (if applicable)
+```
+
+This ensures reproducibility.
+
+---
+
+# 8.22 Scientific Transparency
+
+Every simulation displays a disclaimer.
+
+Example:
+
+```text
+Simulation results illustrate the behavior of the selected model under the specified assumptions. They do not constitute evidence that the historical system operated in this manner.
+```
+
+This message should be visible whenever a simulation begins.
+
+---
+
+# 8.23 Export Formats
+
+Researchers may export:
+
+* CSV
+* JSON
+* Images
+* MP4 animations
+* Parameter sets
+* Simulation logs
+
+Future support:
+
+* VTK
+* glTF animation
+* HDF5
+
+---
+
+# 8.24 API Integration
+
+Simulation requests follow an asynchronous workflow.
+
+```text
+Client
+
+↓
+
+Simulation Queue
+
+↓
+
+Physics Engine
+
+↓
+
+Results Store
+
+↓
+
+Visualization
+```
+
+Long-running simulations do not block user interaction.
+
+---
+
+# 8.25 Performance Strategy
+
+The engine supports progressive complexity.
+
+| Mode     | Description                  |
+| -------- | ---------------------------- |
+| Preview  | Instant approximate solution |
+| Standard | Interactive accuracy         |
+| Research | Higher fidelity, slower      |
+| Offline  | Maximum precision            |
+
+This allows mobile devices to participate without sacrificing scientific workflows.
+
+---
+
+# 8.26 Validation Framework
+
+Each simulation includes objective validation metrics.
+
+For example:
+
+**Hydraulic**
+
+* Conservation of mass
+* Boundary condition verification
+* Numerical stability
+
+**Acoustic**
+
+* Energy conservation
+* Mesh resolution adequacy
+* Frequency convergence
+
+Validation results appear before the simulation is accepted.
+
+---
+
+# 8.27 Proposed Enhancement: Evidence-Aware Simulations
+
+A distinctive feature for GIZA is to make simulations aware of evidence confidence.
+
+Instead of treating all geometry equally, each simulation element carries uncertainty.
+
+Example:
+
+```text
+North Conduit
+
+Geometry Confidence: 84%
+
+↓
+
+Simulation Confidence Limited To 84%
+```
+
+Areas reconstructed with lower certainty produce wider confidence intervals in simulation outputs.
+
+This avoids presenting highly precise numerical results derived from uncertain geometry.
+
+---
+
+# 8.28 Proposed Enhancement: Multi-Scenario Simulation Matrix
+
+Rather than running one scenario at a time, researchers can define parameter ranges.
+
+Example:
+
+| Water Level | Roughness |           Result |
+| ----------- | --------: | ---------------: |
+| 17.0 m      |       Low |           Stable |
+| 17.0 m      |      High |        Slow Flow |
+| 18.5 m      |       Low |         Overflow |
+| 18.5 m      |      High | Partial Overflow |
+
+The application can then visualize sensitivity analyses instead of isolated simulations.
+
+This is valuable because archaeological hypotheses often depend more on parameter uncertainty than on the solver itself.
+
+---
+
+# 8.29 Proposed Enhancement: Coupled Simulations
+
+Long-term architecture should permit modules to interact.
+
+Example:
+
+```text
+Hydraulic
+
+↓
+
+Humidity
+
+↓
+
+Material Moisture
+
+↓
+
+Acoustic Absorption
+
+↓
+
+Resonance Response
+```
+
+or
+
+```text
+Groundwater
+
+↓
+
+Rock Saturation
+
+↓
+
+Structural Properties
+
+↓
+
+Stress Analysis
+```
+
+This enables interdisciplinary exploration while preserving modularity.
+

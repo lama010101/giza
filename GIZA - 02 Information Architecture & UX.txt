@@ -1,0 +1,937 @@
+
+# 1. Information Architecture
+
+```
+Home
+
+Explore
+
+    Giza Plateau
+
+        Great Pyramid
+
+        Osiris Shaft
+
+        Causeway
+
+        Sphinx
+
+Evidence
+
+Theories
+
+Timeline
+
+Research
+
+Settings
+```
+
+---
+
+# 9. User Types
+
+## Visitor
+
+Simple exploration.
+
+---
+
+## Student
+
+Guided learning.
+
+---
+
+## Researcher
+
+Evidence comparison.
+
+Measurements.
+
+Cross-sections.
+
+Source inspection.
+
+---
+
+## Documentary Mode
+
+Narrated experience.
+
+---
+
+## Developer Mode
+
+Debug overlays.
+
+Scene graph.
+
+Bounding boxes.
+
+LOD.
+
+Performance.
+
+Wireframe.
+
+Physics.
+
+---
+
+# 10. UX Philosophy
+
+No clutter.
+
+The environment is always the primary focus.
+
+UI appears only when needed.
+
+Panels slide over the scene instead of replacing it.
+
+The camera never jumps unexpectedly.
+
+Animations prioritize clarity over spectacle.
+
+---
+
+# 11. Interface Layout
+
+```
++---------------------------------------------------+
+
+Top Bar
+
+-----------------------------------------------------
+
+3D Scene
+
+-----------------------------------------------------
+
+Bottom Toolbar
+
+Camera
+
+Layers
+
+Evidence
+
+Measure
+
+Theory
+
+Settings
+
+```
+
+Right side panel
+
+Evidence
+
+Sources
+
+Images
+
+Metadata
+
+Left panel
+
+Scene hierarchy
+
+Bookmarks
+
+Navigation
+
+---
+
+# 12. Visual Language
+
+Color palette
+
+Stone
+
+Sand
+
+Copper
+
+Dark slate
+
+Soft blue
+
+Avoid excessive saturation.
+
+Avoid game-like HUD aesthetics.
+
+Aim for a museum-grade presentation.
+
+---
+
+# 13. Accessibility
+
+Keyboard navigation
+
+Screen reader support
+
+High contrast mode
+
+Large text mode
+
+Colorblind-friendly palettes
+
+Adjustable movement speed
+
+Motion reduction option
+
+
+# 23. User Experience, Navigation & Documentary Mode
+
+This chapter defines how users interact with the application. It specifies workflows rather than implementation details, ensuring a consistent experience across desktop, tablet, mobile, and future VR platforms.
+
+---
+
+# 23.1 UX Philosophy
+
+The interface should never compete with the archaeology.
+
+Users should feel they are **exploring a real site**, not operating a CAD application.
+
+The software continuously balances three priorities:
+
+1. Immersion
+2. Scientific transparency
+3. Ease of exploration
+
+Whenever these priorities conflict, scientific accuracy takes precedence over visual spectacle.
+
+---
+
+# 23.2 Primary Navigation Modes
+
+The application provides five navigation modes.
+
+| Mode         | Purpose                      |
+| ------------ | ---------------------------- |
+| Explore      | Free exploration             |
+| Guided       | Curated tour                 |
+| Research     | Scientific investigation     |
+| Documentary  | Passive cinematic experience |
+| Presentation | Museum / kiosk mode          |
+
+Switching modes never reloads the scene.
+
+Only UI behavior changes.
+
+---
+
+# 23.3 Explore Mode
+
+Default mode.
+
+The user may
+
+* walk
+* fly
+* teleport (optional)
+* inspect
+* measure
+* bookmark
+* switch theories
+* change lighting
+* reveal hidden layers
+
+No narration.
+
+No forced sequence.
+
+---
+
+# 23.4 Guided Mode
+
+Guided mode presents curated paths.
+
+Example:
+
+```text
+Stop 1
+
+↓
+
+Surface
+
+↓
+
+Stop 2
+
+↓
+
+Entrance Shaft
+
+↓
+
+Stop 3
+
+↓
+
+Level 1
+
+↓
+
+Stop 4
+
+↓
+
+Level 2
+
+↓
+
+Stop 5
+
+↓
+
+Level 3
+```
+
+Each stop includes
+
+* narration
+* evidence
+* photographs
+* citations
+* optional animations
+
+Users may leave the guided tour at any moment.
+
+---
+
+# 23.5 Research Mode
+
+Designed for archaeologists and engineers.
+
+Additional tools
+
+✓ Measurements
+
+✓ Cross-sections
+
+✓ Layer isolation
+
+✓ Source inspection
+
+✓ Metadata browser
+
+✓ Confidence visualization
+
+✓ Geometry statistics
+
+✓ Export screenshots
+
+Future versions may support CSV and GIS exports.
+
+---
+
+# 23.6 Documentary Mode
+
+Documentary Mode transforms the application into an interactive film.
+
+Unlike a video, the camera moves through a real-time environment.
+
+Characteristics
+
+* scripted camera
+* narration
+* synchronized overlays
+* animated cutaways
+* timeline transitions
+* evidence highlighting
+
+Users can pause at any point.
+
+---
+
+# 23.7 Documentary Timeline
+
+Example
+
+```text
+Introduction
+
+↓
+
+History
+
+↓
+
+Construction
+
+↓
+
+Discovery
+
+↓
+
+Modern Excavation
+
+↓
+
+Current Understanding
+
+↓
+
+Open Questions
+```
+
+Each chapter is independently downloadable.
+
+---
+
+# 23.8 Camera Choreography
+
+Camera motion follows cinematic rules.
+
+Avoid
+
+* abrupt rotations
+* excessive speed
+* unnecessary orbiting
+
+Preferred movements
+
+* slow dolly
+* crane
+* spline paths
+* controlled orbit
+* static observation
+
+Camera acceleration should be smooth and physically believable.
+
+---
+
+# 23.9 Evidence Reveal
+
+Evidence is introduced progressively.
+
+Instead of displaying dozens of markers immediately,
+
+the application reveals information according to context.
+
+Example
+
+```text
+Approach Sarcophagus
+
+↓
+
+Marker Appears
+
+↓
+
+Hover
+
+↓
+
+Summary
+
+↓
+
+Click
+
+↓
+
+Evidence Panel
+
+↓
+
+Sources
+
+↓
+
+Theory Comparison
+```
+
+---
+
+# 23.10 Evidence Panel
+
+Right-side panel.
+
+Contains
+
+Overview
+
+Confidence
+
+Sources
+
+Images
+
+Measurements
+
+Related Objects
+
+Related Theories
+
+Contradictions
+
+Bibliography
+
+Future Updates
+
+The panel never obscures the selected object.
+
+---
+
+# 23.11 Theory Panel
+
+Independent from evidence.
+
+Example
+
+```text
+Hydraulic Theory
+
+58%
+
+Supporting Evidence
+
+Contradictory Evidence
+
+Unknowns
+
+Engineering Simulation
+
+Bibliography
+```
+
+Users immediately understand
+
+what supports the theory
+
+and what does not.
+
+---
+
+# 23.12 Timeline Navigation
+
+A chronological slider controls historical phases.
+
+```text
+Old Kingdom
+
+──────────────
+
+Late Period
+
+──────────────
+
+Roman
+
+──────────────
+
+Modern
+```
+
+Changing the timeline updates
+
+* movable objects
+* annotations
+* occupation layers
+* excavation equipment
+
+Permanent architecture changes only where supported by evidence.
+
+---
+
+# 23.13 Layer Manager
+
+Users control scene visibility.
+
+Example
+
+```text
+☑ Ancient Architecture
+
+☑ Modern Equipment
+
+☑ Water
+
+☑ Geological Layers
+
+☑ Evidence
+
+☑ Simulations
+
+☑ Lighting Helpers
+
+☐ Debug Objects
+```
+
+Layers update instantly.
+
+---
+
+# 23.14 Search Workflow
+
+Example
+
+Search
+
+```
+North conduit
+```
+
+Results
+
+```text
+Location
+
+Evidence
+
+Sources
+
+Theory References
+
+Simulation
+
+Bookmarks
+```
+
+Selecting any result moves the camera smoothly.
+
+---
+
+# 23.15 Bookmarks
+
+Researchers may create bookmarks.
+
+Each bookmark stores
+
+Camera
+
+Layers
+
+Theory
+
+Lighting
+
+Selected Object
+
+Notes
+
+Bookmarks are shareable via URLs or exported JSON.
+
+---
+
+# 23.16 Measurement Workflow
+
+Example
+
+User selects
+
+```
+Measure Distance
+```
+
+Clicks Point A
+
+Clicks Point B
+
+Result
+
+```
+4.36 meters
+```
+
+Optional
+
+* save
+* annotate
+* export
+* compare
+
+Measurements reference the exact geometry version.
+
+---
+
+# 23.17 Cross-Section Workflow
+
+User selects
+
+Vertical Plane
+
+↓
+
+Moves Plane
+
+↓
+
+Scene Updates
+
+↓
+
+Evidence Updates
+
+↓
+
+Measurements Remain Valid
+
+No geometry duplication is generated.
+
+---
+
+# 23.18 Comparison Mode
+
+One of the platform's defining capabilities.
+
+Example
+
+Split Screen
+
+```
+Measured Geometry
+
+|
+
+Hydraulic Theory
+```
+
+or
+
+```
+Mainstream
+
+|
+
+Acoustic
+
+|
+
+Hydraulic
+```
+
+All cameras remain synchronized.
+
+---
+
+# 23.19 Educational Mode
+
+Designed for schools.
+
+Features
+
+Simplified vocabulary
+
+Progressive disclosure
+
+Interactive quizzes
+
+Achievements
+
+Teacher notes
+
+Age-appropriate explanations
+
+Scientific uncertainty remains visible but is explained in accessible language.
+
+---
+
+# 23.20 Museum Mode
+
+Fully automated.
+
+Runs continuously.
+
+Characteristics
+
+Looping
+
+Auto-navigation
+
+Large typography
+
+No keyboard required
+
+Touch-friendly
+
+Idle attract mode
+
+Suitable for kiosks and projection installations.
+
+---
+
+# 23.21 Session Persistence
+
+The application automatically preserves
+
+Current Scene
+
+Camera
+
+Selected Theory
+
+Timeline
+
+Bookmarks
+
+Measurements
+
+Notes
+
+Last Viewed Evidence
+
+Session restoration should take less than one second after startup.
+
+---
+
+# 23.22 Collaboration (Future)
+
+Researchers may share
+
+Annotations
+
+Measurements
+
+Bookmarks
+
+Discussion threads
+
+Evidence reviews
+
+Each collaboration item includes author attribution and version history.
+
+---
+
+# 23.23 Screenshot Mode
+
+Designed for publications.
+
+Options
+
+Hide UI
+
+Transparent background
+
+High resolution
+
+Orthographic
+
+Scale bar
+
+North arrow
+
+Citation watermark
+
+Output formats
+
+PNG
+
+WebP
+
+Future
+
+SVG overlays
+
+PDF report generation
+
+---
+
+# 23.24 Presentation Mode
+
+For lectures and conferences.
+
+Features
+
+Large fonts
+
+Laser-pointer support
+
+Slide-like navigation
+
+Presenter notes
+
+Camera presets
+
+Offline operation
+
+The presenter can move seamlessly between narrative slides and live 3D exploration.
+
+---
+
+# 23.25 Accessibility Workflow
+
+Every interaction must be achievable using
+
+Mouse
+
+Keyboard
+
+Touch
+
+Gamepad
+
+Future VR controllers
+
+Users should not encounter functionality available only through a specific input method.
+
+---
+
+# 23.26 Error Handling
+
+Missing or incomplete data should never interrupt exploration.
+
+Instead of displaying an error,
+
+the application presents the uncertainty.
+
+Example
+
+```text
+Northern Conduit
+
+Continuation Unknown
+
+No verified survey beyond this point.
+
+See competing interpretations.
+```
+
+This reinforces the project's philosophy of distinguishing absence of evidence from evidence of absence.
+
+---
+
+# 23.27 Proposed Enhancement: Research Workspace
+
+Beyond simple bookmarks, introduce a persistent workspace where users assemble their own investigation.
+
+Components:
+
+```text
+Research Workspace
+
+├── Saved Views
+├── Selected Evidence
+├── Measurement Sets
+├── Notes
+├── Imported Publications
+├── Comparison Sessions
+└── Export Package
+```
+
+This transforms the application from a visualization tool into a genuine research environment.
+
+---
+
+# 23.28 Proposed Enhancement: Narrative Builder
+
+Allow curators, educators, or researchers to create their own guided tours.
+
+Each narrative consists of:
+
+* Camera keyframes
+* Narration
+* Timing
+* Visible layers
+* Highlighted evidence
+* Theory selection
+* Quiz prompts (optional)
+
+Narratives become reusable assets that can be shared with others, enabling museums or universities to publish their own interpretations without modifying the core application.
