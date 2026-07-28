@@ -184,7 +184,7 @@ Organic remains.
 
 ## Interpretive Objects
 
-Only visible when a theory requires them.
+Only visible when a hypothesis requires them. See *GIZA - 11 Hypothesis Framework* §7.3 for interpretive objects.
 
 Examples:
 
@@ -339,7 +339,7 @@ Simulation parameters:
 | Refraction         |       Enabled |
 | Ripple simulation  |       Enabled |
 
-Future theory modules may simulate active hydraulic behavior, but the default state represents observed standing water.
+Future hypothesis plugins may simulate active hydraulic behavior via the Hydraulic simulation module. See *GIZA - 11 Hypothesis Framework* §9. The default state represents observed standing water.
 
 ---
 
@@ -401,6 +401,25 @@ The object itself is never movable.
 
 ---
 
+## Multi-Hypothesis Object
+
+The sarcophagus is central to several competing hypotheses. The geometry, dimensions, position, material, and orientation are identical across all hypotheses. Only the interpretation changes.
+
+```
+Hypothesis                  Confidence
+Mainstream Funerary         92%
+Hydraulic Reservoir         73%
+Acoustic Resonator          51%
+Chemical Reactor            38%
+Mathematical Reference      44%
+Astronomical Instrument     29%
+Unknown Function            10%
+```
+
+Each hypothesis provides its own overlays, annotations, and linked simulations. See *GIZA - 11 Hypothesis Framework* §2.2 for the full example.
+
+---
+
 # 2.15 Northern Conduit
 
 The conduit is treated with exceptional care because it is central to several competing interpretations.
@@ -418,9 +437,9 @@ Optional overlays:
 * Known surveyed path
 * Geological projection
 * Hydraulic hypothesis
-* Alternative archaeological interpretations
+* Other interpretive frameworks
 
-The application must visually distinguish between surveyed space and inferred continuation.
+The application must visually distinguish between surveyed space and inferred continuation. See *GIZA - 11 Hypothesis Framework* §12 for terminology.
 
 ---
 

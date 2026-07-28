@@ -176,28 +176,75 @@ Example
 }
 ```
 
-Objects never store theory information.
+Objects never store theory or hypothesis information. Objects are hypothesis-agnostic; interpretations live in Hypothesis records (*11* §3). The same object serves all hypotheses that reference it.
 
 ---
 
-# -13. Theory Schema
+# -13. Theory / Hypothesis Schema
 
 This is the heart of the platform.
+
+The `Theory` entity is the data model for an interpretation overlay. The preferred conceptual term is `Hypothesis` (see *GIZA - 11 Hypothesis Framework* §3). Both terms use the `THEORY-NNN` identifier namespace. A `Hypothesis` is a `Theory` extended with predictions, per-object confidence, visualization rules, and plugin packaging.
 
 ```json
 {
   "id":"THEORY-001",
-  "name":"Hydraulic Interpretation",
+  "name":"Hydraulic Hypothesis",
   "description":"",
   "supports":[],
   "contradicts":[],
+  "requiredEvidence":[],
+  "predictions":[],
   "confidence":58,
+  "confidenceByObject":{},
+  "visualizationRules":[],
+  "simulations":[],
   "authors":[],
-  "references":[]
+  "references":[],
+  "bibliography":[],
+  "plugin":{},
+  "status":"published"
 }
 ```
 
-Each theory is evaluated dynamically.
+Each hypothesis is evaluated dynamically.
+
+The full hypothesis schema with all fields is defined in *GIZA - 11 Hypothesis Framework* §3. The fields above extend the legacy Theory schema with:
+
+* `predictions` — observable claims testable against evidence (*11* §4)
+* `confidenceByObject` — per-object-per-hypothesis confidence (*11* §5)
+* `visualizationRules` — declarative overlay specifications (*11* §7)
+* `simulations` — linked simulation module IDs (*11* §9)
+* `requiredEvidence` — evidence without which the hypothesis is untenable
+* `bibliography` — extended per-hypothesis source list
+* `plugin` — plugin packaging metadata (*11* §6)
+* `status` — lifecycle state
+
+A legacy Theory record with only `id`, `name`, `description`, `supports`, `contradicts`, `confidence`, `authors`, and `references` is a valid Hypothesis with empty predictions and no per-object confidence.
+
+---
+
+# -12a. Prediction Schema
+
+A prediction is an observable claim derived from a hypothesis, testable against evidence.
+
+```json
+{
+  "id":"PRED-001-01",
+  "hypothesisId":"THEORY-001",
+  "description":"Erosion patterns consistent with water flow in the Descending Passage.",
+  "predictedObservation":"Directional erosion marks aligned with passage slope.",
+  "evidenceRefs":[],
+  "status":"untested",
+  "comparisonResult":null
+}
+```
+
+Prediction status: `untested` | `confirmed` | `partially-confirmed` | `contradicted` | `inconclusive`.
+
+The system compares predicted observations against measured evidence and assigns a status. The comparison is automated for structured evidence; qualitative comparisons are proposed by the system and confirmed by a human reviewer.
+
+Defined in *GIZA - 11 Hypothesis Framework* §4.
 
 ---
 
@@ -253,18 +300,24 @@ Evidence
 
 ↓
 
-Object Confidence
+Object Confidence (geometry + measurement)
 
 ↓
 
-Theory Confidence
+Hypothesis Confidence per Object (evidence supports/contradicts/required)
 
 ↓
 
-Simulation Confidence
+Overall Hypothesis Confidence (aggregate of per-object confidence)
+
+↓
+
+Simulation Confidence (bounded by hypothesis + geometry confidence)
 ```
 
-Changing one measurement automatically updates every dependent calculation.
+Confidence belongs to (Object, Hypothesis), not to an object alone. Each hypothesis has independent per-object confidence values. Changing one measurement automatically updates every dependent calculation across all hypotheses that reference the affected evidence.
+
+The per-object-per-hypothesis confidence model is defined in *GIZA - 11 Hypothesis Framework* §5.
 
 ---
 

@@ -4,7 +4,7 @@
 **Status:** Working Specification
 **Last update:** 2026-07-28
 
-This document bridges the GIZA specification set (00–10) to executable work. It decomposes the project into 18 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy.
+This document bridges the GIZA specification set (00–11) to executable work. It decomposes the project into 19 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform.
 
 It is the operational counterpart of the specifications. Where the numbered specifications define *what* and *why*, this document defines *how*, *in what order*, and *when a task is finished*. The companion document *GIZA - 99 Development Playbook* defines how development is conducted day to day and should be read alongside this roadmap.
 
@@ -124,6 +124,7 @@ The generation pipeline is established in M00 (task M00-T12) and wired into CI. 
 | M03.5 | Scientific Content Pipeline | M01, M02, M03 | 21 |
 | M04 | Application Shell & Rendering Foundation | M00 | 25 |
 | M05 | Scene Graph & Coordinate System | M01, M04 | 22 |
+| M05.5 | Hypothesis Framework Engine | M01, M05 | 26 |
 | M06A | Asset Pipeline Tooling | M01, M05 | 18 |
 | M06.5 | Survey Acquisition & Geometry Validation | M05, M06A | 18 |
 | M06B | Asset Production | M06A, M06.5 | 13 |
@@ -134,9 +135,9 @@ The generation pipeline is established in M00 (task M00-T12) and wired into CI. 
 | M10 | Simulation Framework MVP | M05, M09 | 26 |
 | M11 | Great Pyramid Reconstruction | M09, M10, M06B, M06.5 | 30 |
 | M12 | Polish, Performance, Accessibility & Release | M09, M10, M11 | 18 |
-| **Total** | | | **400** |
+| **Total** | | | **426** |
 
-> The total exceeds the sum of any single critical path because the data/content track (M02, M03, M03.5), the asset/survey track (M06A, M06.5, M06B), and the frontend track (M04–M08, M08.5) run in parallel after M01. M-1 (governance) precedes all code. M06 was split into M06A (tooling) and M06B (production) so that artists can begin producing reusable assets (rocks, limestone, granite, stairs, shafts) long before environment coding finishes.
+> The total exceeds the sum of any single critical path because the data/content track (M02, M03, M03.5), the asset/survey track (M06A, M06.5, M06B), the hypothesis track (M05.5), and the frontend track (M04–M08, M08.5) run in parallel after M01. M-1 (governance) precedes all code. M06 was split into M06A (tooling) and M06B (production) so that artists can begin producing reusable assets (rocks, limestone, granite, stairs, shafts) long before environment coding finishes. M05.5 (Hypothesis Framework) is the architectural centerpiece that makes GIZA a hypothesis exploration platform rather than a static reconstruction.
 
 ---
 
@@ -190,7 +191,7 @@ evidence seeding)              │                            │
                  M12 Polish, Performance, Release
 ```
 
-Critical path: **M-1 → M00 → M01 → M04 → M05 → M07 → M08 → M09 → M10 → M11 → M12**
+Critical path: **M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10 → M11 → M12**
 
 Three tracks run in parallel after M01:
 
@@ -376,11 +377,12 @@ Constraints:
 | M01-T02 | Define `Source` type + Zod schema (all fields from 09 §4) | 3 | M00 | 09 §4 | Schema validates sample sources for every source type listed in 09 §6 |
 | M01-T03 | Define `Location` type + Zod schema | 1 | M00 | 05 §-15 | Hierarchical `parent` field typed; bounding box and center typed |
 | M01-T04 | Define `Object` type + Zod schema | 1 | M00 | 05 §-14 | Mesh ref, location, confidence, evidence array typed |
-| M01-T05 | Define `Theory` type + Zod schema | 2 | M00 | 05 §-13, 07 §2.32 | `supports`/`contradicts` arrays, `geometryOverrides`, `interpretiveObjects` typed |
-| M01-T06 | Define `Simulation` type + Zod schema | 2 | M00 | 05 §-12, 06 §1.5 | Inputs, outputs, parameters, enabled flag typed |
+| M01-T05 | Define `Theory`/`Hypothesis` type + Zod schema (full hypothesis schema from 11 §3: predictions, confidenceByObject, visualizationRules, simulations, plugin, status; backward-compatible with legacy Theory from 05 §-13) | 3 | M00 | 05 §-13, 11 §3, 07 §2.32 | Full hypothesis schema validates; legacy theory (8 fields) also validates; `supports`/`contradicts`/`requiredEvidence`/`predictions`/`confidenceByObject`/`visualizationRules`/`simulations`/`plugin` typed |
+| M01-T05a | Define `Prediction` type + Zod schema (id, hypothesisId, description, predictedObservation, evidenceRefs, status, comparisonResult) | 1 | T05 | 11 §4 | Schema validates; 5 prediction statuses (untested/confirmed/partially-confirmed/contradicted/inconclusive) enforced |
+| M01-T06 | Define `Simulation` type + Zod schema | 2 | M00 | 05 §-12, 06 §1.5 | Inputs, outputs, parameters, enabled flag, optional hypothesisId typed |
 | M01-T07 | Define `Annotation` type + Zod schema | 1 | M00 | 05 §-11 | Type, author, text, location, visible typed |
 | M01-T08 | Define `Media` type + Zod schema (was undefined in 05) | 2 | M00 | 08 §1.19 | All media types from 08 §1.19 covered; license required for Published |
-| M01-T09 | Define `User`, `Bookmark`, `Measurement` types + Zod schemas (were undefined in 05) | 2 | M00 | 05 §-19, 02 §23.15, 02 §23.16 | Bookmark stores camera, layers, theory, lighting, selected object, notes; measurement stores points, type, value |
+| M01-T09 | Define `User`, `Bookmark`, `Measurement` types + Zod schemas (were undefined in 05) | 2 | M00 | 05 §-19, 02 §23.15, 02 §23.16 | Bookmark stores camera, layers, active hypotheses (array), lighting, selected object, notes; measurement stores points, type, value |
 | M01-T10 | Define evidence lifecycle states and transitions as a state machine | 2 | T01 | 08 §1.3 | `EvidenceLifecycle` type; invalid transitions throw; unit tests cover all valid/invalid transitions |
 | M01-T11 | Define dependency graph edge types and relations | 1 | T01 | 08 §1.10 | `DependencyEdge` type with all 7 relations (validates, supports, contradicts, refines, supersedes, influences, derived_from) |
 | M01-T12 | Define conflict record types and resolution states | 1 | T01 | 08 §1.15 | `ConflictRecord`, `ConflictResolution` (unresolved/partial/superseded/contextual) |
@@ -718,6 +720,79 @@ Write unit tests. Do NOT modify specs.
 
 ---
 
+### M05.5 — Hypothesis Framework Engine
+
+**Goal:** Implement the Hypothesis Framework as a core engine: hypothesis plugin architecture, prediction framework, per-object-per-hypothesis confidence, visualization rules engine, comparison framework, and hypothesis selector UI. This is the architectural centerpiece that makes GIZA a scientific hypothesis exploration platform rather than a static reconstruction.
+
+**Spec ref:** 11 (entire), 05 §-13 (Theory schema, extended), 08 §1.8 (confidence propagation, extended), 08 §1.24 (hypothesis independence)
+**Depends on:** M01, M05
+**Parallelizable with:** M06A, M07
+**Estimate:** 26 points
+**AI-coder estimate:** ~45 files · ~8,000 LOC · 6 sessions · ~160k tokens
+**Documentation outputs:** `docs/api/` (hypothesis endpoints), `docs/architecture/hypothesis-framework.md`, plugin development guide
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M05.5-T01 | Implement hypothesis plugin registry and lifecycle (discover → load → register → activate → deactivate → unregister) | 3 | M01, M05 | 11 §6 | Plugins discovered from `hypotheses/` dir and npm `giza-hypothesis-*`; load failure reported, not fatal; activate/deactivate session-scoped |
+| M05.5-T02 | Implement hypothesis plugin interface (`HypothesisPlugin`, `HypothesisContext`) per *11* §6.3 | 2 | T01 | 11 §6.3 | Interface typed; a sample plugin registers and activates; TypeScript enforces interface |
+| M05.5-T03 | Implement hypothesis store (CRUD for hypothesis records using M01-T05 schema; full schema with predictions, confidenceByObject, visualizationRules, plugin metadata) | 3 | M01-T05 | 11 §3 | CRUD works; full schema validated; legacy theories (8 fields) also accepted |
+| M05.5-T04 | Implement prediction store and lifecycle (CRUD for predictions; link to hypothesis; status transitions) | 2 | M01-T05a, T03 | 11 §4 | Predictions stored; 5 statuses enforced; linked to hypothesis |
+| M05.5-T05 | Implement prediction comparison engine (compare predicted observation vs measured evidence; auto for structured, propose for qualitative) | 3 | T04, M02 | 11 §4.4 | Structured comparisons auto-assigned; qualitative proposed for human review; status updates trigger confidence recalc |
+| M05.5-T06 | Implement per-object-per-hypothesis confidence model (weighted avg of supporting minus contradicting evidence, bounded by required evidence; independent per hypothesis) | 3 | T03, M02-T06 | 11 §5 | Per-(Object, Hypothesis) confidence computed; independent across hypotheses; recalc on evidence change |
+| M05.5-T07 | Implement overall hypothesis confidence (mean of confidenceByObject) | 1 | T06 | 11 §5.5 | Overall confidence = mean of per-object values; updated on any per-object change |
+| M05.5-T08 | Implement visualization rules engine (apply/Remove overlays per active hypothesis; no base mesh modification; overlay types from *11* §7.3) | 3 | T01, M05 | 11 §7 | All overlay types work; no base mesh modified; multi-hypothesis overlays blend; Scientific Evidence mode hides all |
+| M05.5-T09 | Implement hypothesis selector UI (checkbox list; activate/deactivate; dynamic scene update) | 2 | T01, T08 | 11 §11.1, 02 §23.29 | Selector renders; multi-activate works; scene updates without geometry change |
+| M05.5-T10 | Implement hypothesis panel (per-object: hypothesis name, confidence, key evidence, predictions status, compare button) | 2 | T06, T09 | 11 §11.3, 02 §23.11 | Panel shows per-hypothesis data for selected object; compare button opens comparison view |
+| M05.5-T11 | Implement comparison framework (tabular comparison + side-by-side scene with synchronized cameras) | 3 | T08, T10 | 11 §10 | Table shows all criteria; side-by-side renders same geometry with different hypothesis overlays; cameras synced |
+| M05.5-T12 | Implement hypothesis API endpoints (`GET /hypotheses`, `/:id`, `/:id/predictions`, `/:id/confidence`, `/:id/evidence`, `/:id/simulations`, `POST /:id/activate`, `/deactivate`, `GET /compare`, `POST /install`, `POST /:id/predictions/:predId/compare`) | 2 | T03–T07 | 11 §13 | All endpoints return typed data; activation is session-scoped |
+| M05.5-T13 | Implement plugin validation (id uniqueness, THEORY-NNN format, predictions non-empty, confidenceByObject covers affectedStructures, references resolve, simulations resolve, visualizationRules target existing objects) | 2 | T03 | 11 §14.3 | Validation runs on install; failures reported, not fatal; all checks from *11* §14.3 enforced |
+| M05.5-T14 | Create 3 sample hypothesis plugins (Mainstream Funerary, Hydraulic, Acoustic) for the Osiris Shaft sarcophagus with predictions, confidence, and visualization rules | 2 | T01–T08 | 11 §2.2 | 3 plugins install and activate; sarcophagus shows 3 hypotheses with per-hypothesis confidence and overlays |
+| M05.5-T15 | Write hypothesis framework integration test (install plugin → activate → verify overlays → run prediction comparison → verify confidence → compare two hypotheses) | 2 | T01–T14 | — | E2E test passes in CI |
+
+#### AI-Coder Prompt for M05.5
+
+```
+Read GIZA - 11 Hypothesis Framework.md in full, GIZA - 05 Data Architecture.txt
+(§-13, §-10), and GIZA - 08 Evidence Database Specification.txt (§1.8, §1.24).
+Implement the Hypothesis Framework as a core engine.
+
+Build:
+- Hypothesis plugin registry and lifecycle (discover, load, register,
+  activate, deactivate, unregister, uninstall)
+- HypothesisPlugin interface and HypothesisContext (§6.3)
+- Hypothesis store (full schema from §3: predictions, confidenceByObject,
+  visualizationRules, simulations, plugin, status; backward-compatible
+  with legacy Theory)
+- Prediction store and lifecycle (5 statuses: untested, confirmed,
+  partially-confirmed, contradicted, inconclusive)
+- Prediction comparison engine (auto for structured evidence, propose
+  for qualitative; human confirms qualitative)
+- Per-object-per-hypothesis confidence (weighted avg supporting minus
+  contradicting, bounded by required evidence; independent per hypothesis)
+- Overall hypothesis confidence (mean of per-object values)
+- Visualization rules engine (apply/remove overlays; NO base mesh
+  modification; overlay types: highlight, label, annotation, water-level,
+  flow-arrows, resonance-field, interpretive-object, simulation-overlay;
+  multi-hypothesis blending; Scientific Evidence mode hides all)
+- Hypothesis selector UI (checkbox list, multi-activate, dynamic update)
+- Hypothesis panel (per-object: name, confidence, evidence, predictions,
+  compare button)
+- Comparison framework (tabular + side-by-side scene, synced cameras)
+- Hypothesis API endpoints (§13)
+- Plugin validation (§14.3: id, predictions, confidenceByObject coverage,
+  references, simulations, visualizationRules)
+- 3 sample plugins (Mainstream Funerary, Hydraulic, Acoustic) for the
+  Osiris Shaft sarcophagus
+- Integration test
+
+The geometry never changes. Only the interpretation changes. Confidence
+belongs to (Object, Hypothesis). Do NOT modify specs.
+```
+
+---
+
 ### M06A — Asset Pipeline Tooling
 
 **Goal:** Build the validation, publishing, and metadata tooling that enforces the asset production pipeline. This ensures every glTF entering the scene is validated, budgeted, and linked to evidence. M06A is the tooling half of the former M06; it must complete before any asset is produced (M06B) or survey-derived geometry is validated (M06.5).
@@ -1036,7 +1111,7 @@ rendering. This scene makes no archaeological claims. Do NOT modify specs.
 **Goal:** Build the first fully explorable environment — the Osiris Shaft — as the reference implementation for all subsequent environments. Includes all levels, water, island, sarcophagus, conduit, geology, evidence hotspots, and chronology layers.
 
 **Spec ref:** 03 (entire), 04 §6.1–6.10
-**Depends on:** M05, M06A, M06B, M06.5, M07, M08, M03.5
+**Depends on:** M05, M05.5, M06A, M06B, M06.5, M07, M08, M03.5
 **Parallelizable with:** M02, M03 (backend feeds in)
 **Estimate:** 30 points
 **AI-coder estimate:** ~55 files · ~9,000 LOC · 8 sessions · ~180k tokens
@@ -1334,12 +1409,13 @@ Do NOT modify specs.
 | Data | M01, M02, M03 | 51 |
 | Content pipeline | M03.5 | 10 |
 | Rendering | M04, M05, M08.5 | 29 |
+| Hypothesis | M05.5 | 15 |
 | Asset | M06A, M06B | 22 |
 | Survey | M06.5 | 9 |
 | UI | M07, M08 | 27 |
 | Content/Environment | M09, M11 | 48 |
 | Simulation | M10 | 19 |
-| **Total** | | **245** |
+| **Total** | | **261** |
 
 ---
 
@@ -1355,6 +1431,7 @@ Do NOT modify specs.
 | M03.5 | 21 | 4.2 |
 | M04 | 25 | 5.0 |
 | M05 | 22 | 4.4 |
+| M05.5 | 26 | 5.2 |
 | M06A | 18 | 3.6 |
 | M06.5 | 18 | 3.6 |
 | M06B | 13 | 2.6 |
@@ -1365,9 +1442,9 @@ Do NOT modify specs.
 | M10 | 26 | 5.2 |
 | M11 | 30 | 6.0 |
 | M12 | 18 | 3.6 |
-| **Total** | **400** | **80.0** |
+| **Total** | **426** | **85.2** |
 
-With three parallel tracks after M01 (data/content M02→M03→M03.5; asset/survey M06A→M06.5→M06B; frontend M04→M05→{M07→M08, M08.5}), the effective critical-path duration is approximately **48 engineer-weeks** for a single agent, or ~18 weeks with three agents (one per track) plus integration. M06B (artist production) overlaps the frontend track so that reusable assets exist before M09.
+With four parallel tracks after M01 (data/content M02→M03→M03.5; hypothesis M05.5; asset/survey M06A→M06.5→M06B; frontend M04→M05→{M07→M08, M08.5}), the effective critical-path duration is approximately **52 engineer-weeks** for a single agent, or ~16 weeks with four agents (one per track) plus integration. M06B (artist production) overlaps the frontend track so that reusable assets exist before M09. M05.5 (Hypothesis Framework) is the architectural centerpiece.
 
 Per-milestone AI-coder estimates (files, LOC, sessions, context) are stated in each milestone header and explained in §1.3.1. They complement story points and are the primary planning figure for AI coding agents.
 
@@ -1438,3 +1515,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | ---- | ------- | ------ |
 | 2026-07-28 | 0.1 Draft | Initial roadmap: 13 milestones, ~203 tasks, dependency graph, AI-coder prompts, GitHub structure, DoD |
 | 2026-07-28 | 0.2 Draft | Added M-1 Repository Governance; M03.5 Scientific Content Pipeline (≥100 seeded evidence records); split M06 into M06A (tooling) + M06.5 (survey acquisition) + M06B (asset production); added M08.5 Benchmark Scene; added AI-coder estimates (files/LOC/sessions/context) per milestone; added Definition of Scientific Done (§1.5); added documentation generation strategy (§1.6) and per-milestone Documentation outputs; added Risk Register (§8) and staged Release Strategy (§9); updated dependency graph, task index (245 tasks), and effort summary (400 points). Companion document *GIZA - 99 Development Playbook* added. |
+| 2026-07-28 | 0.3 Draft | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added M05.5 Hypothesis Framework Engine (15 tasks, 26 points) implementing the Hypothesis Framework spec (*GIZA - 11*): plugin architecture, predictions, per-object-per-hypothesis confidence, visualization rules, comparison framework, hypothesis selector UI, 3 sample plugins. Updated M01-T05 to full Hypothesis schema; added M01-T05a Prediction schema; updated M01-T09 for active hypotheses array. Updated M09 dependency to include M05.5. Updated task index (261 tasks), effort summary (426 points), critical path. |

@@ -973,9 +973,9 @@ Movable objects, blocking stones, and modern infrastructure change per layer.
 
 ---
 
-# 2.31 Theory-Independent Reconstruction
+# 2.31 Hypothesis-Independent Reconstruction
 
-The Great Pyramid is the canonical example of theory-independent reconstruction.
+The Great Pyramid is the canonical example of hypothesis-independent reconstruction.
 
 Geometry exists independently of interpretation.
 
@@ -988,7 +988,7 @@ Evidence
 
 +
 
-Theory
+Hypothesis
 ```
 
 Example:
@@ -999,27 +999,27 @@ King's Chamber
 Geometry
     identical
 
-Theory A
+Hypothesis A
     Royal burial chamber
 
-Theory B
+Hypothesis B
     Acoustic resonator
 
-Theory C
+Hypothesis C
     Hydraulic pressure vessel
 
-Theory D
+Hypothesis D
     Initiation chamber
 
-Theory E
+Hypothesis E
     Energy generator
 ```
 
 Only the explanation changes.
 
-The geometry does not.
+The geometry does not. See *GIZA - 11 Hypothesis Framework* for the full hypothesis framework.
 
-Each theory is presented with:
+Each hypothesis is presented with:
 
 ```
 Supporting Evidence
@@ -1033,23 +1033,38 @@ Engineering Simulation (if any)
 Bibliography
 ```
 
-Theory schema is defined in *GIZA - Data Architecture* §-13.
+Hypothesis schema is defined in *GIZA - 11 Hypothesis Framework* §3 and *GIZA - Data Architecture* §-13 (Theory schema, extended).
 
 ---
 
-# 2.32 Theory Variants
+# 2.32 Hypothesis Variants
 
-To support competing interpretations without duplicating geometry, theory variants are stored as overlays.
+To support competing interpretations without duplicating geometry, hypothesis variants are stored as overlays. See *GIZA - 11 Hypothesis Framework* for the full hypothesis framework.
 
 ```json
 {
   "id": "THEORY-GP-001",
-  "name": "Royal Tomb Interpretation",
+  "name": "Mainstream Funerary Hypothesis",
   "monumentId": "MON-GP-001",
   "geometryOverrides": [],
   "interpretiveObjects": [],
   "annotations": [],
+  "predictions": [
+    { "id": "PRED-GP-001-01", "description": "Sarcophagus dimensions conform to standard royal burial proportions.", "evidenceRefs": ["EV-001102"], "status": "confirmed" },
+    { "id": "PRED-GP-001-02", "description": "Blocking stones seal the Ascending Passage for burial security.", "evidenceRefs": ["EV-001118"], "status": "confirmed" }
+  ],
   "confidence": 85,
+  "confidenceByObject": {
+    "OBJ-0001": 92,
+    "OBJ-0008": 88,
+    "OBJ-0012": 85
+  },
+  "plugin": {
+    "package": "giza-hypothesis-funerary",
+    "version": "0.1.0",
+    "entry": "./index.ts",
+    "configSchema": "./config.schema.json"
+  },
   "references": ["SRC-0102", "SRC-0118"]
 }
 ```
@@ -1057,7 +1072,7 @@ To support competing interpretations without duplicating geometry, theory varian
 ```json
 {
   "id": "THEORY-GP-002",
-  "name": "Hydraulic Interpretation",
+  "name": "Hydraulic Hypothesis",
   "monumentId": "MON-GP-001",
   "geometryOverrides": [],
   "interpretiveObjects": [
@@ -1065,8 +1080,54 @@ To support competing interpretations without duplicating geometry, theory varian
     {"type": "PressureConduit", "location": "DescendingPassage"}
   ],
   "annotations": [],
+  "predictions": [
+    { "id": "PRED-GP-002-01", "description": "Water pathways conform to surveyed passage geometry.", "evidenceRefs": ["EV-003012"], "status": "partially-confirmed" },
+    { "id": "PRED-GP-002-02", "description": "Erosion patterns consistent with water flow are present in the Descending Passage.", "evidenceRefs": [], "status": "untested" }
+  ],
   "confidence": 35,
+  "confidenceByObject": {
+    "OBJ-0012": 73,
+    "OBJ-0018": 41,
+    "OBJ-0025": 28
+  },
+  "plugin": {
+    "package": "giza-hypothesis-hydraulic",
+    "version": "0.1.0",
+    "entry": "./index.ts",
+    "configSchema": "./config.schema.json"
+  },
   "references": ["SRC-0210"]
+}
+```
+
+```json
+{
+  "id": "THEORY-GP-003",
+  "name": "Acoustic Resonator Hypothesis",
+  "monumentId": "MON-GP-001",
+  "geometryOverrides": [],
+  "interpretiveObjects": [
+    {"type": "ResonanceChamber", "location": "KingsChamber"},
+    {"type": "HelmholtzResonator", "location": "GrandGallery"}
+  ],
+  "annotations": [],
+  "predictions": [
+    { "id": "PRED-GP-003-01", "description": "Chamber dimensions produce resonant frequencies within the audible range.", "evidenceRefs": ["EV-004210"], "status": "partially-confirmed" },
+    { "id": "PRED-GP-003-02", "description": "Coffer geometry amplifies specific frequencies under acoustic excitation.", "evidenceRefs": [], "status": "untested" }
+  ],
+  "confidence": 51,
+  "confidenceByObject": {
+    "OBJ-0001": 51,
+    "OBJ-0012": 48,
+    "OBJ-0020": 55
+  },
+  "plugin": {
+    "package": "giza-hypothesis-acoustic",
+    "version": "0.1.0",
+    "entry": "./index.ts",
+    "configSchema": "./config.schema.json"
+  },
+  "references": ["SRC-0310", "SRC-0311"]
 }
 ```
 

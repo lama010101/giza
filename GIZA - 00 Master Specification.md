@@ -12,11 +12,11 @@ For any architectural decision, the numbered specifications are authoritative. T
 
 # 1. Project Overview
 
-GIZA is an interactive scientific visualization platform for the Giza Plateau.
+GIZA is an interactive scientific hypothesis exploration platform for the Giza Plateau.
 
-The project reconstructs the plateau's monuments and subterranean structures as explorable 3D environments in which every visible element is traceable to archaeological evidence.
+The project reconstructs the plateau's monuments and subterranean structures as explorable 3D environments in which every visible element is traceable to archaeological evidence, and in which every archaeological object supports multiple simultaneous, scientifically neutral hypotheses regarding its construction, function, and operation.
 
-The platform is **not** a documentary advocating a single conclusion. It is a scientific visualization engine in which users inspect evidence, compare interpretations, run simulations, and understand uncertainty.
+The platform is **not** a documentary advocating a single conclusion. It is a scientific visualization engine in which users inspect evidence, compare hypotheses, visualize predictions, run simulations, and understand uncertainty. The primary purpose is to allow users to explore, compare, visualize, and experimentally test multiple competing hypotheses against shared evidence.
 
 The full mission, product objectives, and core principles are defined in *GIZA - 01 Vision & Scientific Foundation* and are not repeated here.
 
@@ -46,14 +46,14 @@ It is intentionally short. Depth lives in the numbered specifications.
 
 | Field             | Value         |
 | ----------------- | ------------- |
-| Specification set | 0.2 Draft     |
-| Document count    | 14 (00–10, 15, 99, ADR-0001) |
+| Specification set | 0.3 Draft     |
+| Document count    | 15 (00–11, 15, 99, ADR-0001) |
 | Status            | Working specification |
 | Last update       | 2026-07-28    |
 
 The specification set is considered a working draft until the first implementation milestone is reached. Until then, documents may be extended but not rewritten without explicit instruction.
 
-The numbered specifications (00–10) define *what* is built. Two operational documents extend them without overriding them: *GIZA - 15 Implementation Roadmap* (how, in what order, when a task is finished) and *GIZA - 99 Development Playbook* (how development is conducted day to day). Architecture decisions are recorded as ADRs under `docs/adr/`.
+The numbered specifications (00–11) define *what* is built. Specification 11 (Hypothesis Framework) is the architectural centerpiece: it elevates the platform from a digital reconstruction to a scientific hypothesis exploration platform. Two operational documents extend the specifications without overriding them: *GIZA - 15 Implementation Roadmap* (how, in what order, when a task is finished) and *GIZA - 99 Development Playbook* (how development is conducted day to day). Architecture decisions are recorded as ADRs under `docs/adr/`.
 
 ---
 
@@ -72,6 +72,7 @@ giza/
 ├── GIZA - 08 Evidence Database Specification.txt
 ├── GIZA - 09 Sources & Bibliography Standard.txt
 ├── GIZA - 10 Asset Production Pipeline.txt
+├── GIZA - 11 Hypothesis Framework.md
 ├── GIZA - 15 Implementation Roadmap.md
 ├── GIZA - 99 Development Playbook.md
 ├── docs/
@@ -92,7 +93,7 @@ GIZA - <NN> <Title>.<ext>
 
 * `NN` is a two-digit zero-padded number.
 * `00` is reserved for this master document.
-* `01`–`10` are the canonical numbered specifications.
+* `01`–`11` are the canonical numbered specifications.
 * `15` is the Implementation Roadmap (operational; bridges specs to executable work).
 * `99` is the Development Playbook (operational; defines how development is conducted).
 * Numbers `11`–`14` and `16`–`98` are reserved for future numbered specifications (see §11).
@@ -152,6 +153,10 @@ Defines citation rules, source reliability, DOI/ISBN/ORCID handling, archival UR
 ### 10 Asset Production Pipeline
 
 Defines the production pipeline for every 3D asset: directory structure, naming conventions, layered coordinate system, Blender workflow, photogrammetry, laser scan integration, retopology, UV workflow, texture standards, PBR material library, mesh budgets, collision rules, LOD generation, glTF export, validation, publishing, and mandatory scientific metadata embedded in glTF node extras.
+
+### 11 Hypothesis Framework
+
+Defines the Hypothesis Framework, the architectural centerpiece that elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. Covers the hypothesis data model and schema, plugin architecture, prediction framework, per-hypothesis confidence model, comparison framework, visualization rules engine, evidence sharing, pluggable simulation modules, terminology standard, and API endpoints. Extends the Theory concept from *05* §-13 and the theory-independence principle from *01* §7. Every archaeological object supports multiple simultaneous hypotheses; geometry never changes, only the interpretation changes.
 
 ---
 
@@ -258,8 +263,10 @@ Dependencies indicate which specification defines concepts that another specific
       ▼          ▼
 06 Simulation  10 Asset Production Pipeline
       │
-      ▼
-07 Great Pyramid
+      ├──────────┐
+      ▼          ▼
+11 Hypothesis  07 Great Pyramid
+Framework
 ```
 
 ### Dependency Notes
@@ -267,19 +274,22 @@ Dependencies indicate which specification defines concepts that another specific
 * `01` is the root. Every other document depends on it.
 * `02` depends on `01` and informs `04`.
 * `03` depends on `01` and `02`, and is the reference implementation for `04`.
+* `11` depends on `01`, `05`, `06`, and `08`. It is the architectural centerpiece that extends the Theory concept (*05* §-13) into a full hypothesis framework with plugins, predictions, per-hypothesis confidence, and comparison.
 * `04` depends on `01`, `02`, and `03`.
 * `05` depends on `01`.
 * `06` depends on `01`, `04`, and `05`.
-* `07` depends on `01`, `02`, `03`, `04`, `05`, and `06`.
+* `07` depends on `01`, `02`, `03`, `04`, `05`, `06`, and `11`.
 * `08` depends on `05`.
 * `09` depends on `05`.
 * `10` depends on `04` and `05`.
+* `11` depends on `01`, `05`, `06`, and `08`.
 
 ### Independence Guarantees
 
-* `08`, `09`, and `10` may be read without reading `03` or `07`.
-* `03` and `07` may be read without reading `08`, `09`, or `10`.
+* `08`, `09`, and `10` may be read without reading `03`, `07`, or `11`.
+* `03` and `07` may be read without reading `08`, `09`, `10`, or `11` (but `07` is enriched by `11`).
 * `06` may be read without reading any environment specification.
+* `11` may be read without reading `03` or `07` (it is environment-agnostic).
 
 ---
 
@@ -287,11 +297,17 @@ Dependencies indicate which specification defines concepts that another specific
 
 The following principles span all specifications. They are stated here once and referenced elsewhere.
 
-## 8.1 Evidence First
+## 8.1 Hypothesis Exploration
 
-Evidence is immutable. Interpretations are replaceable. Every visible claim links to one or more sources. Nothing appears as fact unless directly measured.
+GIZA is a scientific hypothesis exploration platform. Every archaeological object supports multiple simultaneous, scientifically neutral hypotheses. The platform never assumes any interpretation is correct. Users activate one or more hypotheses; the scene updates dynamically with overlays, simulations, and evidence panels; the geometry never changes. Confidence belongs to (Object, Hypothesis), not to an object alone.
 
-Defined in *01* §3 (Principles 1–4) and operationalized in *08*.
+Defined in *11* (Hypothesis Framework) and grounded in *01* §7 (theory independence, extended).
+
+## 8.2 Evidence First
+
+Evidence is immutable. Interpretations are replaceable. Every visible claim links to one or more sources. Nothing appears as fact unless directly measured. Evidence is shared across hypotheses; interpretations reference evidence, never the reverse.
+
+Defined in *01* §3 (Principles 1–4) and operationalized in *08* and *11* §8.
 
 ## 8.2 Four-Layer Separation
 
@@ -313,9 +329,9 @@ Simulation
 
 These layers never mix. Defined in *01* §4 and enforced by the schema in *05* and *08*.
 
-## 8.3 Theory Independence
+## 8.3 Hypothesis Independence
 
-Geometry exists independently. Theories are overlays. Removing a theory never alters evidence or geometry. Defined in *01* §7 and operationalized in *07* §2.31 and *08* §1.24.
+Geometry exists independently. Hypotheses are overlays. Removing a hypothesis never alters evidence or geometry. Adding a hypothesis never requires new measurements. Evidence is shared; interpretations reference evidence, never the reverse. Defined in *01* §7 (extended) and operationalized in *11* §8, *07* §2.32, and *08* §1.24. The legacy term "Theory Independence" is retained for backward compatibility; "Hypothesis Independence" is the preferred term.
 
 ## 8.4 Geometry First
 
@@ -323,7 +339,7 @@ Visual quality never overrides geometric accuracy. Defined in *01* §3 (Principl
 
 ## 8.5 Confidence Is Explicit
 
-Nothing is presented as binary true/false. Confidence is continuous and propagated through the dependency graph. Defined in *01* §6 and operationalized in *05* §-9, §-10 and *08* §1.8.
+Nothing is presented as binary true/false. Confidence is continuous and propagated through the dependency graph. Confidence belongs to (Object, Hypothesis), not to an object alone. Multiple hypotheses may have high confidence for the same object; confidence values are independent and never pick a winner. Defined in *01* §6, operationalized in *05* §-9, §-10, *08* §1.8, and extended in *11* §5.
 
 ## 8.6 Modularity
 
@@ -347,6 +363,7 @@ Each specification owns a distinct concern. No concern is owned by two specifica
 | Software architecture          | 04     |
 | Data model                     | 05     |
 | Simulation                     | 06     |
+| Hypothesis framework           | 11     |
 | Evidence operations            | 08     |
 | Bibliography                   | 09     |
 | Asset production               | 10     |
@@ -388,15 +405,35 @@ Stable terms used across documents:
 | Source                | A bibliographic record                              | 05 §-16, 09 §1.3 |
 | Object                | A reconstructed item                                | 05 §-14    |
 | Location              | A spatial hierarchy node                            | 05 §-15    |
-| Theory                | An interpretation overlay                           | 05 §-13    |
+| Theory                | An interpretation overlay (legacy term; data entity and identifier namespace THEORY-NNN) | 05 §-13 |
+| Hypothesis            | An interpretive framework with predictions, per-object confidence, and plugin packaging; preferred term for Theory | 11 §3, §12 |
+| Prediction            | An observable claim derived from a hypothesis, testable against evidence | 11 §4 |
 | Simulation            | A physics solver run                                | 06 §1      |
-| Confidence            | A continuous score 0–100                            | 01 §6      |
+| Confidence            | A continuous score 0–100, belonging to (Object, Hypothesis) | 01 §6, 11 §5 |
 | Evidence class        | E1–E8                                               | 01 §5      |
 | Chronology layer      | A historical period visualization layer             | 03 §2.3, 07 §2.30 |
-| Theory variant        | A modular interpretation overlay                    | 07 §2.32   |
+| Theory variant        | A modular interpretation overlay (legacy term; see Hypothesis variant) | 07 §2.32 |
+| Hypothesis variant    | A modular interpretation overlay; preferred term for Theory variant | 07 §2.32, 11 §3 |
+| Visualization rule    | A declarative overlay specification tied to a hypothesis | 11 §7 |
+| Interpretive object   | A hypothesis-only visible object, never in Scientific Evidence mode | 03 §2.5, 07 §2.5, 11 §7.3 |
 | Local Plateau Coordinates | The plateau-scale world coordinate system       | 04 §4, 10 §1.5 |
 
 New terms must be added to this table when introduced.
+
+### Terminology Standard
+
+The following terms are preferred. The avoided terms must not be used in specifications, UI, or documentation.
+
+| Preferred Term          | Avoided Term       | Reason |
+| ----------------------- | ------------------ | ------ |
+| Hypothesis              | Alternative theory | Implies a "main" theory and marginalizes others |
+| Hypothesis              | Fringe theory      | Dismissive; prejudges scientific merit |
+| Hypothesis              | Pseudo-science     | Prejudges the hypothesis before evaluation |
+| Interpretive framework  | Alternative theory | Same as above |
+| Scientific model        | Fringe theory      | Same as above |
+| Explanatory model       | Pseudo-science     | Same as above |
+
+Defined in *11* §12.
 
 ## 10.3 Identifier Namespaces
 
@@ -453,7 +490,7 @@ The following documents are anticipated. Numbers are reserved.
 
 | Number | Title                              | Status    |
 | ------ | ---------------------------------- | --------- |
-| 11     | Khafre Pyramid Specification       | Planned   |
+| 11     | Hypothesis Framework               | Published |
 | 12     | Menkaure Pyramid Specification     | Planned   |
 | 13     | Sphinx Specification               | Planned   |
 | 14     | Causeways and Temples Specification| Planned   |
@@ -467,8 +504,11 @@ The following documents are anticipated. Numbers are reserved.
 | 23     | Deployment Specification           | Planned   |
 | 24     | Testing & QA Specification         | Planned   |
 | 25     | Plateau Topography Specification   | Planned   |
+| 26     | Khafre Pyramid Specification       | Planned   |
 
-Number `15` is assigned to the *Implementation Roadmap* (operational document, not a numbered specification). Number `99` is assigned to the *Development Playbook* (operational document). Numbers `26`–`98` are reserved for future numbered specifications.
+Number `11` was reassigned from "Khafre Pyramid Specification" (previously planned, never published) to "Hypothesis Framework" by editorial decision. Khafre is now planned at `26`. Per the numbering rules (§4), a published number is never reused; `11` was never published as Khafre, so reassignment is permitted.
+
+Number `15` is assigned to the *Implementation Roadmap* (operational document, not a numbered specification). Number `99` is assigned to the *Development Playbook* (operational document). Numbers `27`–`98` are reserved for future numbered specifications.
 
 Architecture Decision Records are not numbered specifications; they live under `docs/adr/` and are indexed in `docs/adr/README.md`.
 
@@ -487,6 +527,7 @@ New specifications must:
 | ------- | ---------- | ---------------------------------------------------- |
 | 0.1     | 2026-07-28 | Initial working specification set (00–10)           |
 | 0.2     | 2026-07-28 | Added operational documents: *GIZA - 15 Implementation Roadmap* and *GIZA - 99 Development Playbook*. Added `docs/adr/` with ADR-0001 (GIZA-Core / GIZA-Content split, Proposed). Updated §3 (document count), §4 (repo organization, naming convention), §11 (15 reassigned to roadmap; Plateau Topography moved to 25; 99 reserved for playbook). No numbered specification 01–10 was modified. |
+| 0.3     | 2026-07-28 | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added *GIZA - 11 Hypothesis Framework* (new centerpiece specification). Updated §1 (project overview), §3 (doc count 15), §4 (repo org, naming), §5 (scope of 11), §7 (dependency graph), §8 (new principle 8.1 Hypothesis Exploration; 8.3 renamed to Hypothesis Independence; 8.5 confidence per-hypothesis), §9 (separation of responsibilities), §10 (terminology: Hypothesis, Prediction, Visualization rule, Interpretive object; terminology standard), §11 (11 = Hypothesis Framework Published; Khafre moved to 26). Modified specs 01, 02, 03, 04, 05, 06, 07, 08, 09, 10 to integrate the hypothesis framework. |
 
 ### Per-Document Revision History
 

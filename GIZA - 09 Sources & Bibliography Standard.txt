@@ -342,7 +342,9 @@ Lehner, M. (2017). The complete pyramids. Thames & Hudson.
 
 The BibTeX key is derived from the `SRC` identifier to guarantee uniqueness.
 
-Researchers may download the complete bibliography for any scene, theory, or evidence set.
+Researchers may download the complete bibliography for any scene, hypothesis, or evidence set.
+
+Bibliography generation supports per-hypothesis bibliographies. A hypothesis's `bibliography` field (*11* §3.2) lists all sources referenced by the hypothesis. The bibliography engine can generate a formatted bibliography for any hypothesis. See *GIZA - 11 Hypothesis Framework* §3.2 for the hypothesis bibliography field.
 
 ---
 
@@ -749,6 +751,20 @@ New source types may be added without migrating existing records, provided they 
 New citation styles may be added as plug-ins without modifying the Source schema.
 
 New preservation services may be added by extending the archival URL resolver.
+
+---
+
+# 1.28a Per-Hypothesis Bibliography
+
+Each hypothesis (*GIZA - 11 Hypothesis Framework* §3) declares a `bibliography` field listing all `SRC-` sources it references. The bibliography engine generates formatted bibliographies per hypothesis in any of the 11 supported citation styles (§1.11).
+
+Per-hypothesis bibliographies are used in:
+* the hypothesis panel (§23.11 of *GIZA - 02*)
+* the comparison view (§23.18 of *GIZA - 02*)
+* export footers for hypothesis-specific exports
+* the comparison framework (*GIZA - 11* §10)
+
+Sources are shared across hypotheses. A source referenced by multiple hypotheses appears in each hypothesis's bibliography. Sources are never duplicated.
 
 ---
 

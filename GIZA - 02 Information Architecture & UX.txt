@@ -118,7 +118,7 @@ Evidence
 
 Measure
 
-Theory
+Hypotheses
 
 Settings
 
@@ -480,33 +480,56 @@ The panel never obscures the selected object.
 
 ---
 
-# 23.11 Theory Panel
+# 23.11 Hypothesis Panel
 
 Independent from evidence.
+
+The panel shows multiple hypotheses per object with per-hypothesis confidence.
 
 Example
 
 ```text
-Hydraulic Theory
+Hydraulic Reservoir
 
-58%
+Confidence: 58% (this object)
 
 Supporting Evidence
 
-Contradictory Evidence
+Contradicting Evidence
 
-Unknowns
+Predictions: 2 confirmed, 1 untested
 
-Engineering Simulation
+Compare hypotheses
 
-Bibliography
+Acoustic Resonator
+
+Confidence: 31% (this object)
+
+Supporting Evidence
+
+Contradicting Evidence
+
+Predictions: 0 confirmed, 3 untested
+
+Compare hypotheses
 ```
+
+For each hypothesis the panel shows
+
+* hypothesis name
+* confidence per object
+* key supporting evidence
+* key contradicting evidence
+* predictions status
+* a "Compare hypotheses" button
 
 Users immediately understand
 
-what supports the theory
+what supports each hypothesis
 
 and what does not.
+
+See *GIZA - 11 Hypothesis Framework* §11.3 for the hypothesis panel specification.
 
 ---
 
@@ -564,6 +587,8 @@ Example
 
 ☐ Debug Objects
 ```
+
+Hypothesis overlays are managed through the hypothesis selector (§23.29), not the layer manager. The layer manager shows which hypothesis overlays are currently active.
 
 Layers update instantly.
 
@@ -682,6 +707,19 @@ No geometry duplication is generated.
 
 One of the platform's defining capabilities.
 
+Comparison Mode allows users to compare two or more hypotheses side by side.
+
+The comparison presents the following criteria for each hypothesis
+
+* assumptions
+* supporting evidence
+* contradicting evidence
+* predicted observations
+* simulation outputs
+* unresolved questions
+* confidence (per object)
+* bibliography
+
 Example
 
 Split Screen
@@ -691,7 +729,7 @@ Measured Geometry
 
 |
 
-Hydraulic Theory
+Hydraulic Reservoir
 ```
 
 or
@@ -708,7 +746,9 @@ Acoustic
 Hydraulic
 ```
 
-All cameras remain synchronized.
+A side-by-side scene view renders each hypothesis in its own viewport with synchronized cameras. Moving the camera in one viewport updates all others, so that the same object is observed from the same viewpoint under each interpretation.
+
+The purpose is comparison, not advocacy. See *GIZA - 11 Hypothesis Framework* §10.
 
 ---
 
@@ -766,7 +806,7 @@ Current Scene
 
 Camera
 
-Selected Theory
+Active hypotheses
 
 Timeline
 
@@ -935,3 +975,27 @@ Each narrative consists of:
 * Quiz prompts (optional)
 
 Narratives become reusable assets that can be shared with others, enabling museums or universities to publish their own interpretations without modifying the core application.
+
+---
+
+# 23.29 Hypothesis Selector
+
+A hypothesis selector panel lists all installed hypotheses with checkboxes. Users activate one or multiple hypotheses simultaneously.
+
+```
+✓ Mainstream Funerary
+✓ Hydraulic Reservoir
+☐ Acoustic Resonator
+☐ Chemical Reactor
+☐ Mathematical Reference System
+☐ Astronomical Instrument
+☐ Unknown Function
+```
+
+When a hypothesis is activated or deactivated, the scene updates dynamically: overlays, interpretive objects, simulations, evidence panels, and confidence values update. The geometry does not change.
+
+Multiple hypotheses may be active simultaneously. Each hypothesis's overlays render in its assigned color. Conflicting overlays show both labels with hypothesis attribution.
+
+In Scientific Evidence mode, all hypothesis overlays and interpretive objects are hidden.
+
+See *GIZA - 11 Hypothesis Framework* §11 for the full UI integration specification.

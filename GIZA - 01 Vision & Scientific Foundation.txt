@@ -12,21 +12,23 @@
 
 ## 1.1 Mission
 
-Create the most scientifically rigorous, visually accurate, and technologically advanced interactive reconstruction of the Giza Plateau ever produced.
+Create the most scientifically rigorous, visually accurate, and technologically advanced interactive scientific hypothesis exploration platform for the Giza Plateau ever produced.
 
-The project is **not** intended to prove a particular theory.
+The project is **not** intended to prove a particular hypothesis.
 
 Instead, it provides a platform where users can explore:
 
 * archaeological evidence
 * published research
 * measured geometry
-* competing interpretations
+* competing hypotheses
+* predictions and their testable outcomes
 * engineering simulations
+* confidence assessments
 
-Each hypothesis is presented transparently with its supporting and contradicting evidence.
+Each hypothesis is presented transparently with its supporting and contradicting evidence, its predictions, and its confidence assessment.
 
-The application acts as a **scientific visualization engine**, not a documentary advocating a single conclusion.
+The application acts as a **scientific hypothesis exploration engine**, not a documentary advocating a single conclusion. The primary purpose is to allow users to explore, compare, visualize, and experimentally test multiple competing hypotheses regarding the construction, function, and operation of the Giza Plateau.
 
 ---
 
@@ -37,9 +39,11 @@ The platform should allow users to:
 * explore reconstructed environments in real time
 * inspect every architectural element
 * access original sources
-* compare theories
+* compare hypotheses side-by-side
+* activate multiple hypotheses simultaneously
+* visualize predictions and their confirmation status
 * visualize engineering simulations
-* understand uncertainty
+* understand uncertainty and confidence
 * distinguish evidence from interpretation
 
 The application must remain useful to:
@@ -94,6 +98,20 @@ Nothing appears as "fact" unless directly measured.
 Geometry first.
 
 Visual quality never overrides geometric accuracy.
+
+---
+
+## Principle 6
+
+Every object supports multiple simultaneous hypotheses.
+
+Geometry never changes. Only the interpretation changes.
+
+Each hypothesis is a plugin with its own assumptions, predictions, confidence, and visualization rules.
+
+Confidence belongs to (Object, Hypothesis), not to an object alone.
+
+Defined in *GIZA - 11 Hypothesis Framework*.
 
 ---
 
@@ -182,13 +200,13 @@ Use continuous confidence.
 
 ---
 
-# 7. Theory Independence
+# 7. Hypothesis Independence
 
 One of the most important architectural decisions.
 
 Geometry exists independently.
 
-Theories are overlays.
+Hypotheses are overlays.
 
 ```
 Geometry
@@ -199,7 +217,7 @@ Evidence
 
 +
 
-Theory
+Hypothesis
 ```
 
 Example:
@@ -210,20 +228,55 @@ King's Chamber
 Geometry
     identical
 
-Theory A
+Hypothesis A
     Tomb
 
-Theory B
+Hypothesis B
     Machine
 
-Theory C
+Hypothesis C
     Ritual chamber
 
-Theory D
+Hypothesis D
     Acoustic resonator
+
+Hypothesis E
+    Hydraulic reservoir
 ```
 
 Only the explanation changes.
 
 The geometry does not.
+
+Each hypothesis is a plugin installable without modifying the engine. Each hypothesis defines its own predictions, which are tested against shared evidence. Confidence is assessed per object per hypothesis. The platform never declares one hypothesis correct.
+
+The full hypothesis framework is defined in *GIZA - 11 Hypothesis Framework*.
+
+The legacy term "Theory Independence" is retained for backward compatibility. "Hypothesis Independence" is the preferred term.
+
+---
+
+# 8. Terminology
+
+The platform is scientifically neutral. It never assumes any interpretation is correct.
+
+Preferred terms:
+
+| Term                  | Use                                             |
+| --------------------- | ----------------------------------------------- |
+| Hypothesis            | A specific interpretive framework               |
+| Interpretive framework| A broader explanatory model                     |
+| Scientific model      | A formalized hypothesis with predictive power   |
+| Explanatory model     | A general interpretation                        |
+| Interpretation        | The act or result of explaining evidence        |
+
+Avoided terms:
+
+| Term                  | Reason                                          |
+| --------------------- | ----------------------------------------------- |
+| Alternative theory    | Implies a "main" theory and marginalizes others |
+| Fringe theory         | Dismissive; prejudges scientific merit          |
+| Pseudo-science        | Prejudges the hypothesis before evaluation      |
+
+Defined in *GIZA - 11 Hypothesis Framework* §12.
 

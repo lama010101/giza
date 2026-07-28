@@ -217,7 +217,11 @@ Every subsystem communicates through a shared Scene Context rather than directly
 
             <EvidenceManager/>
 
-            <TheoryManager/>
+            <HypothesisFramework/>
+
+            <HypothesisSelector/>
+
+            <HypothesisManager/>
 
             <WaterSimulation/>
 
@@ -229,6 +233,8 @@ Every subsystem communicates through a shared Scene Context rather than directly
 Every major component loads independently.
 
 Nothing inside Level 3 should require Level 0 to remain in memory.
+
+The Hypothesis Framework is a core engine defined in *GIZA - 11 Hypothesis Framework*. `<HypothesisFramework/>` is the root component that loads and manages hypothesis plugins. `<HypothesisSelector/>` provides the user interface for activating and deactivating hypotheses. `<HypothesisManager/>` coordinates active hypotheses, their visualization rules, and their linked simulations.
 
 ---
 
@@ -756,6 +762,10 @@ Red
 
 Contradictory evidence.
 
+Evidence overlays are hypothesis-agnostic. Evidence belongs to no hypothesis. Evidence overlays are always available regardless of which hypotheses are active.
+
+Hypothesis overlays are distinct from evidence overlays. Hypothesis overlays are visualization rules declared per hypothesis (*GIZA - 11 Hypothesis Framework* §7) and are applied only when their parent hypothesis is activated. Evidence overlays are unconditional. Hypothesis overlays are conditional on active hypotheses.
+
 ---
 
 # 6.21 Scene Layers
@@ -771,7 +781,7 @@ Geology
 
 Evidence
 
-Theory
+Hypothesis
 
 Simulation
 
@@ -779,6 +789,8 @@ Annotations
 ```
 
 Every layer independently toggleable.
+
+Hypothesis overlays are additive and never modify the base mesh.
 
 ---
 
@@ -831,7 +843,7 @@ Bookmarks
 
 Visible layers
 
-Selected theory
+Active hypotheses
 
 Measurements
 
@@ -1490,6 +1502,31 @@ This feature supports iterative refinement and provides objective validation of 
 
 ---
 
+# 7.25a Hypothesis Visualization Pipeline
+
+The hypothesis visualization pipeline applies visualization rules from active hypotheses to the scene.
+
+```text
+Active Hypotheses
+    ↓
+Visualization Rules (per hypothesis, §11 §7)
+    ↓
+Overlay Compositor (batched per object)
+    ↓
+Render (additive overlays, no base mesh modification)
+```
+
+The pipeline ensures:
+
+* No overlay modifies the base mesh
+* Multiple hypotheses' overlays blend with opacity
+* Interpretive objects are separate scene nodes
+* Overlay budget is enforced (§11 §16.1)
+
+See *GIZA - 11 Hypothesis Framework* §7 and §16 for the full specification.
+
+---
+
 # 7.26 Proposed Enhancement: Temporal Material Simulation
 
 Introduce time-aware material states.
@@ -1540,6 +1577,8 @@ It does **not** answer:
 
 * Why the builders created the structure.
 * Whether a specific theory is historically correct.
+
+Simulation modules are now pluggable (see *GIZA - 11 Hypothesis Framework* §9 and *GIZA - 06 Simulation Framework* §1.2 as updated). Each simulation module is a plugin that can be linked to one or more hypotheses. A simulation module can be installed and run independently of any hypothesis, and a hypothesis can reference zero or more simulation modules via its `simulations` field.
 
 ---
 
@@ -1845,6 +1884,8 @@ Level 3
 
 No simulation modifies the underlying archaeological model.
 
+Simulations are linked to hypotheses via the hypothesis `simulations` field but remain independent. A simulation can run without a hypothesis, and a hypothesis can exist without simulations. The link is interpretive, not structural — it records which hypothesis motivated the simulation run, not a dependency between the two.
+
 ---
 
 # 8.19 Time Control
@@ -1900,12 +1941,16 @@ Author
 
 Geometry Version
 
-Theory Context
+Hypothesis Context
+
+Hypothesis ID
 
 Random Seed (if applicable)
 ```
 
 This ensures reproducibility.
+
+The `Hypothesis ID` field links simulation results to the interpretive context. When a simulation is run from within an active hypothesis, the hypothesis ID is recorded so that results can be associated with the hypothesis that motivated them. When a simulation is run independently, the field is empty.
 
 ---
 

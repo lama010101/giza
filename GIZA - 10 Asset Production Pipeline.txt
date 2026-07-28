@@ -590,7 +590,7 @@ Collision mesh
 * Water surfaces: no collision (handled by simulation).
 * Dust, fog, particles: no collision.
 * Evidence hotspots: no collision.
-* Interpretive objects: collision only when the parent theory is active.
+* Interpretive objects: collision only when the parent hypothesis is active.
 
 ---
 
@@ -929,16 +929,16 @@ Movable and interpretive assets are tagged only with the periods in which they a
 
 ---
 
-# 1.23 Theory Variants
+# 1.23 Hypothesis Variants
 
-Theory-specific assets (interpretive objects) are produced through the same pipeline but flagged as `interpretive`.
+Hypothesis-specific assets (interpretive objects) are produced as separate glTF files and loaded only when the parent hypothesis is active. See *GIZA - 11 Hypothesis Framework* §7.3 for interpretive objects and visualization rules.
 
 ```json
 {
   "giza": {
     "assetId": "GP-Antechamber-PortcullisSlabs",
     "interpretive": true,
-    "theoryIds": ["THEORY-GP-001"],
+    "hypothesisIds": ["THEORY-GP-001"],
     "confidence": 40
   }
 }
@@ -946,7 +946,9 @@ Theory-specific assets (interpretive objects) are produced through the same pipe
 
 Interpretive assets are never loaded by default.
 
-They appear only when the parent theory is active (see *GIZA - Great Pyramid Specification* §2.32).
+They appear only when the parent hypothesis is active (see *GIZA - Great Pyramid Specification* §2.32).
+
+Geometry assets are hypothesis-independent. The base mesh never changes between hypotheses. Hypothesis visualization rules (*GIZA - 11* §7) affect overlays and interpretive objects only, never the base geometry. This ensures that producing an asset once serves all hypotheses that reference it.
 
 ---
 

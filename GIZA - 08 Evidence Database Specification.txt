@@ -258,26 +258,34 @@ Evidence
 
 ↓
 
-Object Confidence
+Object Confidence (geometry + measurement)
 
 ↓
 
-Theory Confidence
+Hypothesis Confidence per Object (evidence supports/contradicts/required)
 
 ↓
 
-Simulation Confidence
+Overall Hypothesis Confidence (aggregate of per-object confidence)
+
+↓
+
+Simulation Confidence (bounded by hypothesis + geometry confidence)
 ```
 
 Propagation rules:
 
 * Object confidence is the weighted average of supporting evidence confidence, weighted by source reliability.
-* Theory confidence is bounded by the lowest confidence of its required evidence.
-* Simulation confidence is bounded by the lowest geometry confidence it depends on.
+* Hypothesis confidence per object is the weighted average of supporting evidence minus contradicting evidence, bounded by required evidence confidence. Each (Object, Hypothesis) pair has an independent confidence value.
+* Overall hypothesis confidence is the mean of per-object confidence values across all affected objects.
+* Simulation confidence is bounded by the lowest geometry confidence it depends on and the hypothesis confidence of the hypothesis it runs under.
+* Confidence values are independent across hypotheses. A high confidence for one hypothesis does not imply a low confidence for another.
 
-A change to any upstream evidence automatically triggers recalculation of dependent objects, theories, and simulations.
+A change to any upstream evidence automatically triggers recalculation of dependent objects, hypotheses, and simulations.
 
 Propagation is asynchronous but eventually consistent.
+
+The per-object-per-hypothesis confidence model is defined in *GIZA - 11 Hypothesis Framework* §5.
 
 ---
 
@@ -787,15 +795,25 @@ Evidence without chronology tags is flagged in review.
 
 ---
 
-# 1.24 Theory Independence
+# 1.24 Hypothesis Independence
 
-The database enforces theory independence at the schema level.
+The database enforces hypothesis independence at the schema level.
 
-Evidence records have no `theoryId` field.
+Evidence records have no `hypothesisId` field.
 
-Theories reference evidence, never the reverse.
+Hypotheses reference evidence, never the reverse.
 
-This guarantees that removing a theory never alters evidence, and adding a theory never requires new measurements.
+This guarantees that removing a hypothesis never alters evidence, and adding a hypothesis never requires new measurements.
+
+Evidence is shared across hypotheses. The same laser scan, photograph, or publication is referenced by multiple hypotheses. The dependency is unidirectional:
+
+```
+Hypothesis → Evidence (one-way reference)
+```
+
+The full hypothesis-evidence relationship is defined in *GIZA - 11 Hypothesis Framework* §8. The hypothesis schema with `supports`, `contradicts`, `requiredEvidence`, and prediction `evidenceRefs` is defined in *11* §3 and §4.
+
+The legacy term "Theory Independence" is retained for backward compatibility. "Hypothesis Independence" is the preferred term.
 
 ---
 

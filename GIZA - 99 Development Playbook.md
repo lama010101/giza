@@ -32,6 +32,8 @@ Read *GIZA - 00 Master Specification* §4 (repository organization) and *GIZA - 
 
 Read *GIZA - 05 Data Architecture*, *GIZA - 08 Evidence Database Specification*, and *GIZA - 09 Sources & Bibliography Standard*. Execute milestone M01 (Core Type System & Schemas). Every downstream milestone depends on these types.
 
+> **Reading order note.** The Hypothesis Framework (spec 11) is a core engine specification and should be read early — after *GIZA - 01 Vision & Scientific Foundation* and before the environment specifications (03, 07). The recommended reading order is: 00 → 01 → 11 → 05 → 08 → 09 → 04 → 02 → 06 → 10 → 03 → 07 → 15 → 99. Spec 11 formalizes the theory-independence principle from 01 §7 into a plugin architecture with predictions and per-hypothesis confidence; reading it before the environment specs ensures that reconstruction work is hypothesis-aware from the start.
+
 ### 1.4 Two Parallel Tracks
 
 After M01, development proceeds along two parallel tracks. The tracks converge at M09.
@@ -460,6 +462,7 @@ Every visible 3D element must be traceable to archaeological evidence. This is t
 * Every evidence record links to at least one `SRC-NNNNNN` source record.
 * No geometry is hardcoded in components. Object metadata is injected from glTF `extras.giza` (see *GIZA - 04 Technical Architecture* §6.5).
 * No fantasy or decorative archaeology elements. No baked dirt textures. No invented chambers or passages.
+* Hypothesis-first: every visible object must support multiple simultaneous hypotheses. Geometry never changes between hypotheses. Use the `THEORY-NNN` identifier namespace for hypotheses. Confidence belongs to (Object, Hypothesis). See *GIZA - 11 Hypothesis Framework*.
 
 ### 6.6 Four-Layer Separation
 
@@ -646,6 +649,11 @@ Every PR must pass this checklist before merge. Reviewers (human or AI) verify e
 - [ ] No baked dirt or invented textures in shaders.
 - [ ] Four-layer separation is respected.
 - [ ] Theory independence is preserved.
+- [ ] Hypothesis linkage: if the PR adds or modifies a visible object, does it support multiple hypotheses? Is evidence shared, not duplicated?
+- [ ] Per-hypothesis confidence: is confidence assigned per (Object, Hypothesis), not per object alone?
+- [ ] Prediction status: if the PR adds a hypothesis, does it define predictions with testable status?
+- [ ] No advocacy: does the PR avoid declaring one hypothesis correct? Are avoided terms ('alternative theory', 'fringe theory', 'pseudo-science') absent?
+- [ ] Plugin architecture: is the hypothesis installable without engine modification?
 
 ### 8.6 Tests
 
@@ -716,6 +724,30 @@ Effort estimates in the roadmap use story points (*GIZA - 15 Implementation Road
 ### 9.13 Forgetting to Regenerate Docs
 
 When API surfaces change, run `npm run docs` and commit the regenerated documentation. Stale docs are a review failure (§8.7).
+
+### 9.14 Assigning Confidence to an Object Instead of (Object, Hypothesis)
+
+Confidence is per-hypothesis. Assigning a single confidence value to an object, without regard to which hypothesis is being evaluated, violates *GIZA - 11 Hypothesis Framework* §5. Use `confidenceByObject` so that each (Object, Hypothesis) pair has its own score.
+
+### 9.15 Duplicating Evidence Per Hypothesis
+
+Evidence is shared; hypotheses reference evidence. Duplicating evidence records per hypothesis violates *GIZA - 11 Hypothesis Framework* §6 and the theory-independence principle (*GIZA - 08 Evidence Database Specification* §1.24). Evidence is immutable and hypothesis-agnostic; hypotheses point to the same evidence records.
+
+### 9.16 Modifying Geometry When a Hypothesis Changes
+
+Geometry is hypothesis-independent; only overlays change (see *GIZA - 11 Hypothesis Framework* §2 and *GIZA - 00 Master Specification* §8.3). Code that mutates geometry when a hypothesis is toggled or swapped violates this principle. Geometry is measured reconstruction; hypotheses are interpretive overlays.
+
+### 9.17 Using Avoided Terms
+
+The terms 'alternative theory', 'fringe theory', and 'pseudo-science' are avoided (see *GIZA - 11 Hypothesis Framework* §8). Use 'hypothesis', 'interpretive framework', or 'scientific model'. The platform is scientifically neutral and does not label hypotheses pejoratively.
+
+### 9.18 Hardcoding a Hypothesis Into the Engine
+
+Hypotheses are plugins; install without engine modification (see *GIZA - 11 Hypothesis Framework* §3 and §9). A hypothesis that requires changes to core engine code to load or run violates the plugin architecture. The engine must remain hypothesis-agnostic.
+
+### 9.19 Declaring One Hypothesis Correct
+
+The platform is neutral; present data, let users conclude (see *GIZA - 11 Hypothesis Framework* §2.3 and *GIZA - 01 Vision & Scientific Foundation* §7). Code or UI that declares one hypothesis the correct or authoritative interpretation violates scientific neutrality. All hypotheses are presented with their evidence, predictions, and confidence; the user draws conclusions.
 
 ---
 
@@ -809,6 +841,7 @@ giza/
 ├── GIZA - 08 Evidence Database Specification.txt  Evidence lifecycle, identifiers, review, conflicts, audit
 ├── GIZA - 09 Sources & Bibliography Standard.txt  Citation rules, source reliability, DOI/ISBN/ORCID, licensing
 ├── GIZA - 10 Asset Production Pipeline.txt        Asset directory, naming, validation, glTF extras, publishing
+├── GIZA - 11 Hypothesis Framework.md              Hypothesis framework: plugin architecture, predictions, per-hypothesis confidence, comparison
 ├── GIZA - 15 Implementation Roadmap.md            Milestones M00–M12, tasks, dependency graph, AI-coder prompts
 └── GIZA - 99 Development Playbook.md              This document; operational guide for development
 ```
@@ -875,6 +908,7 @@ assets/
 
 ```
 database/              SQLite dev database, migrations, seed data
+hypotheses/            Hypothesis plugins (one package per hypothesis, see *GIZA - 11 Hypothesis Framework* §9)
 tests/                 Test configuration, fixtures, e2e specs
 docs/                  Architecture Decision Records (ADRs)
 .devin/                Devin configuration and project rules
