@@ -1,0 +1,1249 @@
+
+# 1. Great Pyramid Reconstruction — Introduction
+
+## Purpose
+
+The Great Pyramid of Khufu is the second fully explorable environment in the GIZA platform and the first monument-scale reconstruction.
+
+It extends the methodology established by the Osiris Shaft specification (see *GIZA - Osiris Shaft Specification*) to a far larger, more complex, and more contested structure.
+
+It serves as the reference implementation for:
+
+* multi-chamber monuments
+* theory-independent reconstruction at scale
+* chronology layer switching
+* shaft and passage systems
+* relieving architecture
+* high-density evidence hotspots
+* large-mesh streaming and LOD management
+
+Subsequent monuments (Khafre, Menkaure, satellite pyramids) should follow the same architectural conventions.
+
+## Scope
+
+The reconstruction will include:
+
+* Surrounding plateau context and pyramid enclosure.
+* Casing fragments and reconstructed casing surface.
+* Core masonry mass.
+* Original entrance and modern entrance tunnel (Al-Mamun).
+* Descending Passage.
+* Subterranean Chamber and its subsidiaries.
+* Ascending Passage and plug blocks.
+* Grand Gallery.
+* King's Chamber, Antechamber, and relieving chambers.
+* Queen's Chamber and its shafts.
+* King's Chamber shafts (including the northern and southern "air shafts").
+* Well Shaft (Service Shaft) and the Grotto.
+* Modern exploration infrastructure (clearly distinguished from ancient features).
+* Evidence hotspots linked to sources and confidence scores.
+* Chronology layers from Old Kingdom construction to modern excavation.
+
+The next section ("2. Great Pyramid — Historical & Archaeological Specification") provides the detailed reconstruction, covering chronology, geometry, chamber-by-chamber specification, materials, evidence mapping, interaction, and implementation considerations.
+
+---
+
+# 2. Great Pyramid — Historical & Archaeological Specification
+
+---
+
+# 2.1 Purpose of the Reconstruction
+
+The objective is to reproduce the Great Pyramid as faithfully as possible from documented survey and archaeological evidence while clearly identifying where interpretation begins.
+
+The reconstruction is **not** intended to advocate a single function for the monument. Instead, it represents the structure's best-supported physical state, with the ability to switch between multiple chronological phases and multiple competing interpretations.
+
+The initial MVP reconstructs the pyramid as an archaeological monument rather than as an imagined functioning installation.
+
+---
+
+# 2.2 Geographic Location
+
+The Great Pyramid is located on the Giza Plateau, on the northern edge of the necropolis, at the head of the Nile floodplain.
+
+The application should position the pyramid within the plateau terrain model using the Local Plateau Coordinate system defined in *GIZA - Technical Architecture* §4.
+
+The pyramid's center is used as a monument-local origin. All internal chambers are positioned relative to this origin.
+
+Future versions will align the model with published topographic and laser survey datasets (see §2.7).
+
+---
+
+# 2.3 Chronology
+
+The chronology panel presents multiple interpretations rather than a single definitive timeline.
+
+| Period                              | Status            | Confidence |
+| ----------------------------------- | ----------------- | ---------: |
+| Old Kingdom construction (Khufu)    | Strong consensus  |         95 |
+| Old Kingdom completion              | Strong consensus  |         92 |
+| Late Period reuse                   | Possible          |         55 |
+| Roman exploration                   | Documented        |         80 |
+| Medieval (Al-Mamun) breakthrough    | Documented        |         95 |
+| Early modern exploration            | Documented        |         90 |
+| Modern excavation and survey        | Documented        |        100 |
+| ScanPyramids / muon detection       | Documented        |        100 |
+
+Each period can be enabled as a visualization layer.
+
+Example:
+
+```
+Old Kingdom Construction
+
+↓
+
+Old Kingdom Completion
+
+↓
+
+Late Period
+
+↓
+
+Roman
+
+↓
+
+Medieval
+
+↓
+
+Modern Excavation
+
+↓
+
+Contemporary Survey
+```
+
+The geometry remains identical where evidence supports continuity; only occupation layers, blocking stones, modern infrastructure, and movable objects change.
+
+---
+
+# 2.4 Primary Sources
+
+Every reconstruction element links to one or more source records.
+
+Example source categories:
+
+* Survey measurements (Petrie, Cole, Lehner, Gantenbrink)
+* Archaeological reports
+* Expedition photographs
+* Published plans and cross-sections
+* Academic papers
+* Exploration videos (Gantenbrink, ScanPyramids)
+* Laser scans (future)
+* Muon radiography reports
+* Site photography
+
+Each source receives:
+
+```
+Source ID
+
+Title
+
+Authors
+
+Publication
+
+Year
+
+Type
+
+Reliability
+
+URL
+
+Notes
+```
+
+Source schema is defined in *GIZA - Data Architecture* §-16 and extended in *GIZA - Sources & Bibliography Standard*.
+
+---
+
+# 2.5 Reconstruction Philosophy
+
+Every modeled object belongs to one of the five classes defined in *GIZA - Osiris Shaft Specification* §2.5.
+
+## Original Architecture
+
+Ancient masonry, passages, chambers, and shafts.
+
+Cannot be moved.
+
+## Modern Installations
+
+Modern entrance tunnel.
+
+Wooden walkways.
+
+Metal ladders and railings.
+
+Lighting.
+
+Ventilation machinery.
+
+Clearly distinguishable.
+
+## Environmental Objects
+
+Dust.
+
+Humidity.
+
+Airflow (where measured).
+
+Bat guano and organic deposits (where documented).
+
+## Archaeological Finds
+
+Casing fragments.
+
+Plug blocks (where observed in situ or relocated).
+
+Relieving chamber debris.
+
+Sarcophagus (King's Chamber).
+
+## Interpretive Objects
+
+Only visible when a theory requires them.
+
+Examples:
+
+* Granite plug blocks in transit
+* Counterweight assemblies (Grand Gallery)
+* Portcullis systems (Antechamber)
+* Hydraulic seals
+* Acoustic resonator arrays
+* Internal ramp segments
+
+These never appear in Scientific Evidence mode.
+
+---
+
+# 2.6 Coordinate Reference
+
+The Great Pyramid uses the layered coordinate system defined in *GIZA - Technical Architecture* §4.
+
+```
+World (Local Plateau Origin)
+
+└── Great Pyramid
+
+      Exterior
+
+      Casing
+
+      Core
+
+      Descending Passage
+
+      Subterranean Chamber
+
+      Ascending Passage
+
+      Grand Gallery
+
+      Antechamber
+
+      King's Chamber
+
+      Relieving Chambers
+
+      Queen's Chamber
+
+      King's Chamber Shafts
+
+      Queen's Chamber Shafts
+
+      Well Shaft
+
+      Grotto
+```
+
+Each node stores:
+
+```
+Position
+
+Rotation
+
+Scale
+
+Bounding box
+
+Survey reference
+```
+
+To prevent floating-point precision loss at monument scale, all chamber-local geometry is authored in Room Coordinates and transformed to Monument Coordinates at load time. See *GIZA - Asset Production Pipeline* for the coordinate transformation chain.
+
+---
+
+# 2.7 Geometry Accuracy Levels
+
+Different parts of the pyramid have different certainty.
+
+| Geometry                              | Confidence |
+| ------------------------------------- | ---------: |
+| Base dimensions                       |         98 |
+| Cardinal orientation                  |         97 |
+| Casing slope angle                    |         95 |
+| Original height                       |         90 |
+| Descending Passage                    |         96 |
+| Subterranean Chamber                  |         90 |
+| Ascending Passage                     |         95 |
+| Grand Gallery                         |         96 |
+| King's Chamber                        |         97 |
+| Antechamber                           |         95 |
+| Relieving Chambers                    |         90 |
+| Queen's Chamber                       |         95 |
+| Queen's Chamber shafts (lower)        |         92 |
+| Queen's Chamber shafts (upper)        |         80 |
+| King's Chamber shafts                 |         93 |
+| Well Shaft                            |         85 |
+| Grotto                                |         80 |
+| Casing surface (reconstructed)        |         70 |
+| Pyramidion                            |         40 |
+| "Big Void" (ScanPyramids)             |         60 |
+| Internal ramp (Dormion hypothesis)    |         30 |
+
+Future photogrammetry and laser scans can replace lower-confidence geometry without affecting application logic.
+
+---
+
+# 2.8 External Architecture
+
+The reconstruction begins outside the monument.
+
+Visible elements include:
+
+* Limestone bedrock and plateau surface
+* Pyramid enclosure wall traces
+* Corner socket stones
+* Core masonry (stepped casing)
+* Remaining casing stones (lower courses, north face)
+* Casing fragment debris fields
+* Modern entrance tunnel mouth
+* Original entrance (blocked, high on north face)
+* Surrounding mastaba field context (low LOD)
+* Modern visitor infrastructure (optional, toggleable)
+
+The purpose is to provide orientation and scale before entering the interior.
+
+---
+
+# 2.9 Core Masonry
+
+The core is represented as a stepped mass of locally quarried limestone blocks.
+
+Properties:
+
+```
+Static geometry
+
+Collision enabled
+
+Receives shadows
+
+Procedural weathering
+
+Erosion gullies
+
+Casing fragment decals
+```
+
+The core mesh is authored as a single closed volume with LOD variants. Internal chambers are carved as separate geometry rather than boolean-subtracted from the core, preserving independent streaming and editing.
+
+---
+
+# 2.10 Casing Stones
+
+The original Tura limestone casing is largely missing.
+
+Default presentation:
+
+* Remaining casing stones (north face, lower courses) shown at measured confidence.
+* Reconstructed casing surface shown as a transparent overlay with explicit confidence labeling.
+* Casing angle derived from surviving casing stones and socket measurements.
+
+Optional overlays:
+
+* Reconstructed full casing (theory layer)
+* Bent pyramid-style casing hypothesis (rejected, included for comparison only)
+* Casing fragment scatter
+
+The application must visually distinguish between surviving casing and reconstructed casing.
+
+---
+
+# 2.11 Pyramidion
+
+The pyramidion is missing.
+
+Default presentation:
+
+* Absent.
+* Optional transparent reconstruction overlay.
+* Multiple candidate forms (solid gold-capped, basalt, limestone) presented as theory variants.
+
+No pyramidion geometry appears in Scientific Evidence mode.
+
+---
+
+# 2.12 Descending Passage
+
+The Descending Passage runs from the original entrance down to the Subterranean Chamber.
+
+Characteristics:
+
+* Slope approximately 26° 31′
+* Cross-section approximately 1.2 m × 1.0 m
+* Length approximately 96 m (to Subterranean Chamber)
+* Cut through core masonry and into bedrock below
+* Rougher finish in bedrock section
+
+Visual goals:
+
+* Immediate perception of descent
+* Scale awareness
+* Transition from masonry to bedrock
+
+Evidence hotspots:
+
+* Original entrance
+* Joint between masonry and bedrock
+* Mummy pit (excavation, southern side)
+* Modern ventilation shaft penetration
+
+---
+
+# 2.13 Subterranean Chamber
+
+The Subterranean Chamber is cut into the bedrock below the pyramid center.
+
+Principal elements:
+
+* Rough-hewn rectangular chamber
+* Central pit (variously interpreted as unfinished sarcophagus recess or cistern)
+* Southern niche
+* Western, northern, and eastern blind passages (incomplete)
+* Connecting horizontal passage from Descending Passage
+* Rough floor and ceiling
+
+The chamber appears unfinished in the archaeological record.
+
+Default presentation:
+
+* Observed geometry only
+* Measured dimensions
+* Visible tool marks (where documented)
+* No assumed function
+
+Optional overlays:
+
+* Tomb hypothesis (sarcophagus recess)
+* Cistern hypothesis (hydraulic)
+* Abandoned primary chamber hypothesis
+* Ritual chamber hypothesis
+
+The application must visually distinguish between surveyed space and inferred features.
+
+---
+
+# 2.14 Ascending Passage
+
+The Ascending Passage rises from the junction with the Descending Passage to the Grand Gallery.
+
+Characteristics:
+
+* Slope approximately 26° 02′
+* Cross-section approximately 1.0 m × 1.2 m
+* Length approximately 39 m
+* Blocked by three granite plug blocks (lower end)
+* Limestone masonry walls (fine Tura limestone)
+
+Default presentation:
+
+* Passage geometry
+* Plug blocks in observed positions
+* Modern bypass tunnel (Al-Mamun) clearly distinguished
+
+Optional overlays:
+
+* Plug block emplacement hypotheses
+* Sealing sequence theories
+
+---
+
+# 2.15 Grand Gallery
+
+The Grand Gallery is the largest interior passage and one of the most contested spaces.
+
+Characteristics:
+
+* Corbelled vault, approximately 8.5 m high
+* Length approximately 47 m
+* Slope approximately 26° 02′
+* Side benches with regular notches
+* Ramp slots in floor
+* Roof formed of corbelled limestone courses
+
+Principal elements:
+
+* Corbelled walls
+* Floor ramp slots
+* Side bench notches
+* Ceiling blocks
+* Junction with Ascending Passage (lower end)
+* Junction with Antechamber (upper end)
+* Well Shaft entrance (west side, near floor)
+
+Visual goals:
+
+* Communicate structural sophistication
+* Reveal corbelling geometry
+* Support multiple interpretation overlays
+
+Optional overlays:
+
+* Counterweight and sled system (theory)
+* Portcullis storage (theory)
+* Acoustic resonator (theory)
+* Processional ramp (theory)
+
+These never appear in Scientific Evidence mode.
+
+---
+
+# 2.16 King's Chamber
+
+The King's Chamber is the highest principal chamber and the most precisely constructed.
+
+Characteristics:
+
+* Rectangular, approximately 10.5 m × 5.2 m
+* Height approximately 5.8 m
+* Walls of red granite from Aswan
+* Floor of granite
+* Flat ceiling of granite beams
+* Sarcophagus (broken) along west wall
+* Two "air shafts" (north and south) exiting the chamber
+
+Principal elements:
+
+* Granite walls (smoothly dressed)
+* Granite floor
+* Granite ceiling beams
+* Sarcophagus
+* Northern shaft entrance
+* Southern shaft entrance
+* Wall joint evidence
+* Stress fractures (where documented)
+
+The sarcophagus is one of the highest-priority evidence objects.
+
+Metadata:
+
+```
+Object ID
+
+Historical classification
+
+Dimensions
+
+Material
+
+Confidence
+
+Bibliography
+
+Photographs
+
+3D references
+```
+
+Interaction options:
+
+* Rotate information panel
+* Highlight measurements
+* Compare photographs
+* Show excavation notes
+* Toggle reconstruction overlays
+
+The object itself is never movable.
+
+---
+
+# 2.17 King's Chamber Relieving Chambers
+
+Above the King's Chamber lie five relieving chambers.
+
+Characteristics:
+
+* Five compartments stacked above the flat ceiling
+* Lower four chambers of rougher granite
+* Top chamber (Campbell's Chamber) with cartouche markings
+* Massive limestone gable roof above the top chamber
+
+Principal elements:
+
+* Davison's Chamber (lowest)
+* Wellington Chamber
+* Lady Arbuthnot Chamber
+* Nelson's Chamber
+* Campbell's Chamber
+* Limestone gable roof
+
+Default presentation:
+
+* Observed geometry
+* Cartouche markings (where documented)
+* Masonry joints
+
+Optional overlays:
+
+* Construction sequence hypothesis
+* Stress distribution simulation overlay
+* Acoustic coupling hypothesis
+
+Access in the application is via a virtual flythrough, since physical access is restricted.
+
+---
+
+# 2.18 Antechamber
+
+The Antechamber lies between the Grand Gallery and the King's Chamber.
+
+Characteristics:
+
+* Small rectangular chamber
+* Granite-lined
+* Vertical slots for portcullis slabs (three or four)
+* Half-width granite wainscots
+* Bypass channel in east wall
+
+Default presentation:
+
+* Observed geometry
+* Portcullis slots (empty)
+* Measured dimensions
+
+Optional overlays:
+
+* Portcullis slabs in place (theory)
+* Sealing sequence (theory)
+* Acoustic valve hypothesis (theory)
+
+---
+
+# 2.19 Queen's Chamber
+
+The Queen's Chamber lies on the pyramid's central axis, below the King's Chamber.
+
+Characteristics:
+
+* Rectangular, approximately 5.8 m × 5.2 m
+* Height approximately 6.2 m to apex
+* Corbelled niche on east wall
+* Limestone walls, finely dressed
+* Gabled roof
+* Two shafts (north and south) exiting the chamber
+
+Principal elements:
+
+* Walls
+* Niche (east wall)
+* Gabled roof
+* Floor
+* Northern shaft entrance
+* Southern shaft entrance
+* Modern ventilation hole (1872, Waynman Dixon)
+
+Default presentation:
+
+* Observed geometry
+* Niche dimensions
+* Shaft entrances
+
+Optional overlays:
+
+* Niche as statue recess (theory)
+* Niche as sealed door (theory)
+* Serapeum-style niche (theory)
+
+The chamber is presented without an assumed occupant.
+
+---
+
+# 2.20 Queen's Chamber Shafts
+
+The Queen's Chamber shafts are unusual: they do not exit the pyramid and were sealed at their inner ends until 1872.
+
+Characteristics:
+
+* Approximately 0.20 m × 0.20 m cross-section
+* Horizontal initial section
+* Upward bend
+* Terminate before reaching the pyramid exterior
+* Southern shaft explored by Upuaut-2 robot (Gantenbrink, 1993)
+* Northern shaft explored by later robots (2002, 2010)
+
+Default presentation:
+
+* Observed geometry (surveyed portions)
+* Sealed inner ends (as found in 1872)
+* "Door" / blocking stones (Gantenbrink, Pyramid Rover)
+* Uns surveyed portions marked as inferred
+
+Optional overlays:
+
+* Star-shaft hypothesis (Krupp / Bauval)
+* Soul-shaft hypothesis
+* Hydraulic conduit hypothesis
+* Acoustic waveguide hypothesis
+
+The application must visually distinguish between robot-surveyed segments and inferred continuation.
+
+---
+
+# 2.21 King's Chamber Shafts
+
+The King's Chamber shafts exit the pyramid's north and south faces.
+
+Characteristics:
+
+* Approximately 0.14 m × 0.20 m cross-section
+* Slope approximately 7°–9° (varies)
+* Penetrate casing and core
+* Exit at specific elevations on north and south faces
+* Northern shaft exhibits a bend and a "door" feature (Pyramid Rover, 2002)
+* Southern shaft explored by Upuaut-2 (Gantenbrink, 1993)
+
+Default presentation:
+
+* Observed geometry (surveyed portions)
+* Exit points on exterior
+* "Door" features where documented
+* Inferred portions clearly marked
+
+Optional overlays:
+
+* Ventilation hypothesis
+* Star-shaft hypothesis
+* Soul-shaft hypothesis
+* Acoustic waveguide hypothesis
+
+---
+
+# 2.22 Well Shaft (Service Shaft)
+
+The Well Shaft connects the Descending Passage (lower end) to the Grand Gallery (lower west side).
+
+Characteristics:
+
+* Irregular vertical and inclined shaft
+* Approximately 30 m vertical drop
+* Passes through the Grotto
+* Cut through core masonry and bedrock
+* Rough finish
+
+Principal elements:
+
+* Upper entrance (Grand Gallery)
+* Vertical section
+* Grotto (intermediate chamber)
+* Lower exit (Descending Passage)
+
+Default presentation:
+
+* Observed geometry
+* Grotto dimensions
+* Measured irregularities
+
+Optional overlays:
+
+* Construction access hypothesis
+* Escape route hypothesis
+* Hydraulic conduit hypothesis
+
+---
+
+# 2.23 Grotto
+
+The Grotto is a small natural or modified cavity intersected by the Well Shaft.
+
+Characteristics:
+
+* Irregular chamber
+* Limestone with embedded nummulitic fossils
+* Possibly natural cavity enlarged
+* Located above bedrock / core interface
+
+Default presentation:
+
+* Observed geometry
+* Geological context
+* No assumed function
+
+---
+
+# 2.24 Modern Installations
+
+Modern features are clearly distinguished from ancient architecture.
+
+Included:
+
+* Al-Mamun's tunnel (entrance, 9th century)
+* Modern tourist entrance
+* Wooden walkways and stairs
+* Metal ladders (Well Shaft, relieving chambers)
+* Lighting conduits
+* Ventilation machinery (King's Chamber shafts)
+* Robot exploration equipment (where preserved)
+* Survey markers
+
+These objects appear only when the "Modern Installations" layer is enabled.
+
+---
+
+# 2.25 Materials
+
+The pyramid uses a limited, well-documented material palette.
+
+Master materials (see *GIZA - Technical Architecture* §7.7):
+
+| Material                  | Usage                              |
+| ------------------------- | ---------------------------------- |
+| Local limestone (core)    | Core masonry, rough passages       |
+| Tura limestone (casing)   | Casing, fine passages, gallery     |
+| Red granite (Aswan)       | King's Chamber, Antechamber, plugs |
+| Basalt                    | Floor of upper temple (context)    |
+| Mortar                    | Joint fill, casing bedding         |
+| Gypsum plaster            | Surface finishing (where present)  |
+| Bedrock                   | Subterranean Chamber, Grotto       |
+| Wood (modern)             | Walkways, ladders                  |
+| Steel (modern)            | Railings, fixtures                 |
+
+Every material derives from the master shader framework defined in *GIZA - Technical Architecture* §7.16.
+
+Material properties must remain editable without modifying geometry.
+
+---
+
+# 2.26 Environmental Rendering
+
+The environment should communicate age, dryness, and confinement through physically based rendering rather than exaggerated visual effects.
+
+Features include:
+
+* Dust accumulation
+* Salt efflorescence (where documented)
+* Smoke blackening (where documented)
+* Surface roughness variation
+* Micro cracks
+* Subtle airborne dust
+* Localized humidity gradients (Subterranean Chamber, Well Shaft)
+
+No decorative "fantasy tomb" elements are permitted.
+
+---
+
+# 2.27 Lighting Strategy
+
+Lighting follows the three operational modes defined in *GIZA - Osiris Shaft Specification* §2.18.
+
+### Documentary Mode
+
+Balanced illumination approximating professional archaeological photography.
+
+### Exploration Mode
+
+Low ambient illumination with realistic darkness, supplemented by the user's virtual light source.
+
+### Scientific Inspection Mode
+
+Even, neutral lighting that minimizes shadows to reveal geometry and surface details.
+
+Additional pyramid-specific notes:
+
+* The Grand Gallery and King's Chamber benefit from indirect bounce lighting to reveal corbelling and granite grain.
+* The Subterranean Chamber remains dark by default; ambient lift is provided only in Scientific Inspection Mode.
+* Shaft interiors are not lit by ambient sources; users must enable inspection lights or robot-mounted lights.
+
+Lighting parameters should be physically plausible and configurable without altering the underlying material properties.
+
+---
+
+# 2.28 Evidence Hotspots
+
+Every hotspot exists as metadata, following the schema in *GIZA - Technical Architecture* §6.16.
+
+```
+Position
+
+Radius
+
+Priority
+
+Evidence IDs
+
+Title
+
+Description
+
+Images
+
+Publications
+
+Confidence
+```
+
+Priority hotspots:
+
+| Hotspot                            | Priority | Confidence |
+| ---------------------------------- | -------: | ---------: |
+| Original entrance                  |        1 |         95 |
+| Plug blocks                        |        1 |         95 |
+| Grand Gallery corbelling           |        1 |         96 |
+| King's Chamber sarcophagus         |        1 |         97 |
+| Relieving chamber cartouches       |        1 |         90 |
+| Queen's Chamber niche              |        2 |         95 |
+| Queen's Chamber southern shaft door|        1 |         85 |
+| King's Chamber northern shaft door |        1 |         85 |
+| Subterranean Chamber pit           |        2 |         90 |
+| Well Shaft / Grotto                |        2 |         80 |
+| ScanPyramids "Big Void" region     |        2 |         60 |
+| Casing stone remnants              |        3 |         95 |
+
+Clicking a hotspot never pauses rendering.
+
+---
+
+# 2.29 Interaction Model
+
+The Great Pyramid inherits the interaction system defined in *GIZA - Technical Architecture* §6.17.
+
+Supported interactions:
+
+* Hover
+* Focus
+* Inspect
+* Measure
+* Bookmark
+* Compare
+* Hide Layer
+* Cross Section
+* Evidence View
+* Theory View
+* Chronology Switch
+* Shaft Flythrough
+
+### Shaft Flythrough
+
+A pyramid-specific interaction.
+
+The user may select any of the four chamber shafts and trigger an automated camera flythrough following the surveyed path.
+
+The flythrough pauses at "door" features and displays associated evidence.
+
+Inferred segments are rendered in a distinct visual style (wireframe or dashed outline) and are not traversable beyond the surveyed extent.
+
+---
+
+# 2.30 Chronology Layers
+
+The pyramid supports multiple historical periods as visualization layers.
+
+| Layer                  | Visible Changes                                         |
+| ---------------------- | ------------------------------------------------------- |
+| Old Kingdom Construction | Construction ramps, casing in progress, plug blocks out |
+| Old Kingdom Completion | Full casing, pyramidion, sealed passages                |
+| Late Period            | Casing partially stripped, entrance accessible          |
+| Roman                  | Possible intrusive activity                             |
+| Medieval               | Al-Mamun tunnel open                                    |
+| Early Modern           | Casing largely stripped, exploration shafts             |
+| Modern Excavation      | Ventilation machinery, walkways, lighting               |
+| Contemporary Survey    | Robot equipment, muon detectors, scan markers           |
+
+Permanent architecture changes only where supported by evidence.
+
+Movable objects, blocking stones, and modern infrastructure change per layer.
+
+---
+
+# 2.31 Theory-Independent Reconstruction
+
+The Great Pyramid is the canonical example of theory-independent reconstruction.
+
+Geometry exists independently of interpretation.
+
+```
+Geometry
+
++
+
+Evidence
+
++
+
+Theory
+```
+
+Example:
+
+```
+King's Chamber
+
+Geometry
+    identical
+
+Theory A
+    Royal burial chamber
+
+Theory B
+    Acoustic resonator
+
+Theory C
+    Hydraulic pressure vessel
+
+Theory D
+    Initiation chamber
+
+Theory E
+    Energy generator
+```
+
+Only the explanation changes.
+
+The geometry does not.
+
+Each theory is presented with:
+
+```
+Supporting Evidence
+
+Contradictory Evidence
+
+Unknowns
+
+Engineering Simulation (if any)
+
+Bibliography
+```
+
+Theory schema is defined in *GIZA - Data Architecture* §-13.
+
+---
+
+# 2.32 Theory Variants
+
+To support competing interpretations without duplicating geometry, theory variants are stored as overlays.
+
+```json
+{
+  "id": "THEORY-GP-001",
+  "name": "Royal Tomb Interpretation",
+  "monumentId": "MON-GP-001",
+  "geometryOverrides": [],
+  "interpretiveObjects": [],
+  "annotations": [],
+  "confidence": 85,
+  "references": ["SRC-0102", "SRC-0118"]
+}
+```
+
+```json
+{
+  "id": "THEORY-GP-002",
+  "name": "Hydraulic Interpretation",
+  "monumentId": "MON-GP-001",
+  "geometryOverrides": [],
+  "interpretiveObjects": [
+    {"type": "Seal", "location": "Antechamber"},
+    {"type": "PressureConduit", "location": "DescendingPassage"}
+  ],
+  "annotations": [],
+  "confidence": 35,
+  "references": ["SRC-0210"]
+}
+```
+
+Geometry overrides are limited to non-destructive visual changes such as:
+
+* Highlighting specific blocks
+* Showing interpretive objects
+* Activating simulation overlays
+
+The underlying mesh is never modified.
+
+---
+
+# 2.33 Performance Considerations
+
+The Great Pyramid is significantly larger than the Osiris Shaft and requires stricter streaming discipline.
+
+### Scene Streaming
+
+Initial load:
+
+```
+Plateau context (low LOD)
+
+Pyramid exterior (LOD2)
+
+Modern entrance
+
+UI
+```
+
+After entering:
+
+```
+Descending Passage
+
+Subterranean Chamber
+```
+
+Later:
+
+```
+Ascending Passage
+
+Grand Gallery
+```
+
+Finally:
+
+```
+King's Chamber
+
+Relieving Chambers
+
+Queen's Chamber
+
+Shafts (on demand)
+```
+
+Assets unload when sufficiently distant unless pinned by the user.
+
+### Mesh Budgets
+
+The pyramid exterior and core dominate the triangle budget.
+
+| Component                  | LOD0 Triangles | LOD2 Triangles |
+| -------------------------- | -------------: | -------------: |
+| Exterior + core            |      2,500,000 |        400,000 |
+| Grand Gallery              |        400,000 |         60,000 |
+| King's Chamber             |        300,000 |         50,000 |
+| Relieving Chambers         |        200,000 |         30,000 |
+| Queen's Chamber            |        200,000 |         40,000 |
+| Subterranean Chamber       |        250,000 |         50,000 |
+| Shafts (per shaft)         |        120,000 |         20,000 |
+| Casing reconstruction      |        150,000 |         25,000 |
+
+These budgets are illustrative; final values are governed by *GIZA - Technical Architecture* §6.27 and *GIZA - Asset Production Pipeline*.
+
+### Cross-Section Performance
+
+Cross-section clipping planes (see *GIZA - Technical Architecture* §7.18) must operate on the entire pyramid volume without generating duplicate geometry.
+
+Cut surfaces display geological texture or grid overlay.
+
+### Shaft Rendering
+
+Shafts are narrow and prone to clipping artifacts.
+
+Mitigations:
+
+* Reduced near-clip distance during shaft traversal
+* Dedicated shaft camera presets
+* Capped LOD for shaft interiors
+* Optional wireframe mode for uns surveyed segments
+
+### Memory Management
+
+Only one principal chamber should remain fully resident in GPU memory at a time, unless the user pins additional chambers.
+
+The Well Shaft and Grotto stream on demand.
+
+Relieving chambers stream only when accessed via virtual flythrough.
+
+---
+
+# 2.34 Proposed Enhancement: Multi-Monument Cross-Section
+
+Future versions should permit a plateau-scale cross-section plane that simultaneously cuts the Great Pyramid, Khafre, Menkaure, and the Osiris Shaft.
+
+This requires a shared Local Plateau Coordinate system and consistent LOD discipline across monuments.
+
+The cut plane must not generate duplicate geometry and must respect per-monument evidence confidence.
+
+---
+
+# 2.35 Proposed Enhancement: Construction Sequence Simulation
+
+A future module should simulate the construction sequence of the pyramid.
+
+Phases:
+
+```
+Site preparation
+
+↓
+
+Core masonry courses
+
+↓
+
+Casing installation
+
+↓
+
+Internal chambers (parallel)
+
+↓
+
+Plug block emplacement
+
+↓
+
+Pyramidion
+
+↓
+
+Sealing
+```
+
+Each phase references evidence and remains theory-independent where the construction method is contested (ramp configurations, counterweight systems, internal ramps).
+
+The simulation produces a chronological visualization, not a proof of method.
+
+---
+
+# 2.36 Proposed Enhancement: Acoustic Coupling Map
+
+A future acoustic module should evaluate coupling between chambers via shafts and passages.
+
+Example:
+
+```
+King's Chamber
+
+↓ (via northern shaft)
+
+Exterior
+
+↓ (via southern shaft)
+
+King's Chamber
+
+↓ (via Grand Gallery)
+
+Queen's Chamber
+```
+
+The map reveals resonant paths without asserting historical intent.
+
+Results are presented as overlays on the existing geometry, following the simulation framework defined in *GIZA - Simulation Framework*.
