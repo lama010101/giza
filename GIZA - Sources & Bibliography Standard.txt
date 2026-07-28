@@ -1,0 +1,791 @@
+
+# 1. Sources & Bibliography Standard
+
+This chapter defines how sources are cited, stored, evaluated, and preserved across the GIZA platform.
+
+It extends the Source schema defined in *GIZA - Data Architecture* §-16 and the citation engine defined in *GIZA - Data Architecture* §1.
+
+The objective is that every visible statement in the application can be traced to a stable, well-described, and preservable source record.
+
+---
+
+# 1.1 Scope
+
+This specification covers:
+
+* citation rules
+* source reliability
+* DOI handling
+* ISBN handling
+* ORCID handling
+* archival URLs
+* museum references
+* image licensing
+* video references
+* duplicate detection
+* bibliography generation
+* metadata requirements
+* preservation strategy
+
+It does **not** redefine the Source schema. It constrains and extends its fields.
+
+---
+
+# 1.2 Architectural Philosophy
+
+Sources are first-class entities.
+
+A source is created once and referenced by many evidence records.
+
+Sources are never embedded inside evidence records; they are linked by identifier.
+
+This guarantees:
+
+* single source of truth per publication
+* consistent citation across the platform
+* efficient duplicate detection
+* stable bibliography generation
+
+---
+
+# 1.3 Source Schema (Extended)
+
+The base Source schema is defined in *GIZA - Data Architecture* §-16.
+
+This specification extends it with bibliographic and preservation fields.
+
+```json
+{
+  "id": "SRC-0032",
+  "authors": [],
+  "editors": [],
+  "title": "",
+  "subtitle": "",
+  "publication": "",
+  "publisher": "",
+  "place": "",
+  "year": 2025,
+  "edition": "",
+  "volume": "",
+  "issue": "",
+  "pages": "",
+  "doi": "",
+  "isbn": "",
+  "issn": "",
+  "orcidAuthors": [],
+  "url": "",
+  "archivalUrl": "",
+  "archiveDate": "",
+  "license": "",
+  "rightsHolder": "",
+  "museumAccession": "",
+  "museumCollection": "",
+  "type": "Journal",
+  "reliability": 90,
+  "language": "",
+  "keywords": [],
+  "externalRefs": [],
+  "created": "",
+  "updated": ""
+}
+```
+
+Fields not present in the base schema:
+
+* `editors`, `subtitle`, `publisher`, `place`, `edition`, `volume`, `issue`, `pages`
+* `issn`
+* `orcidAuthors`
+* `archivalUrl`, `archiveDate`
+* `rightsHolder`
+* `museumAccession`, `museumCollection`
+* `language`
+* `keywords`
+* `externalRefs`
+
+---
+
+# 1.4 Source Identifiers
+
+Every source receives a stable, opaque identifier.
+
+Format:
+
+```
+SRC-NNNNNN
+```
+
+Example:
+
+```
+SRC-0032
+```
+
+Rules:
+
+* Identifiers are sequential within the `SRC` namespace.
+* Identifiers are never reused.
+* Identifiers are never renamed.
+* Identifiers survive migration, export, and import.
+
+External identifiers (DOI, ISBN, ORCID, museum accession) are stored in dedicated fields and never replace the `SRC` identifier.
+
+---
+
+# 1.5 Source Types
+
+Supported types follow *GIZA - Data Architecture* §-16.
+
+* Book
+* Journal
+* Conference
+* Survey
+* Archaeological Report
+* Museum
+* Government
+* Video
+* Photograph
+* Personal Communication
+
+Extended types:
+
+* Thesis
+* Dataset
+* Scan
+* Laser Scan
+* Muon Radiography Report
+* Robot Exploration Log
+* News Article
+* Blog Post
+* Manuscript (unpublished)
+
+Each type has distinct required fields (see §1.13).
+
+---
+
+# 1.6 Citation Rules
+
+Every visible claim in the application must cite at least one source.
+
+Citations are rendered from the Source record, never hardcoded.
+
+### In-App Citation
+
+```text
+Water depth
+
+Confidence 94%
+
+Sources 4
+
+View Publications
+```
+
+Selecting the citation opens the bibliography panel rather than an external browser by default.
+
+### Inline Citation Format
+
+```text
+(Lehner 2017, p. 142)
+```
+
+The format is generated from the Source record and the selected citation style (see §1.11).
+
+### Multi-Source Citations
+
+```text
+(Lehner 2017; Gantenbrink 1999; ScanPyramids 2017)
+```
+
+Sources are ordered by year ascending, then by author surname.
+
+---
+
+# 1.7 Source Reliability
+
+Every source carries a reliability score on the 0–100 confidence scale defined in *GIZA - Vision & Scientific Foundation* §6.
+
+Default reliability by type:
+
+| Type                    | Default Reliability |
+| ----------------------- | ------------------: |
+| Peer-reviewed journal   |                 95 |
+| Archaeological report   |                 90 |
+| Survey                  |                 95 |
+| Museum record           |                 90 |
+| Government record       |                 85 |
+| Conference paper        |                 80 |
+| Book (academic press)   |                 85 |
+| Book (popular press)    |                 60 |
+| Thesis                  |                 70 |
+| Dataset                 |                 85 |
+| Laser scan              |                 98 |
+| Muon radiography report |                 90 |
+| Robot exploration log   |                 85 |
+| Video (documentary)     |                 55 |
+| Video (exploration)     |                 75 |
+| Photograph              |                 80 |
+| News article            |                 40 |
+| Blog post               |                 30 |
+| Personal communication  |                 50 |
+| Manuscript (unpublished)|                 40 |
+
+Reliability may be adjusted per record by an Editor, with justification recorded in the audit log.
+
+Reliability feeds into confidence propagation (see *GIZA - Evidence Database Specification* §1.8).
+
+---
+
+# 1.8 DOI Handling
+
+A DOI (Digital Object Identifier) is the preferred persistent identifier for published scholarly works.
+
+Rules:
+
+* DOIs are stored in the `doi` field.
+* DOIs are normalized to URL form: `https://doi.org/10.xxxx/...`
+* DOIs are validated against the DOI resolver on import.
+* A source with a DOI is preferred over a source without when both describe the same work.
+* DOIs are never manually edited after validation.
+
+```json
+{
+  "doi": "10.1144/sp305.14"
+}
+```
+
+Where a DOI is present, the application resolves metadata automatically where possible.
+
+---
+
+# 1.9 ISBN Handling
+
+ISBNs identify books.
+
+Rules:
+
+* ISBNs are stored in the `isbn` field.
+* Both ISBN-10 and ISBN-13 are accepted.
+* ISBNs are normalized to ISBN-13 on storage.
+* Hyphens are removed for storage and reinserted for display.
+* ISBNs are validated by checksum on import.
+
+```json
+{
+  "isbn": "9780500051801"
+}
+```
+
+Where an ISBN is present, the application may resolve bibliographic metadata from registered agencies.
+
+---
+
+# 1.10 ORCID Handling
+
+ORCID iDs identify individual researchers.
+
+Rules:
+
+* ORCID iDs are stored in the `orcidAuthors` array, parallel to `authors`.
+* ORCID iDs are normalized to URI form: `https://orcid.org/0000-0001-2345-6789`
+* ORCID iDs are validated by checksum on import.
+* An author without an ORCID is retained; ORCID is optional but encouraged.
+
+```json
+{
+  "authors": ["Mark Lehner"],
+  "orcidAuthors": ["https://orcid.org/0000-0002-1234-5678"]
+}
+```
+
+ORCID is also used for reviewer attribution (see *GIZA - Evidence Database Specification* §1.12).
+
+---
+
+# 1.11 Bibliography Generation
+
+The bibliography engine supports the styles defined in *GIZA - Data Architecture* §2.
+
+* APA
+* Chicago
+* Harvard
+* IEEE
+* BibTeX export
+* RIS export
+
+Additional styles:
+
+* MLA
+* Turabian
+* SAA (Society for American Archaeology)
+* Chicago Notes-Bibliography
+* Chicago Author-Date
+
+Style selection is per-user and per-export.
+
+### Generated Entry Example (APA)
+
+```text
+Lehner, M. (2017). The complete pyramids. Thames & Hudson.
+```
+
+### Generated Entry Example (BibTeX)
+
+```bibtex
+@book{SRC-0032,
+  author = {Lehner, Mark},
+  title  = {The complete pyramids},
+  publisher = {Thames \& Hudson},
+  year = {2017},
+  isbn = {9780500051801}
+}
+```
+
+The BibTeX key is derived from the `SRC` identifier to guarantee uniqueness.
+
+Researchers may download the complete bibliography for any scene, theory, or evidence set.
+
+---
+
+# 1.12 Archival URLs
+
+Web sources are fragile.
+
+Every URL-bearing source must declare an archival URL.
+
+Rules:
+
+* `archivalUrl` points to a snapshot in the Internet Archive (Wayback Machine) or a comparable preservation service.
+* `archiveDate` records the snapshot date.
+* If no archival snapshot exists, the application offers a one-click "Archive now" action that submits the URL to the preservation service and stores the result.
+* Sources without an archival URL are flagged in review for non-`Personal Communication` types.
+
+```json
+{
+  "url": "https://example.com/report",
+  "archivalUrl": "https://web.archive.org/web/20250101000000/https://example.com/report",
+  "archiveDate": "2025-01-01"
+}
+```
+
+---
+
+# 1.13 Museum References
+
+Museum-held objects and archives are cited via accession numbers.
+
+Rules:
+
+* `museumAccession` stores the accession identifier.
+* `museumCollection` stores the collection or department name.
+* The museum itself is recorded as a Source of type `Museum` and referenced where appropriate.
+* Museum URLs link to the canonical collection page where available.
+
+```json
+{
+  "museumAccession": "JE 32352",
+  "museumCollection": "Egyptian Museum, Cairo"
+}
+```
+
+Where a museum object has been relocated, both original and current accession numbers are retained in `externalRefs`.
+
+---
+
+# 1.14 Image Licensing
+
+Every image attached to evidence or sources must declare a license.
+
+Supported licenses:
+
+* CC0
+* CC-BY
+* CC-BY-SA
+* CC-BY-ND
+* CC-BY-NC
+* CC-BY-NC-SA
+* CC-BY-NC-ND
+* Public Domain
+* All Rights Reserved
+* Museum Permitted Use
+* Editorial Use Only
+
+Rules:
+
+* License is stored on the Media record (see *GIZA - Evidence Database Specification* §1.19).
+* `rightsHolder` identifies the copyright holder.
+* `credit` records the attribution line as it must appear on screen and in exports.
+* Images without a license declaration cannot be attached to Published evidence.
+* Images marked `All Rights Reserved` are display-only and excluded from exports unless explicit permission is recorded.
+
+```json
+{
+  "id": "MED-0421",
+  "license": "CC-BY-SA",
+  "rightsHolder": "Giza Plateau Mapping Project",
+  "credit": "Photo: Giza Plateau Mapping Project, CC BY-SA"
+}
+```
+
+---
+
+# 1.15 Video References
+
+Video sources require additional metadata.
+
+Required fields for type `Video`:
+
+* `url` (canonical video URL)
+* `archivalUrl`
+* `duration` (seconds)
+* `timestamp` (for references to specific moments)
+* `license`
+* `credit`
+
+```json
+{
+  "id": "SRC-0210",
+  "type": "Video",
+  "title": "Upuaut-2 southern shaft exploration",
+  "url": "",
+  "archivalUrl": "",
+  "duration": 312,
+  "timestamp": "00:04:18",
+  "license": "CC-BY",
+  "credit": "Rudolf Gantenbrink, 1993"
+}
+```
+
+Timestamps allow the application to deep-link to the cited moment.
+
+---
+
+# 1.16 Duplicate Detection
+
+Sources are imported frequently from multiple evidence submissions.
+
+Duplicate detection runs on import and on edit.
+
+Detection signals:
+
+* DOI match (exact)
+* ISBN match (exact)
+* Title similarity (fuzzy, > 0.9)
+* Author + year match
+* URL match (canonicalized)
+
+```text
+Candidate import
+
+↓
+
+Duplicate check
+
+↓
+
+Match found?
+
+  Yes → Merge proposal
+
+  No  → Create new source
+```
+
+Merges require Editor approval and are recorded in the audit log.
+
+Merged sources retain all `externalRefs` from both records.
+
+---
+
+# 1.17 Merge Workflow
+
+```
+Duplicate detected
+
+↓
+
+Editor reviews candidate
+
+↓
+
+Fields reconciled
+
+↓
+
+Evidence links migrated
+
+↓
+
+Old source marked Superseded
+
+↓
+
+New source retains both IDs in externalRefs
+```
+
+Superseded sources are retained for audit and never deleted.
+
+---
+
+# 1.18 Metadata Requirements
+
+Each source type has distinct required fields.
+
+| Type                    | Required Fields                                              |
+| ----------------------- | ------------------------------------------------------------ |
+| Book                    | title, authors or editors, publisher, year, isbn            |
+| Journal                 | title, authors, publication, year, volume, issue, pages, doi|
+| Conference              | title, authors, publication, year, place                    |
+| Survey                  | title, authors, year, place                                  |
+| Archaeological Report   | title, authors or organization, year                         |
+| Museum                  | title, museumCollection, museumAccession                    |
+| Government              | title, organization, year                                    |
+| Video                   | title, url, archivalUrl, license, credit                     |
+| Photograph              | title, credit, license, capturedDate                         |
+| Personal Communication  | title, authors, date                                         |
+| Thesis                  | title, authors, institution, year, degree                    |
+| Dataset                 | title, authors, year, doi                                    |
+| Scan                    | title, authors, year, instrument, locationId                 |
+| Muon Radiography Report | title, authors, year, doi                                    |
+| Robot Exploration Log   | title, authors, year, robotId, locationId                    |
+| News Article            | title, authors, publication, year, url, archivalUrl          |
+| Blog Post               | title, authors, url, archivalUrl, date                       |
+| Manuscript              | title, authors, date                                         |
+
+Sources missing required fields cannot transition to Published.
+
+---
+
+# 1.19 Language
+
+Every source declares its original language.
+
+```json
+{
+  "language": "en"
+}
+```
+
+Language codes follow ISO 639-1.
+
+Translations are recorded as separate Source records linked via `externalRefs` with relation `translation_of`.
+
+The application surfaces the original-language source by default and offers translations where available.
+
+---
+
+# 1.20 Keywords
+
+Sources carry keywords for search and clustering.
+
+```json
+{
+  "keywords": ["Great Pyramid", "King's Chamber", "sarcophagus", "granite"]
+}
+```
+
+Keywords are free-text but normalized to lowercase on storage.
+
+Controlled vocabulary may be introduced in future versions without migration.
+
+---
+
+# 1.21 External References
+
+External identifiers are preserved in `externalRefs`.
+
+```json
+{
+  "externalRefs": [
+    {"system": "Crossref", "id": "10.1144/sp305.14"},
+    {"system": "Gantenbrink1993", "id": "UPUAUT-SOUTH-DOOR"},
+    {"system": "BibTeXKey", "id": "lehner2017pyramids"}
+  ]
+}
+```
+
+This guarantees that imports from external systems remain reconcilable.
+
+---
+
+# 1.22 Preservation Strategy
+
+Sources must remain accessible for decades.
+
+Strategy:
+
+* All source metadata is stored in version control alongside evidence.
+* Full-text PDFs (where licensed) are mirrored to a preservation bucket.
+* Archival URLs are captured for every web source.
+* DOIs are preferred over URLs for published works.
+* Museum accession numbers are preferred over museum URLs.
+* The complete source database is exportable as a self-contained JSON archive.
+
+### Preservation Tiers
+
+| Tier | Content                              | Storage                  |
+| ---- | ------------------------------------ | ------------------------ |
+| 1    | Source metadata                      | Version control + DB     |
+| 2    | Archival URL snapshot                | External archive         |
+| 3    | Licensed full-text PDF               | Preservation bucket      |
+| 4    | Licensed image / video               | Preservation bucket      |
+| 5    | Scan data (point cloud, mesh)        | Preservation bucket      |
+
+Tier 1 is mandatory for all sources.
+
+Tiers 2–5 are mandatory where the license permits.
+
+---
+
+# 1.23 Citation Engine Integration
+
+The citation engine (see *GIZA - Data Architecture* §1) consumes Source records to render:
+
+* in-app hover citations
+* bibliography panels
+* export footers
+* screenshot watermarks
+* PDF report citations
+
+The engine never reads URLs directly; it reads the Source record and resolves the appropriate identifier (DOI, ISBN, archival URL) for the context.
+
+---
+
+# 1.24 API Endpoints
+
+Source-specific endpoints extend *GIZA - Evidence Database Specification* §1.25.
+
+```
+GET /sources
+GET /sources/:id
+GET /sources/:id/evidence
+GET /sources/:id/versions
+GET /sources/:id/audit
+POST /sources/import
+POST /sources/export
+POST /sources/merge
+POST /sources/archive
+```
+
+Administrative endpoints (create, update, merge, retract) require Editor or Administrator roles.
+
+---
+
+# 1.25 Search
+
+Source-specific search dimensions:
+
+* author surname
+* year range
+* type
+* reliability range
+* DOI presence
+* ISBN presence
+* ORCID presence
+* archival URL presence
+* license type
+* museum collection
+* keyword
+
+Example query:
+
+```text
+type = Journal
+
+year >= 2000
+
+reliability >= 80
+
+keyword = "King's Chamber"
+```
+
+---
+
+# 1.26 Localization
+
+Source metadata is stored in its original language.
+
+Display fields (title, publication) may carry translations stored as parallel fields with language suffixes.
+
+```json
+{
+  "title": "Die Cheops-Pyramide",
+  "title_en": "The Great Pyramid of Khufu"
+}
+```
+
+Citation rendering uses the user's selected locale where a translation exists, falling back to the original.
+
+Scientific identifiers (DOI, ISBN, ORCID, accession numbers) remain language-independent.
+
+---
+
+# 1.27 Audit History
+
+Every source modification is auditable, following *GIZA - Evidence Database Specification* §1.22.
+
+Audit entries record:
+
+```text
+Who
+
+When
+
+Why
+
+Previous State
+
+New State
+
+Affected Evidence
+```
+
+Merges record both source IDs and the full set of migrated evidence links.
+
+---
+
+# 1.28 Extensibility
+
+New source types may be added without migrating existing records, provided they are documented in this specification.
+
+New citation styles may be added as plug-ins without modifying the Source schema.
+
+New preservation services may be added by extending the archival URL resolver.
+
+---
+
+# 1.29 Proposed Enhancement: Linked Open Data
+
+Publish source records as linked open data using schema.org and FaBiO ontologies.
+
+This enables external scholarly systems to reference GIZA sources by URI and to reconcile them with Crossref, ORCID, and Wikidata.
+
+Benefits:
+
+* Machine-readable provenance
+* Interoperability with reference managers (Zotero, Mendeley)
+* Citation tracking across the scholarly web
+
+---
+
+# 1.30 Proposed Enhancement: Citation Graph
+
+Build a citation graph linking sources that cite one another.
+
+```
+Source A
+
+↓ cited by
+
+Source B
+
+↓ cited by
+
+Source C
+```
+
+The graph reveals:
+
+* influential foundational works
+* contested claims
+* citation clusters around competing theories
+
+This graph is browsable in Research Mode alongside the evidence dependency graph (see *GIZA - Evidence Database Specification* §1.11).
