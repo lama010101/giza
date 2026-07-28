@@ -1,0 +1,1138 @@
+
+# 1. Asset Production Pipeline
+
+This chapter defines the production pipeline for every 3D asset in the GIZA platform.
+
+It extends the asset pipeline outline in *GIZA - Technical Architecture* §6.28 and the asset standards in *GIZA - Technical Architecture* §5.
+
+The objective is that every exported asset is geometrically accurate, scientifically traceable, performant, and reusable across monuments.
+
+---
+
+# 1.1 Scope
+
+This specification covers:
+
+* directory structure
+* naming conventions
+* coordinate system
+* Blender workflow
+* photogrammetry
+* laser scan integration
+* retopology
+* UV workflow
+* texture standards
+* PBR material library
+* mesh budgets
+* collision rules
+* LOD generation
+* glTF export
+* validation
+* publishing
+* scientific metadata
+
+It does **not** redefine the rendering pipeline or the material shader framework. Those remain in *GIZA - Technical Architecture* §7.
+
+---
+
+# 1.2 Architectural Philosophy
+
+Assets are scientific artifacts, not decorative content.
+
+Every asset must satisfy three constraints simultaneously:
+
+1. **Geometric fidelity** to measured evidence
+2. **Performance** within the rendering budget
+3. **Traceability** to the evidence database
+
+No constraint may be silently sacrificed for another.
+
+Where trade-offs are necessary, they are recorded in the asset's metadata and visible in Debug Mode.
+
+---
+
+# 1.3 Directory Structure
+
+All source assets live under `assets/` (see *GIZA - Technical Architecture* §2).
+
+```
+assets/
+    source/
+        scans/
+            photogrammetry/
+            laser/
+            muon/
+        surveys/
+        reference/
+            photos/
+            plans/
+            drawings/
+    working/
+        blender/
+        zbrush/
+        substance/
+    master/
+        highpoly/
+        lowpoly/
+        uvs/
+        textures/
+        materials/
+    export/
+        gltf/
+        ktx2/
+    metadata/
+        manifests/
+        provenance/
+    validation/
+        reports/
+        diffs/
+```
+
+### Directory Rules
+
+* `source/` is read-only after ingestion.
+* `working/` contains editable artist files.
+* `master/` contains approved, versioned outputs.
+* `export/` contains only validated, publish-ready assets.
+* `metadata/` contains manifests linking exports to evidence.
+* `validation/` contains automated and manual reports.
+
+No asset reaches `export/` without a corresponding manifest in `metadata/`.
+
+---
+
+# 1.4 Naming Conventions
+
+Asset names are stable, parseable, and meaningful.
+
+### Mesh File Names
+
+```
+<monument>-<location>-<object>-<lod>.glb
+```
+
+Example:
+
+```
+GP-KingsChamber-Sarcophagus-LOD0.glb
+GP-KingsChamber-Sarcophagus-LOD1.glb
+OS-Level3-Sarcophagus-LOD0.glb
+```
+
+### Texture File Names
+
+```
+<monument>-<location>-<object>_<map>_LOD<n>.ktx2
+```
+
+Example:
+
+```
+GP-KingsChamber-Walls_albedo_LOD0.ktx2
+GP-KingsChamber-Walls_normal_LOD0.ktx2
+GP-KingsChamber-Walls_roughness_LOD0.ktx2
+```
+
+### Material File Names
+
+```
+MAT_<materialName>.json
+```
+
+Example:
+
+```
+MAT_TuraLimestone.json
+MAT_AswanGranite.json
+```
+
+### Rules
+
+* Names use CamelCase for readability.
+* Names never contain spaces.
+* Names never contain version numbers; versions live in metadata.
+* Names are stable across LODs.
+* Monument codes: `GP` (Great Pyramid), `OS` (Osiris Shaft), `KF` (Khafre), `MK` (Menkaure), `PL` (Plateau).
+
+---
+
+# 1.5 Coordinate System
+
+Assets are authored in a layered coordinate system to prevent floating-point precision loss at monument scale.
+
+```
+GPS / UTM / EPSG
+
+↓
+
+Local Plateau Coordinates
+
+↓
+
+Monument Coordinates
+
+↓
+
+Room Coordinates
+
+↓
+
+Object Coordinates
+```
+
+### Layer Definitions
+
+| Layer                    | Origin                                  | Units | Use                              |
+| ------------------------ | --------------------------------------- | ----- | -------------------------------- |
+| GPS                      | WGS84                                   | deg   | Ingestion only                   |
+| UTM                      | UTM zone 36N                            | m     | Survey ingestion                 |
+| EPSG                     | Projected CRS (e.g., EPSG:32636)        | m     | Survey ingestion                 |
+| Local Plateau Coordinates| Fixed plateau reference point           | m     | World scene                      |
+| Monument Coordinates     | Monument center (ground level)         | m     | Monument scene                   |
+| Room Coordinates         | Room center                             | m     | Asset authoring                  |
+| Object Coordinates       | Object pivot                            | m     | Object authoring                 |
+
+### Authoring Rule
+
+Every mesh is authored in Room Coordinates or Object Coordinates.
+
+The export pipeline embeds the transformation chain as glTF node hierarchy.
+
+At load time, the engine composes transformations to place the asset in World Coordinates without accumulating floating-point error.
+
+### Axis Convention
+
+Follows *GIZA - Technical Architecture* §4.
+
+* Y axis: vertical
+* X axis: east-west
+* Z axis: north-south
+* Units: meters
+* Scale: 1.0 = 1 meter
+
+All imported models must preserve real-world scale.
+
+---
+
+# 1.6 Coordinate Transformations
+
+Transformations are stored as a chain of named matrices.
+
+```json
+{
+  "transforms": [
+    {"name": "objectToRoom", "matrix": []},
+    {"name": "roomToMonument", "matrix": []},
+    {"name": "monumentToPlateau", "matrix": []},
+    {"name": "plateauToWorld", "matrix": []}
+  ]
+}
+```
+
+The engine composes:
+
+```
+worldPoint = plateauToWorld * monumentToPlateau * roomToMonument * objectToRoom * objectPoint
+```
+
+For rendering, the engine applies transformations at the scene-graph node level, keeping vertex coordinates in their authored local space.
+
+This avoids the precision loss that occurs when vertices are baked into world coordinates far from the origin.
+
+---
+
+# 1.7 Blender Workflow
+
+Blender is the primary DCC (digital content creation) tool.
+
+### Project File Structure
+
+```
+<asset>.blend
+<asset>.blend1
+<asset>.blend2
+```
+
+Auto-save versions are retained for recovery.
+
+### Unit Settings
+
+```
+Unit System: Metric
+Length: Meters
+Unit Scale: 1.0
+```
+
+### Scene Settings
+
+```
+Up Axis: Z (Blender default)
+Forward Axis: -Y
+```
+
+On export, the pipeline converts to the GIZA convention (Y up, -Z forward) via the glTF exporter settings.
+
+### Collections
+
+Every Blender file uses a fixed collection structure:
+
+```
+SourceData
+HighPoly
+LowPoly
+UVs
+BakeTargets
+Validation
+Export
+```
+
+This enables automated processing scripts to locate content reliably.
+
+---
+
+# 1.8 Photogrammetry Integration
+
+Photogrammetry is a primary source of measured geometry.
+
+### Ingestion
+
+```
+Source photographs
+
+↓
+
+Metashape / RealityCapture project
+
+↓
+
+Dense point cloud
+
+↓
+
+Mesh
+
+↓
+
+Cleanup
+
+↓
+
+Retopology
+```
+
+### Cleanup Rules
+
+* Remove stray geometry outside the surveyed bounds.
+* Remove floating artifacts.
+* Fill holes only where evidence supports the surface.
+* Do not smooth away measured irregularities.
+
+### Provenance
+
+The photogrammetry project file is stored in `assets/source/scans/photogrammetry/`.
+
+The source photographs are stored alongside, with their media IDs recorded in the asset manifest.
+
+---
+
+# 1.9 Laser Scan Integration
+
+Laser scans provide the highest-confidence geometry.
+
+### Ingestion
+
+```
+Point cloud (E57 / LAS / LAZ)
+
+↓
+
+Registration
+
+↓
+
+Cleanup
+
+↓
+
+Meshing
+
+↓
+
+Retopology
+```
+
+### Registration
+
+Scan stations are registered to the Local Plateau Coordinate system using survey control points.
+
+Registration error is recorded in the asset manifest.
+
+### Meshing
+
+Meshing is performed at the resolution required for the highest LOD.
+
+Lower LODs are derived via retopology, not via decimation of the scanned mesh.
+
+### Provenance
+
+The registered point cloud is preserved in `assets/source/scans/laser/`.
+
+The scan metadata (instrument, date, operator, station count, registration error) is recorded in the asset manifest.
+
+---
+
+# 1.10 Retopology
+
+Retopology converts high-resolution scanned or sculpted meshes into clean, performant geometry.
+
+### Rules
+
+* Quads only for master meshes.
+* Even edge flow where the surface is planar.
+* Concentrated topology where curvature is high.
+* Poles minimized and never placed on sharp edges.
+* Symmetry preserved where the original is symmetrical.
+* No n-gons in exported meshes.
+
+### Tools
+
+* Blender (manual and Quad Remesher)
+* ZBrush ZRemesher (for organic surfaces)
+* Custom scripts for architectural surfaces
+
+Retopology is never automated for evidence-critical surfaces without manual review.
+
+---
+
+# 1.11 UV Workflow
+
+### Rules
+
+* UVs are authored in the 0–1 space with a 4-pixel padding margin.
+* Overlapping UVs are permitted only for identical modular elements (e.g., repeated casing blocks).
+* Mirrored UVs are permitted and flagged in metadata.
+* UV islands are oriented to minimize distortion.
+* Multiple UV channels:
+  * Channel 0: albedo, normal, roughness, AO, height
+  * Channel 1: lightmap (where used)
+  * Channel 2: metadata (where used)
+
+### Texel Density
+
+| Asset Class        | Texel Density (px/m) |
+| ------------------ | --------------------:|
+| Hero asset         |                 2048 |
+| Standard asset     |                 1024 |
+| Background asset   |                  512 |
+| Distant asset      |                  128 |
+
+Texel density is consistent within a class to avoid visible blending artifacts.
+
+---
+
+# 1.12 Texture Standards
+
+### Formats
+
+* Master textures: 16-bit EXR or PNG
+* Export textures: KTX2 with Basis Universal compression
+* Color space: linear for data maps, sRGB for albedo
+
+### Map Set (PBR Metallic-Roughness)
+
+```
+albedo (sRGB)
+normal (linear, OpenGL convention)
+roughness (linear)
+metallic (linear)
+ambientOcclusion (linear)
+height (linear, optional)
+opacity (linear, optional)
+emission (sRGB, optional)
+```
+
+### Resolution Tiers
+
+| LOD  | Max Texture Resolution |
+| ---- | ----------------------:|
+| LOD0 | 4096 × 4096 (desktop)  |
+| LOD1 | 2048 × 2048            |
+| LOD2 | 1024 × 1024            |
+| LOD3 | 512 × 512              |
+
+Mobile maximums follow *GIZA - Technical Architecture* §5.
+
+---
+
+# 1.13 PBR Material Library
+
+Master materials are defined once and reused across monuments.
+
+```
+Dry Limestone
+Wet Limestone
+Tura Limestone (casing)
+Local Limestone (core)
+Aswan Granite (red)
+Basalt
+Mortar
+Gypsum Plaster
+Bedrock
+Sand
+Dust
+Wood (ancient)
+Wood (modern)
+Steel (modern)
+Bronze
+Water
+Glass
+UI Materials
+```
+
+Every material is defined by a JSON descriptor:
+
+```json
+{
+  "id": "MAT_AswanGranite",
+  "name": "Aswan Red Granite",
+  "baseShader": "Stone",
+  "maps": {
+    "albedo": "MAT_AswanGranite_albedo.ktx2",
+    "normal": "MAT_AswanGranite_normal.ktx2",
+    "roughness": "MAT_AswanGranite_roughness.ktx2",
+    "ambientOcclusion": "MAT_AswanGranite_ao.ktx2"
+  },
+  "properties": {
+    "metallic": 0.0,
+    "roughnessBase": 0.65,
+    "subsurface": 0.0
+  },
+  "evidenceRefs": ["EV-000143"]
+}
+```
+
+No custom material should bypass the master shader framework (see *GIZA - Technical Architecture* §7.16).
+
+Material properties must remain editable without modifying geometry.
+
+---
+
+# 1.14 Mesh Budgets
+
+Mesh budgets are per-asset, complementing the scene-level budgets in *GIZA - Technical Architecture* §6.27.
+
+### Hero Assets (chambers, sarcophagi, distinctive features)
+
+| LOD  | Max Triangles |
+| ---- | -------------:|
+| LOD0 |     1,000,000 |
+| LOD1 |       300,000 |
+| LOD2 |        80,000 |
+| LOD3 |        20,000 |
+
+### Standard Assets (passages, walls, floors)
+
+| LOD  | Max Triangles |
+| ---- | -------------:|
+| LOD0 |       300,000 |
+| LOD1 |       100,000 |
+| LOD2 |        25,000 |
+| LOD3 |         6,000 |
+
+### Background Assets (exterior, terrain, distant context)
+
+| LOD  | Max Triangles |
+| ---- | -------------:|
+| LOD0 |       150,000 |
+| LOD1 |        40,000 |
+| LOD2 |        10,000 |
+| LOD3 |         2,000 |
+
+Assets exceeding budget are rejected at validation.
+
+Exceptions require Editor approval and are recorded in the manifest.
+
+---
+
+# 1.15 Collision Rules
+
+Collision meshes are separate from render meshes.
+
+### Generation
+
+```
+Render mesh
+
+↓
+
+Simplification
+
+↓
+
+Convex decomposition (where needed)
+
+↓
+
+Collision mesh
+```
+
+### Rules
+
+* Collision meshes are stored as separate glTF nodes within the same file.
+* Collision meshes are named `<objectName>_COL`.
+* Collision meshes are not rendered.
+* Collision meshes are used by the physics engine (Rapier, see *GIZA - Technical Architecture* §1).
+* Collision complexity is minimized: boxes, capsules, and convex hulls are preferred over triangle meshes.
+* For complex geometry (e.g., Grand Gallery corbelling), a triangle mesh collision is permitted but flagged for performance review.
+
+### Collision Exclusions
+
+* Water surfaces: no collision (handled by simulation).
+* Dust, fog, particles: no collision.
+* Evidence hotspots: no collision.
+* Interpretive objects: collision only when the parent theory is active.
+
+---
+
+# 1.16 LOD Generation
+
+LODs are generated from the master mesh, not from the highest LOD.
+
+```
+Master mesh (LOD0)
+
+↓
+
+Retopology / decimation
+
+↓
+
+LOD1
+
+↓
+
+Retopology / decimation
+
+↓
+
+LOD2
+
+↓
+
+Retopology / decimation
+
+↓
+
+LOD3
+
+↓
+
+Billboard / Hidden
+```
+
+### Rules
+
+* LOD transitions must be imperceptible (see *GIZA - Technical Architecture* §7.5).
+* Silhouette preservation is prioritized over texture detail.
+* UVs are preserved across LODs where possible.
+* Where UVs must change, a separate texture set is generated for that LOD.
+
+### Validation
+
+Each LOD is validated against the LOD0 silhouette using a Hausdorff distance metric.
+
+| LOD  | Max Hausdorff Distance |
+| ---- | ----------------------:|
+| LOD1 | 2 mm                   |
+| LOD2 | 10 mm                  |
+| LOD3 | 50 mm                  |
+
+Exceeding the threshold requires manual review.
+
+---
+
+# 1.17 glTF Export
+
+glTF 2.0 is the sole export format for runtime assets (see *GIZA - Technical Architecture* §5).
+
+### Export Settings
+
+```
+Format: .glb (binary) for runtime, .gltf + .bin for archival
+Y up: yes
+Z forward: -Z
+Normals: yes
+Tangents: yes
+UVs: yes
+Materials: PBR metallic-roughness
+Textures: KTX2 embedded or external
+Animation: none (unless required)
+Cameras: none
+Lights: none
+```
+
+### Node Hierarchy
+
+The exported glTF preserves the coordinate transformation chain as a node hierarchy.
+
+```
+PlateauRoot
+└── MonumentRoot
+    └── LocationRoot
+        └── ObjectRoot
+            └── Mesh
+```
+
+Each node carries its transformation matrix.
+
+This allows the engine to place the asset correctly without baking world coordinates.
+
+---
+
+# 1.18 Scientific Metadata
+
+Every exported asset must embed scientific metadata linking it to the evidence database.
+
+### Required Fields
+
+```
+evidence_id
+object_id
+location_id
+chronology
+confidence
+source references
+```
+
+### Storage Mechanism
+
+Metadata is stored in glTF node `extras` and in the `asset` extension.
+
+```json
+{
+  "asset": {
+    "generator": "GIZA Asset Pipeline",
+    "version": "2.0",
+    "extras": {
+      "giza": {
+        "assetId": "GP-KingsChamber-Sarcophagus",
+        "version": 3,
+        "monumentId": "MON-GP-001",
+        "locationId": "LOC-GP-KC",
+        "objectId": "OBJ-0012",
+        "evidenceIds": ["EV-000143", "EV-000144"],
+        "sourceIds": ["SRC-0102", "SRC-0118"],
+        "chronologyTags": [
+          {"period": "Old Kingdom", "scope": "construction"}
+        ],
+        "confidence": 97,
+        "confidenceBasis": "Direct measurement, multiple surveys.",
+        "coordinateLayer": "Room",
+        "author": "",
+        "approvedBy": "",
+        "approvedDate": ""
+      }
+    }
+  }
+}
+```
+
+### Node-Level Metadata
+
+Each significant mesh node carries its own `extras` block.
+
+```json
+{
+  "name": "SarcophagusLid",
+  "extras": {
+    "giza": {
+      "evidenceIds": ["EV-000144"],
+      "confidence": 95,
+      "interactive": true
+    }
+  }
+}
+```
+
+### Compatible Extensions
+
+Where applicable, the pipeline uses glTF extensions:
+
+* `KHR_materials_pbrSpecularGlossiness` (legacy compatibility only)
+* `KHR_texture_basisu` (KTX2 textures)
+* `KHR_materials_unlit` (UI and debug meshes)
+* `EXT_mesh_gpu_instancing` (repeated elements such as casing blocks)
+
+Custom extensions are avoided unless required for metadata that cannot fit in `extras`.
+
+---
+
+# 1.19 Validation
+
+Every exported asset passes automated validation before publishing.
+
+### Validation Checks
+
+| Check                  | Description                                          |
+| ---------------------- | ---------------------------------------------------- |
+| Schema                 | glTF 2.0 valid                                       |
+| Coordinate layer       | Transformation chain present and consistent         |
+| Scale                  | Real-world scale preserved (1 unit = 1 m)           |
+| Pivots                 | Pivots at object center or base, never at world origin |
+| Normals                | All meshes have normals; no inverted normals        |
+| Tangents               | Tangents present where normal maps are used         |
+| UVs                    | UV channel 0 present; no zero-area islands          |
+| N-gons                 | No n-gons in exported meshes                        |
+| Triangle budget        | Per-LOD budgets respected                            |
+| Texture budget         | Per-LOD texture resolutions respected               |
+| Material references    | All materials resolve to master library             |
+| Collision              | Collision mesh present where required               |
+| Metadata               | Scientific metadata complete (see §1.18)            |
+| Evidence linkage       | At least one `evidenceIds` entry per significant mesh |
+| Confidence             | Confidence declared and within 0–100                |
+| Chronology             | At least one chronology tag                         |
+| Naming                 | Naming conventions respected                        |
+
+### Validation Report
+
+Validation produces a JSON report stored in `assets/validation/reports/`.
+
+```json
+{
+  "assetId": "GP-KingsChamber-Sarcophagus",
+  "version": 3,
+  "date": "",
+  "checks": [
+    {"name": "Schema", "passed": true},
+    {"name": "TriangleBudget", "passed": true, "value": 842000, "limit": 1000000}
+  ],
+  "warnings": [],
+  "errors": [],
+  "approved": true
+}
+```
+
+Assets with errors cannot be published.
+
+Assets with warnings may be published with Editor approval.
+
+---
+
+# 1.20 Publishing
+
+Publishing moves a validated asset from `master/` to `export/` and registers it with the runtime asset registry.
+
+```
+Validation passed
+
+↓
+
+Manifest generated
+
+↓
+
+Asset copied to export/
+
+↓
+
+Manifest registered
+
+↓
+
+Version tagged
+
+↓
+Scene registry updated
+```
+
+### Manifest
+
+```json
+{
+  "assetId": "GP-KingsChamber-Sarcophagus",
+  "version": 3,
+  "file": "export/gltf/GP-KingsChamber-Sarcophagus-LOD0.glb",
+  "lods": [
+    {"lod": 0, "file": "GP-KingsChamber-Sarcophagus-LOD0.glb", "triangles": 842000},
+    {"lod": 1, "file": "GP-KingsChamber-Sarcophagus-LOD1.glb", "triangles": 250000},
+    {"lod": 2, "file": "GP-KingsChamber-Sarcophagus-LOD2.glb", "triangles": 60000},
+    {"lod": 3, "file": "GP-KingsChamber-Sarcophagus-LOD3.glb", "triangles": 15000}
+  ],
+  "materials": ["MAT_AswanGranite"],
+  "collisionFile": "GP-KingsChamber-Sarcophagus-LOD0.glb",
+  "evidenceIds": ["EV-000143", "EV-000144"],
+  "sourceIds": ["SRC-0102", "SRC-0118"],
+  "confidence": 97,
+  "validationReport": "validation/reports/GP-KingsChamber-Sarcophagus-v3.json",
+  "approvedBy": "",
+  "approvedDate": ""
+}
+```
+
+### Versioning
+
+Every publish increments the asset version.
+
+Previous versions are retained in `export/` with version suffixes.
+
+The runtime loads the latest approved version unless a specific version is requested (e.g., for reproducible research exports).
+
+---
+
+# 1.21 Evidence Integration
+
+Every significant mesh must be traceable to archaeological evidence, following *GIZA - Evidence Database Specification* §1.18.
+
+```
+Evidence record (EV-000143)
+
+↓
+
+Geometry reference (geometryRefs)
+
+↓
+
+Asset manifest
+
+↓
+
+glTF node extras
+
+↓
+Runtime scene node metadata
+```
+
+At runtime, the scene graph node carries the evidence IDs (see *GIZA - Technical Architecture* §6.5).
+
+A mesh without evidence linkage is flagged in Debug Mode and cannot be marked as `Verified`.
+
+---
+
+# 1.22 Chronology Layers
+
+Assets may declare chronology applicability.
+
+```json
+{
+  "chronologyTags": [
+    {"period": "Old Kingdom", "scope": "construction"},
+    {"period": "Modern Excavation", "scope": "discovery"}
+  ]
+}
+```
+
+The runtime enables or disables assets based on the active chronology layer (see *GIZA - Great Pyramid Specification* §2.30).
+
+Permanent architecture assets are tagged with all periods in which they existed.
+
+Movable and interpretive assets are tagged only with the periods in which they are relevant.
+
+---
+
+# 1.23 Theory Variants
+
+Theory-specific assets (interpretive objects) are produced through the same pipeline but flagged as `interpretive`.
+
+```json
+{
+  "giza": {
+    "assetId": "GP-Antechamber-PortcullisSlabs",
+    "interpretive": true,
+    "theoryIds": ["THEORY-GP-001"],
+    "confidence": 40
+  }
+}
+```
+
+Interpretive assets are never loaded by default.
+
+They appear only when the parent theory is active (see *GIZA - Great Pyramid Specification* §2.32).
+
+---
+
+# 1.24 Performance Considerations
+
+The pipeline enforces performance budgets before assets reach the runtime.
+
+### Draw Call Minimization
+
+* Modular elements (casing blocks, masonry courses) are instanced via `EXT_mesh_gpu_instancing`.
+* Materials are shared across assets wherever possible.
+* Texture atlases are used for modular kits.
+
+### Memory Minimization
+
+* KTX2 compression is mandatory for all textures.
+* LOD textures are generated alongside LOD meshes.
+* Unused UV channels are stripped at export.
+
+### Streaming Readiness
+
+* Each LOD is a separate `.glb` file.
+* File sizes are reported in the manifest.
+* The runtime streams LODs independently (see *GIZA - Technical Architecture* §6.3).
+
+---
+
+# 1.25 Validation Against Survey
+
+For evidence-critical assets, the pipeline supports a deviation comparison against the source survey.
+
+```
+Survey mesh (laser / photogrammetry)
+
+↓
+
+Reconstructed mesh
+
+↓
+
+Deviation heatmap
+
+↓
+
+Hausdorff distance report
+```
+
+Deviation thresholds follow *GIZA - Technical Architecture* §7.25.
+
+| Difference | Color  |
+| ---------- | ------ |
+| < 1 cm     | Green  |
+| 1–5 cm     | Yellow |
+| > 5 cm     | Red    |
+
+The report is stored in `assets/validation/diffs/` and referenced in the manifest.
+
+Assets exceeding the red threshold cannot be marked as `Verified`.
+
+---
+
+# 1.26 Asset Lifecycle
+
+```
+Ingestion
+
+↓
+
+Authoring
+
+↓
+
+Review
+
+↓
+
+Validation
+
+↓
+
+Publishing
+
+↓
+
+Runtime use
+
+↓
+
+Supersession (when better evidence arrives)
+
+↓
+Archive (retained for audit)
+```
+
+Superseded assets remain queryable but are not loaded by default.
+
+Nothing in the asset pipeline is permanently deleted.
+
+---
+
+# 1.27 API Endpoints
+
+The asset pipeline exposes internal endpoints for tooling integration.
+
+```
+GET /assets
+GET /assets/:id
+GET /assets/:id/manifest
+GET /assets/:id/versions
+GET /assets/:id/validation
+POST /assets/validate
+POST /assets/publish
+POST /assets/supersede
+```
+
+Administrative endpoints require Editor or Administrator roles.
+
+---
+
+# 1.28 Extensibility
+
+The pipeline is intentionally tool-agnostic at the manifest and export layers.
+
+New DCC tools may be added by providing exporters that conform to the glTF + metadata standard.
+
+New scan technologies (e.g., muon radiography reconstructions) may be added by extending the ingestion layer.
+
+New monuments reuse the entire pipeline without structural changes.
+
+---
+
+# 1.29 Proposed Enhancement: Procedural Asset Generation
+
+For highly repetitive elements (casing blocks, masonry courses, corridor segments), introduce procedural generation driven by parameters and evidence.
+
+```
+Parameters (block dimensions, joint pattern, weathering seed)
+
+↓
+
+Procedural generator
+
+↓
+
+Mesh + UVs
+
+↓
+
+Validation
+
+↓
+Publishing
+```
+
+Procedural assets carry the same metadata as hand-authored assets, including evidence linkage and confidence.
+
+This reduces production cost for large modular surfaces while preserving traceability.
+
+---
+
+# 1.30 Proposed Enhancement: Time-Aware Assets
+
+Extend assets to carry time-aware material states, complementing the temporal material simulation proposed in *GIZA - Technical Architecture* §7.26.
+
+```
+Asset
+
+↓
+
+Material parameters by chronology layer
+
+↓
+
+Runtime interpolation
+```
+
+Example:
+
+```
+Old Kingdom: fresh Tura casing, bright
+
+Medieval: weathered, partially stripped
+
+Modern: largely absent, fragments only
+```
+
+The geometry remains immutable; only material parameters change per chronology layer.
+
+This enables the same asset to support the full chronology stack defined in *GIZA - Great Pyramid Specification* §2.30 without duplicating meshes.
