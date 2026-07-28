@@ -1,0 +1,926 @@
+
+# 1. Evidence Database Specification
+
+This chapter defines the operational rules of the knowledge engine. It extends the data model defined in *GIZA - Data Architecture* without duplicating it.
+
+The Evidence Database is the single source of truth for archaeological knowledge inside the platform. Rendering, simulation, and UI never embed archaeological claims directly; they consume structured evidence records.
+
+---
+
+# 1.1 Scope
+
+This specification covers:
+
+* evidence lifecycle
+* evidence identifiers
+* evidence classes
+* review workflow
+* dependency graph
+* confidence propagation
+* scientific review
+* version history
+* conflict resolution
+* evidence linking
+* geometry linkage
+* media attachment
+* import workflow
+* export workflow
+* audit history
+
+It does **not** redefine the core schemas (Evidence, Source, Object, Location, Theory, Simulation). Those remain as specified in *GIZA - Data Architecture*.
+
+---
+
+# 1.2 Architectural Philosophy
+
+The database enforces the four-layer separation defined in *GIZA - Vision & Scientific Foundation* §4.
+
+```
+Observed Evidence
+
+↓
+
+Measured Reconstruction
+
+↓
+
+Interpretation
+
+↓
+
+Simulation
+```
+
+Evidence records describe observations only.
+
+Interpretation lives in Theory records.
+
+Simulation lives in Simulation records.
+
+The database refuses to store conclusions as if they were observations.
+
+---
+
+# 1.3 Evidence Lifecycle
+
+Every evidence record passes through a defined lifecycle.
+
+```
+Draft
+
+↓
+
+Submitted
+
+↓
+
+In Review
+
+↓
+
+Verified
+
+↓
+
+Published
+
+↓
+
+Superseded
+
+↓
+
+Retracted
+```
+
+| State      | Meaning                                             |
+| ---------- | --------------------------------------------------- |
+| Draft      | Author is still editing                             |
+| Submitted  | Ready for review                                    |
+| In Review  | Under scientific review                             |
+| Verified   | Review passed, pending publication                  |
+| Published  | Visible to all users                                |
+| Superseded | Replaced by a newer record, retained for history    |
+| Retracted  | Withdrawn, retained for audit but hidden by default |
+
+State transitions are auditable and irreversible in the forward direction.
+
+A retracted record cannot return to Published without a new record ID.
+
+---
+
+# 1.4 Evidence Identifiers
+
+Every evidence record receives a stable, opaque identifier.
+
+Format:
+
+```
+EV-NNNNNN
+```
+
+Example:
+
+```
+EV-000143
+```
+
+Rules:
+
+* Identifiers are sequential within the `EV` namespace.
+* Identifiers are never reused.
+* Identifiers are never renamed.
+* Identifiers are language-independent.
+* Identifiers survive migration, export, and import.
+
+A separate human-readable `slug` may be provided for URLs and citations, but the canonical reference is always the `EV` identifier.
+
+---
+
+# 1.5 Evidence Classes
+
+Evidence classes follow the E1–E8 scheme defined in *GIZA - Vision & Scientific Foundation* §5.
+
+| Class | Description               |
+| ----- | ------------------------- |
+| E1    | Direct observation        |
+| E2    | Instrument measurement    |
+| E3    | Historical documentation  |
+| E4    | Photographic evidence     |
+| E5    | Peer-reviewed publication |
+| E6    | Reconstruction            |
+| E7    | Engineering inference     |
+| E8    | Speculative hypothesis    |
+
+Each evidence record stores exactly one primary class.
+
+Multiple classes may be referenced via the `secondaryClasses` field when an observation combines methods.
+
+```json
+{
+  "id": "EV-000143",
+  "primaryClass": "E2",
+  "secondaryClasses": ["E4"]
+}
+```
+
+Class drives default confidence bounds and review requirements.
+
+---
+
+# 1.6 Evidence Schema (Extended)
+
+The base Evidence schema is defined in *GIZA - Data Architecture* §-17.
+
+This specification extends it with operational fields.
+
+```json
+{
+  "id": "EV-000143",
+  "title": "",
+  "description": "",
+  "category": "Measurement",
+  "primaryClass": "E2",
+  "secondaryClasses": [],
+  "confidence": 96,
+  "confidenceBasis": "",
+  "status": "Published",
+  "lifecycleState": "Published",
+  "sourceIds": [],
+  "locationId": "",
+  "objectIds": [],
+  "geometryRefs": [],
+  "mediaIds": [],
+  "dependencyIds": [],
+  "conflictIds": [],
+  "chronologyTags": [],
+  "tags": [],
+  "reviewLog": [],
+  "version": 3,
+  "created": "",
+  "updated": "",
+  "createdBy": "",
+  "updatedBy": ""
+}
+```
+
+Fields not present in the base schema:
+
+* `primaryClass`, `secondaryClasses`
+* `confidenceBasis`
+* `lifecycleState`
+* `geometryRefs`
+* `mediaIds`
+* `dependencyIds`
+* `conflictIds`
+* `chronologyTags`
+* `reviewLog`
+* `version`
+* `createdBy`, `updatedBy`
+
+---
+
+# 1.7 Confidence Assignment
+
+Confidence follows the continuous scale defined in *GIZA - Vision & Scientific Foundation* §6.
+
+Confidence is never assigned arbitrarily.
+
+Every confidence value must declare a `confidenceBasis`.
+
+```json
+{
+  "confidence": 96,
+  "confidenceBasis": "Laser scan, three independent passes, deviation < 2 mm."
+}
+```
+
+Acceptable bases:
+
+* Direct measurement
+* Multiple independent measurements
+* Peer-reviewed consensus
+* Single authoritative source
+* Reasoned inference
+* Plausible inference
+* Speculative
+
+Confidence values without a basis are rejected at submission.
+
+---
+
+# 1.8 Confidence Propagation
+
+Confidence propagates through the dependency graph defined in *GIZA - Data Architecture* §-10.
+
+```
+Evidence
+
+↓
+
+Object Confidence
+
+↓
+
+Theory Confidence
+
+↓
+
+Simulation Confidence
+```
+
+Propagation rules:
+
+* Object confidence is the weighted average of supporting evidence confidence, weighted by source reliability.
+* Theory confidence is bounded by the lowest confidence of its required evidence.
+* Simulation confidence is bounded by the lowest geometry confidence it depends on.
+
+A change to any upstream evidence automatically triggers recalculation of dependent objects, theories, and simulations.
+
+Propagation is asynchronous but eventually consistent.
+
+---
+
+# 1.9 Confidence Formula
+
+The initial formula is defined in *GIZA - Data Architecture* §-9.
+
+```
+Object Confidence
+
+=
+
+weighted average
+
++
+
+source reliability
+
++
+
+measurement quality
+
++
+
+consensus factor
+```
+
+Weights:
+
+| Factor             | Default Weight |
+| ------------------ | -------------: |
+| Source reliability |           0.35 |
+| Measurement quality|           0.30 |
+| Consensus factor   |           0.20 |
+| Direct observation |           0.15 |
+
+Weights are configurable per category and recorded in the audit log.
+
+Later versions may implement Bayesian updating instead of a weighted average.
+
+---
+
+# 1.10 Dependency Graph
+
+Evidence forms an explicit directed acyclic graph.
+
+```
+Laser Scan
+      │
+      ├── validates Room Dimensions
+      │          │
+      │          └── supports 3D Geometry
+      │                     │
+      │                     └── influences Hydraulic Simulation
+      │
+      Photographic Survey
+      └── validates Surface Condition
+```
+
+Each dependency edge stores:
+
+```json
+{
+  "from": "EV-000120",
+  "to": "EV-000143",
+  "relation": "validates",
+  "strength": 0.8,
+  "notes": ""
+}
+```
+
+Supported relations:
+
+* `validates`
+* `supports`
+* `contradicts`
+* `refines`
+* `supersedes`
+* `influences`
+* `derived_from`
+
+Cycles are rejected at insertion time.
+
+---
+
+# 1.11 Dependency Visualization
+
+The dependency graph is browsable in Research Mode.
+
+Users may:
+
+* Expand a node to reveal upstream and downstream evidence.
+* Highlight a theory to show its full evidence lineage.
+* Identify fragile chains (theories dependent on a single low-confidence evidence item).
+* Export a subgraph as JSON or GraphML.
+
+Example fragile chain warning:
+
+```text
+Theory: Hydraulic Interpretation
+
+Depends on:
+
+  EV-000210 (confidence 40)
+
+  No corroborating evidence.
+
+Recommend: additional measurement before relying on this theory.
+```
+
+---
+
+# 1.12 Review Workflow
+
+Every evidence record passes through scientific review before publication.
+
+```
+Author submits
+
+↓
+
+Editor assigns reviewers
+
+↓
+
+Reviewers comment
+
+↓
+
+Author revises
+
+↓
+
+Reviewers approve or reject
+
+↓
+
+Editor publishes
+```
+
+Reviewers are tracked by ORCID where available (see *GIZA - Sources & Bibliography Standard*).
+
+Each review iteration is recorded in `reviewLog`.
+
+```json
+{
+  "iteration": 1,
+  "reviewer": "ORCID-0000-0001-2345-6789",
+  "decision": "revise",
+  "comments": "",
+  "date": ""
+}
+```
+
+A record with unresolved `revise` decisions cannot transition to Verified.
+
+---
+
+# 1.13 Scientific Review Criteria
+
+Reviewers evaluate:
+
+* Methodological soundness
+* Source provenance
+* Measurement traceability
+* Confidence justification
+* Conflict with existing evidence
+* Chronology tagging
+* Geometry linkage correctness
+
+Reviewers do **not** evaluate whether the evidence supports a preferred theory.
+
+Review rejection on theoretical grounds alone is not permitted.
+
+---
+
+# 1.14 Version History
+
+Every evidence record is versioned, following *GIZA - Data Architecture* §-5.
+
+```
+v1
+
+↓
+
+v2
+
+↓
+
+v3
+```
+
+Each version stores:
+
+```json
+{
+  "version": 3,
+  "author": "",
+  "date": "",
+  "changeSummary": "",
+  "diff": "",
+  "sourcesAdded": [],
+  "sourcesRemoved": []
+}
+```
+
+Researchers may compare revisions.
+
+Nothing is permanently deleted.
+
+Superseded versions remain queryable but are not the default view.
+
+---
+
+# 1.15 Conflict Resolution
+
+Evidence may contradict other evidence.
+
+The platform never hides contradictory evidence (see *GIZA - Data Architecture* §-8).
+
+Conflicts are recorded explicitly.
+
+```json
+{
+  "evidenceA": "EV-000143",
+  "evidenceB": "EV-000210",
+  "relation": "contradicts",
+  "description": "",
+  "resolution": "unresolved",
+  "notes": ""
+}
+```
+
+Resolution states:
+
+* `unresolved`
+* `partial` (one side favored, both retained)
+* `superseded` (one side replaced)
+* `contextual` (both valid under different chronologies or conditions)
+
+Conflicts surface in the UI as red halos and in the Evidence Panel under "Contradictions".
+
+---
+
+# 1.16 Conflict Visualization
+
+In Research Mode, conflicting evidence is displayed side by side.
+
+Example:
+
+```text
+EV-000143  Chamber floor elevation  +18.4 m  confidence 96
+
+EV-000210  Chamber floor elevation  +17.9 m  confidence 70
+
+Conflict:  0.5 m discrepancy
+
+Resolution: unresolved
+```
+
+The application never silently picks one value.
+
+Where a reconstruction must choose, the choice is recorded as a Theory decision, not an Evidence decision.
+
+---
+
+# 1.17 Evidence Linking
+
+Evidence links to other domains via stable identifiers.
+
+| Target    | Field          | Example          |
+| --------- | -------------- | ---------------- |
+| Source    | `sourceIds`    | `SRC-0032`       |
+| Object    | `objectIds`    | `OBJ-0012`       |
+| Location  | `locationId`   | `LOC-005`        |
+| Theory    | via Theory     | `THEORY-001`     |
+| Simulation| via Simulation | `SIM-008`        |
+| Media     | `mediaIds`     | `MED-0421`       |
+| Geometry  | `geometryRefs` | `MESH-KC-WALL-01`|
+
+Links are bidirectional at the API layer.
+
+Breaking a link records an audit entry on both sides.
+
+---
+
+# 1.18 Geometry Linkage
+
+Every significant mesh must be traceable to evidence.
+
+Geometry linkage uses the `geometryRefs` field.
+
+```json
+{
+  "id": "EV-000143",
+  "geometryRefs": [
+    {
+      "meshId": "MESH-KC-WALL-01",
+      "relation": "measured_from",
+      "confidenceContribution": 0.9
+    }
+  ]
+}
+```
+
+Supported relations:
+
+* `measured_from`
+* `reconstructed_from`
+* `inferred_from`
+* `deviation_validated_against`
+* `texture_source_for`
+
+The geometry loader resolves these references at scene load and attaches evidence metadata to mesh nodes (see *GIZA - Technical Architecture* §6.5 and *GIZA - Asset Production Pipeline*).
+
+A mesh without evidence linkage is flagged in Debug Mode and cannot be marked as `Verified`.
+
+---
+
+# 1.19 Media Attachment
+
+Media records are stored separately and linked to evidence.
+
+```json
+{
+  "id": "MED-0421",
+  "type": "Photograph",
+  "url": "",
+  "license": "",
+  "credit": "",
+  "capturedDate": "",
+  "capturedBy": "",
+  "evidenceIds": ["EV-000143"]
+}
+```
+
+Supported media types:
+
+* Photograph
+* Video
+  * Audio
+* Scan
+* Drawing
+* Plan
+* Document
+* 3D capture
+
+Media licensing is governed by *GIZA - Sources & Bibliography Standard*.
+
+Media without a license declaration cannot be attached to Published evidence.
+
+---
+
+# 1.20 Import Workflow
+
+Evidence may be imported from external sources.
+
+```
+Source file (CSV, JSON, BibTeX, RIS)
+
+↓
+
+Schema validation
+
+↓
+
+Duplicate detection
+
+↓
+
+Field mapping
+
+↓
+
+Conflict detection
+
+↓
+
+Staging
+
+↓
+
+Review
+
+↓
+
+Publication
+```
+
+Imported records receive new `EV` identifiers.
+
+Original external identifiers are preserved in `externalRefs`.
+
+```json
+{
+  "externalRefs": [
+    {"system": "Gantenbrink1993", "id": "UPUAUT-SOUTH-DOOR"}
+  ]
+}
+```
+
+No imported record bypasses review.
+
+---
+
+# 1.21 Export Workflow
+
+Evidence may be exported for external research.
+
+```
+Selection (filter, location, theory, object)
+
+↓
+
+Format selection
+
+↓
+
+Provenance attachment
+
+↓
+
+License check
+
+↓
+
+Export
+```
+
+Supported formats:
+
+* JSON (full schema)
+* CSV (flat subset)
+* BibTeX (bibliography only)
+* RIS (bibliography only)
+* GraphML (dependency graph)
+* CITATION.cff (citation file format)
+
+Every export includes a manifest:
+
+```json
+{
+  "exportDate": "",
+  "exportedBy": "",
+  "evidenceCount": 0,
+  "sourceCount": 0,
+  "schemaVersion": "",
+  "applicationVersion": "",
+  "filters": {}
+}
+```
+
+Exports are watermarked with the application version to ensure reproducibility.
+
+---
+
+# 1.22 Audit History
+
+Every modification is auditable, following *GIZA - Data Architecture* §-4.
+
+Each audit entry records:
+
+```text
+Who
+
+When
+
+Why
+
+Sources
+
+Affected Objects
+
+Previous State
+
+New State
+```
+
+Audit entries are immutable.
+
+Audit history is exportable as JSON for institutional review.
+
+Nothing in the audit log is ever deleted.
+
+---
+
+# 1.23 Chronology Tagging
+
+Every evidence record carries chronology tags.
+
+```json
+{
+  "chronologyTags": [
+    {"period": "Old Kingdom", "scope": "construction"},
+    {"period": "Modern Excavation", "scope": "discovery"}
+  ]
+}
+```
+
+Tags drive:
+
+* Timeline filtering
+* Chronology layer visibility
+* Period-specific evidence queries
+
+Evidence without chronology tags is flagged in review.
+
+---
+
+# 1.24 Theory Independence
+
+The database enforces theory independence at the schema level.
+
+Evidence records have no `theoryId` field.
+
+Theories reference evidence, never the reverse.
+
+This guarantees that removing a theory never alters evidence, and adding a theory never requires new measurements.
+
+---
+
+# 1.25 API Endpoints
+
+The Evidence Database exposes the read endpoints defined in *GIZA - Data Architecture* §-2, plus evidence-specific endpoints.
+
+```
+GET /evidence
+GET /evidence/:id
+GET /evidence/:id/dependencies
+GET /evidence/:id/conflicts
+GET /evidence/:id/geometry
+GET /evidence/:id/media
+GET /evidence/:id/versions
+GET /evidence/:id/audit
+POST /evidence/import
+POST /evidence/export
+```
+
+Administrative endpoints (create, update, review, retract) remain separate and require Editor or Administrator roles (see *GIZA - Data Architecture* §6).
+
+---
+
+# 1.26 Search
+
+Search follows *GIZA - Data Architecture* §-1 and §0.
+
+Evidence-specific search dimensions:
+
+* evidence class (E1–E8)
+* lifecycle state
+* confidence range
+* chronology tag
+* dependency depth
+* conflict status
+* geometry linkage status
+
+Search returns relationships, not only documents.
+
+Example query:
+
+```text
+class = E2
+
+confidence >= 90
+
+location = King's Chamber
+
+conflict = unresolved
+```
+
+---
+
+# 1.27 Performance Considerations
+
+The Evidence Database is read-heavy.
+
+Caching strategy:
+
+* Published evidence is cached at the edge.
+* Dependency graphs are materialized as adjacency lists.
+* Confidence propagation is computed incrementally.
+* Search indices are rebuilt on publication, not on every edit.
+
+Write paths are optimized for review throughput, not for transaction volume.
+
+The database is expected to hold on the order of 10⁴–10⁵ evidence records for the full Giza Plateau. Scaling beyond this requires sharding by monument, which the schema supports via `locationId`.
+
+---
+
+# 1.28 Extensibility
+
+The schema is intentionally site-agnostic, following *GIZA - Data Architecture* §7.
+
+Future sites such as Saqqara, Dahshur, or Abu Rawash reuse the same evidence schema with no structural changes.
+
+New evidence classes (E9 and beyond) may be added without migrating existing records, provided they are documented in this specification.
+
+---
+
+# 1.29 Proposed Enhancement: Bayesian Confidence Engine
+
+Replace the weighted-average confidence formula with a Bayesian updating model.
+
+Each evidence record contributes a likelihood update to its dependent objects and theories.
+
+Benefits:
+
+* Quantified posterior uncertainty
+* Sensitivity to evidence order becomes explicit
+* Conflicting evidence is reconciled probabilistically rather than by manual resolution
+
+This enhancement requires no schema change; only the propagation engine changes.
+
+---
+
+# 1.30 Proposed Enhancement: Evidence Provenance Chain
+
+Extend the audit log to record a complete provenance chain from observation to publication.
+
+```
+Instrument reading
+
+↓
+
+Field note
+
+↓
+
+Digitization
+
+↓
+
+Review
+
+↓
+
+Publication
+
+↓
+
+Citation
+```
+
+Each link is cryptographically signed by its author.
+
+This enables external verification of any published claim without trusting the platform alone.
