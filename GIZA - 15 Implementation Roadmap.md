@@ -4,7 +4,7 @@
 **Status:** Working Specification
 **Last update:** 2026-07-28
 
-This document bridges the GIZA specification set (00–11, 16) to executable work. It decomposes the project into 20 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. The Hydraulic-Acoustic System Hypothesis (*GIZA - 16*) is the first hypothesis plugin to be implemented and tested.
+This document bridges the GIZA specification set (00–11, 16, 17) to executable work. It decomposes the project into 20 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. The Hydraulic-Acoustic System Hypothesis (*GIZA - 16*) is the first hypothesis plugin to be implemented and tested. The AI Development Governance & Engineering Standards (*GIZA - 17*) define the governance framework, quality gates, and definition of done that bind this roadmap to the specification set and the development playbook.
 
 It is the operational counterpart of the specifications. Where the numbered specifications define *what* and *why*, this document defines *how*, *in what order*, and *when a task is finished*. The companion document *GIZA - 99 Development Playbook* defines how development is conducted day to day and should be read alongside this roadmap.
 
@@ -249,7 +249,7 @@ Recommended branch naming: `mNN-tKK-<slug>` (e.g. `m00-t03-eslint`, `m06a-t08-lo
 
 **Goal:** Establish the repository governance framework before any code is written, so that every subsequent AI coding agent and human contributor works from identical standards and cannot silently diverge. This milestone produces no application code; it produces the rules, templates, automation, and decision records that govern all later milestones.
 
-**Spec ref:** 00 §4 (repo organization), 00 §13 (AI agent instructions), 00 §14 (contributor guidance)
+**Spec ref:** 00 §4 (repo organization), 00 §13 (AI agent instructions), 00 §14 (contributor guidance), 17 (AI Development Governance & Engineering Standards)
 **Depends on:** —
 **Parallelizable with:** — (must complete before M00)
 **Estimate:** 13 points
@@ -276,7 +276,8 @@ Recommended branch naming: `mNN-tKK-<slug>` (e.g. `m00-t03-eslint`, `m06a-t08-lo
 ```
 You are setting up repository governance for the GIZA project BEFORE any
 application code exists. Read GIZA - 00 Master Specification.md (§3, §4,
-§8, §9, §13, §14) and GIZA - 99 Development Playbook.md.
+§8, §9, §13, §14), GIZA - 17 AI Development Governance & Engineering
+Standards.md, and GIZA - 99 Development Playbook.md.
 
 Produce the governance framework (no application code):
 - Branching strategy (trunk-based, short-lived feature branches, squash-merge)
@@ -1594,3 +1595,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | 2026-07-28 | 0.2 Draft | Added M-1 Repository Governance; M03.5 Scientific Content Pipeline (≥100 seeded evidence records); split M06 into M06A (tooling) + M06.5 (survey acquisition) + M06B (asset production); added M08.5 Benchmark Scene; added AI-coder estimates (files/LOC/sessions/context) per milestone; added Definition of Scientific Done (§1.5); added documentation generation strategy (§1.6) and per-milestone Documentation outputs; added Risk Register (§8) and staged Release Strategy (§9); updated dependency graph, task index (245 tasks), and effort summary (400 points). Companion document *GIZA - 99 Development Playbook* added. |
 | 2026-07-28 | 0.3 Draft | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added M05.5 Hypothesis Framework Engine (15 tasks, 26 points) implementing the Hypothesis Framework spec (*GIZA - 11*): plugin architecture, predictions, per-object-per-hypothesis confidence, visualization rules, comparison framework, hypothesis selector UI, 3 sample plugins. Updated M01-T05 to full Hypothesis schema; added M01-T05a Prediction schema; updated M01-T09 for active hypotheses array. Updated M09 dependency to include M05.5. Updated task index (261 tasks), effort summary (426 points), critical path. |
 | 2026-07-28 | 0.4 Draft | Added M11.5 Hydraulic-Acoustic Hypothesis Plugin (15 tasks, 22 points) implementing the first hypothesis plugin (*GIZA - 16*): coupled hydraulic-acoustic resonator for the Great Pyramid, 7 predictions, 4 linked simulations (hydraulic, acoustic, structural, thermal), 8 experimental scenarios, visualization overlays, prediction-simulation loop, validation methodology. Updated M11 dependencies to include M05.5. Updated M12 dependencies to include M11.5. Updated task index (276 tasks), effort summary (448 points), critical path. |
+| 2026-07-28 | 0.5 Draft | Added reference to *GIZA - 17 AI Development Governance & Engineering Standards* in M-1 Repository Governance (spec ref and AI prompt). Updated intro to reference spec 17. |

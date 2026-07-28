@@ -4,15 +4,17 @@
 **Status:** Working Specification
 **Last update:** 2026-07-28
 
-This document is the operational guide for everyone who touches the GIZA repository — AI coding agents (Devin, Claude Code, Copilot, GLM) and human developers alike. It defines *how* development is conducted: the order in which to read specifications and tackle milestones, the workflow an AI agent follows for each task, reusable prompt templates, git and branching conventions, coding standards, testing strategy, review checklists, common mistakes, recovery procedures, a repository map, and an onboarding guide. It does not redefine *what* is built; the *what* lives in the numbered specifications (00–10) and the implementation roadmap (*GIZA - 15 Implementation Roadmap*).
+This document is the operational guide for everyone who touches the GIZA repository — AI coding agents (Devin, Claude Code, Copilot, GLM) and human developers alike. It defines *how* development is conducted: the order in which to read specifications and tackle milestones, the workflow an AI agent follows for each task, reusable prompt templates, git and branching conventions, coding standards, testing strategy, review checklists, common mistakes, recovery procedures, a repository map, and an onboarding guide. It does not redefine *what* is built; the *what* lives in the numbered specifications (00–11, 16, 17) and the implementation roadmap (*GIZA - 15 Implementation Roadmap*).
 
 ---
 
 ## Relation to the Specifications
 
-This document is operational and meta-architectural. It complements the numbered specifications; it does not override them. Where this document appears to conflict with any specification 00–10, the numbered specifications prevail (see *GIZA - 00 Master Specification* §9). This document may be extended, but it must never alter the architectural principles, identifier namespaces, coordinate system, or terminology defined in *GIZA - 00 Master Specification* §8 and §10.
+This document is operational and meta-architectural. It complements the numbered specifications; it does not override them. Where this document appears to conflict with any specification 00–11, 16, 17, the numbered specifications prevail (see *GIZA - 00 Master Specification* §9). This document may be extended, but it must never alter the architectural principles, identifier namespaces, coordinate system, or terminology defined in *GIZA - 00 Master Specification* §8 and §10.
 
-The specifications 00–10 are canonical and must not be modified by any developer or AI agent unless explicitly instructed (see *GIZA - 00 Master Specification* §13.1 and `.devin/rules/giza.md`).
+The governance framework — including architecture integrity, design guardrails, specification compliance, quality review, risk management, decision logs, and the definition of done — is defined canonically in *GIZA - 17 AI Development Governance & Engineering Standards*. This playbook implements those governance standards as day-to-day operational procedures. Where this document and *GIZA - 17* appear to conflict, *GIZA - 17* prevails on governance matters.
+
+The specifications 00–11, 16, 17 are canonical and must not be modified by any developer or AI agent unless explicitly instructed (see *GIZA - 00 Master Specification* §13.1 and `.devin/rules/giza.md`).
 
 ---
 
@@ -32,7 +34,7 @@ Read *GIZA - 00 Master Specification* §4 (repository organization) and *GIZA - 
 
 Read *GIZA - 05 Data Architecture*, *GIZA - 08 Evidence Database Specification*, and *GIZA - 09 Sources & Bibliography Standard*. Execute milestone M01 (Core Type System & Schemas). Every downstream milestone depends on these types.
 
-> **Reading order note.** The Hypothesis Framework (spec 11) is a core engine specification and should be read early — after *GIZA - 01 Vision & Scientific Foundation* and before the environment specifications (03, 07). The recommended reading order is: 00 → 01 → 11 → 05 → 08 → 09 → 04 → 02 → 06 → 10 → 03 → 07 → 15 → 99. Spec 11 formalizes the theory-independence principle from 01 §7 into a plugin architecture with predictions and per-hypothesis confidence; reading it before the environment specs ensures that reconstruction work is hypothesis-aware from the start.
+> **Reading order note.** The Hypothesis Framework (spec 11) is a core engine specification and should be read early — after *GIZA - 01 Vision & Scientific Foundation* and before the environment specifications (03, 07). The recommended reading order is: 00 → 01 → 11 → 05 → 08 → 09 → 04 → 02 → 06 → 10 → 03 → 07 → 16 → 17 → 15 → 99. Spec 11 formalizes the theory-independence principle from 01 §7 into a plugin architecture with predictions and per-hypothesis confidence; reading it before the environment specs ensures that reconstruction work is hypothesis-aware from the start. Spec 17 (AI Development Governance) should be read before starting any implementation work, as it defines the governance framework, quality gates, and definition of done.
 
 ### 1.4 Two Parallel Tracks
 
@@ -843,6 +845,7 @@ giza/
 ├── GIZA - 10 Asset Production Pipeline.txt        Asset directory, naming, validation, glTF extras, publishing
 ├── GIZA - 11 Hypothesis Framework.md              Hypothesis framework: plugin architecture, predictions, per-hypothesis confidence, comparison
 ├── GIZA - 16 Hydraulic-Acoustic System Hypothesis Specification.md  First hypothesis plugin: Great Pyramid as coupled hydraulic-acoustic resonator
+├── GIZA - 17 AI Development Governance & Engineering Standards.md  Governance framework, engineering standards, quality gates, definition of done
 ├── GIZA - 15 Implementation Roadmap.md            Milestones M00–M12, tasks, dependency graph, AI-coder prompts
 └── GIZA - 99 Development Playbook.md              This document; operational guide for development
 ```
