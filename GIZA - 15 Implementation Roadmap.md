@@ -4,9 +4,9 @@
 **Status:** Working Specification
 **Last update:** 2026-07-28
 
-This document bridges the GIZA specification set (00–10) to executable work. It decomposes the project into 13 implementation milestones, 199 development tasks, a dependency graph, effort estimates, AI-coder prompts per milestone, a GitHub milestone structure, and a Definition of Done (DoD) for every task.
+This document bridges the GIZA specification set (00–10) to executable work. It decomposes the project into 18 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy.
 
-It is the operational counterpart of the specifications. Where the numbered specifications define *what* and *why*, this document defines *how*, *in what order*, and *when a task is finished*.
+It is the operational counterpart of the specifications. Where the numbered specifications define *what* and *why*, this document defines *how*, *in what order*, and *when a task is finished*. The companion document *GIZA - 99 Development Playbook* defines how development is conducted day to day and should be read alongside this roadmap.
 
 ---
 
@@ -14,7 +14,7 @@ It is the operational counterpart of the specifications. Where the numbered spec
 
 ### 1.1 Milestones
 
-Each milestone is a coherent, shippable unit of work. Milestones are numbered `M00`–`M12`. They follow the specification dependency graph (see *00 Master Specification* §7) so that no milestone depends on a later one.
+Each milestone is a coherent, shippable unit of work. Milestones are numbered `M-1` (repository governance, before any code), `M00`–`M12` (the original twelve), plus fractional insertions `M03.5` (scientific content pipeline), `M06A`/`M06B` (the asset pipeline split into tooling and production), `M06.5` (survey acquisition), and `M08.5` (benchmark scene). They follow the specification dependency graph (see *00 Master Specification* §7) so that no milestone depends on a later one. Fractional numbers are stable; they are never renumbered into integers.
 
 ### 1.2 Tasks
 
@@ -28,8 +28,11 @@ Each task has:
 | `Depends on` | Task IDs that must be completed first |
 | `Spec ref` | Specification section(s) this task implements |
 | `DoD` | Definition of Done — concrete, verifiable acceptance criteria |
+| `DoSD` | Definition of Scientific Done — applies only to tasks producing visible/traceable content (§1.5); otherwise "n/a" |
 
 ### 1.3 Effort Scale
+
+Per-task effort is expressed in two complementary units. **AI-coder metrics** (§1.3.1) are the primary estimate for AI coding agents and are aggregated per milestone in each milestone header and in §7. **Story points** are retained as a secondary, human-facing relative-size indicator.
 
 | Points | Label | Approx. duration |
 | ------: | ----- | ---------------- |
@@ -41,6 +44,29 @@ Each task has:
 | 13 | XXL | 3–4 weeks |
 
 Estimates are for a single focused engineer or AI coding agent. They exclude review wait time.
+
+### 1.3.1 AI-Coder Metrics
+
+Story points describe human effort. They are weak predictors of AI coding-agent cost. Every milestone therefore carries an **AI-coder estimate** block of the form:
+
+| Metric | Unit | Meaning |
+| ------ | ---- | ------- |
+| Files | count | New + materially modified source files |
+| LOC | lines | Net new lines of production code (excluding tests, generated, and fixtures) |
+| Sessions | count | Estimated focused coding sessions for one agent |
+| Context | tokens | Approximate context budget the agent must hold (spec + roadmap + neighboring code) |
+
+Example:
+
+```
+M05 — AI-coder estimate
+  Files:    ~42
+  LOC:      ~6,500
+  Sessions: 4
+  Context:  ~120k tokens
+```
+
+These figures are planning estimates, not budgets. They exist so that an AI agent (or its orchestrator) can decide whether to attempt a milestone in one session, split it, or request a context reset. They are refined as milestones are completed.
 
 ### 1.4 Definition of Done (Global)
 
@@ -54,6 +80,35 @@ Every task, in addition to its specific DoD, must satisfy:
 6. Public APIs and shared types are documented with TSDoc.
 7. No secrets, keys, or credentials are committed.
 8. The change does not modify any existing specification document (00–10).
+9. Documentation is regenerated (see §1.6): API docs, schema docs, and any architecture/developer docs touched by the change are rebuilt and committed.
+10. Where the task produces or modifies a visible 3D element, the Definition of Scientific Done (§1.5) is also satisfied.
+
+### 1.5 Definition of Scientific Done
+
+The global Definition of Done (§1.4) guarantees engineering quality. It does not guarantee scientific traceability. A task that touches any reconstructed object, geometry, material, hotspot, theory overlay, or simulation parameter is **not done** until it also satisfies the Definition of Scientific Done (DoSD):
+
+1. **Evidence linkage.** Every visible object links to at least one `EV-NNNNNN` evidence record (see *08* §1.17).
+2. **Bibliographic linkage.** Every evidence record links to at least one `SRC-NNNNNN` source (see *09*).
+3. **Confidence assigned.** Every object and geometry node carries an explicit confidence score 0–100 propagated through the dependency graph (see *08* §1.8).
+4. **Reviewed.** The underlying evidence has passed scientific review (state `Verified` or `Published` per *08* §1.3); unreviewed evidence is never presented as established.
+5. **Reproducible.** The reconstruction can be regenerated from the linked evidence, sources, and survey data; no geometric claim depends on undocumented manual steps.
+6. **Layer separation respected.** Evidence, reconstruction, interpretation, and simulation remain in their respective layers (see *00* §8.2); no interpretive object appears in Scientific Evidence mode.
+
+A task may be engineering-complete (DoD met) and still be scientifically incomplete (DoSD not met). Such a task is merged behind a feature flag and is not eligible for any release beyond Internal Alpha (see §9) until DoSD is satisfied.
+
+### 1.6 Documentation Generation
+
+Documentation is a build artifact, not a manual deliverable. Because AI agents write most of the code, the documentation must be generated automatically from the code and schemas on every merge to `master`.
+
+| Doc type | Generator | Source | Output |
+| -------- | --------- | ------ | ------ |
+| API reference | TypeDoc | `src/**/*.ts` TSDoc | `docs/api/` |
+| Schema reference | `json-schema-to-md` | Zod schemas in `src/evidence/schemas/` | `docs/schema/` |
+| Architecture docs | MkDocs Material | `docs/architecture/*.md` + Mermaid diagrams | `docs/site/` |
+| Developer docs | MkDocs Material | `AGENTS.md`, `GIZA - 99 Development Playbook.md`, ADRs | `docs/site/` |
+| Data dictionary | custom script | `database/migrations/` + Zod schemas | `docs/data-dictionary.md` |
+
+The generation pipeline is established in M00 (task M00-T12) and wired into CI. Each milestone declares its **Documentation outputs** in its header (the doc surfaces that milestone materially updates). The global DoD (§1.4 item 9) requires regeneration on every merge.
 
 ---
 
@@ -61,76 +116,101 @@ Every task, in addition to its specific DoD, must satisfy:
 
 | Milestone | Title | Depends on | Est. points |
 | --------- | ----- | ---------- | ----------: |
-| M00 | Project Bootstrap & Tooling | — | 21 |
+| M-1 | Repository Governance | — | 13 |
+| M00 | Project Bootstrap & Tooling | M-1 | 21 |
 | M01 | Core Type System & Schemas | M00 | 26 |
 | M02 | Evidence Database Backend | M01 | 34 |
 | M03 | Sources & Bibliography Engine | M01 | 23 |
+| M03.5 | Scientific Content Pipeline | M01, M02, M03 | 21 |
 | M04 | Application Shell & Rendering Foundation | M00 | 25 |
 | M05 | Scene Graph & Coordinate System | M01, M04 | 22 |
-| M06 | Asset Pipeline Tooling | M01, M05 | 24 |
+| M06A | Asset Pipeline Tooling | M01, M05 | 18 |
+| M06.5 | Survey Acquisition & Geometry Validation | M05, M06A | 18 |
+| M06B | Asset Production | M06A, M06.5 | 13 |
 | M07 | Core UI Shell & Navigation Modes | M04, M05 | 28 |
 | M08 | Interaction & Research Tools | M05, M07 | 21 |
-| M09 | Osiris Shaft Reconstruction | M05, M06, M07, M08 | 30 |
+| M08.5 | Benchmark Scene | M04, M05, M06A | 13 |
+| M09 | Osiris Shaft Reconstruction | M05, M06A, M06B, M06.5, M07, M08, M03.5 | 30 |
 | M10 | Simulation Framework MVP | M05, M09 | 26 |
-| M11 | Great Pyramid Reconstruction | M09, M10 | 30 |
+| M11 | Great Pyramid Reconstruction | M09, M10, M06B, M06.5 | 30 |
 | M12 | Polish, Performance, Accessibility & Release | M09, M10, M11 | 18 |
-| **Total** | | | **328** |
+| **Total** | | | **400** |
 
-> The total exceeds the sum of any single critical path because milestones M02/M03 (data backend) and M04–M08 (frontend) run in parallel after M01.
+> The total exceeds the sum of any single critical path because the data/content track (M02, M03, M03.5), the asset/survey track (M06A, M06.5, M06B), and the frontend track (M04–M08, M08.5) run in parallel after M01. M-1 (governance) precedes all code. M06 was split into M06A (tooling) and M06B (production) so that artists can begin producing reusable assets (rocks, limestone, granite, stairs, shafts) long before environment coding finishes.
 
 ---
 
 ## 3. Dependency Graph
 
 ```text
+M-1 Repository Governance
+    │
+    ▼
 M00 Project Bootstrap
     │
     ▼
 M01 Core Type System & Schemas
     │
-    ├──────────────┐
-    ▼              ▼
-M02 Evidence DB  M04 App Shell & Rendering
-    │              │
-    ▼              ▼
-M03 Sources &    M05 Scene Graph & Coords
-Bibliography       │
-    │              ├──────────────┐
-    │              ▼              ▼
-    │            M06 Asset       M07 Core UI &
-    │            Pipeline        Navigation
-    │              │              │
-    │              │              ▼
-    │              │            M08 Interaction &
-    │              │            Research Tools
-    │              │              │
-    │              ▼              ▼
-    │            M09 Osiris Shaft Reconstruction
-    │              │
-    │              ▼
-    │            M10 Simulation Framework MVP
-    │              │
-    │              ▼
-    │            M11 Great Pyramid Reconstruction
-    │              │
-    │              ▼
-    │            M12 Polish, Performance, Release
+    ├─────────────────────────────┐
+    ▼                             ▼
+M02 Evidence DB                M04 App Shell & Rendering
+    │                             │
+    ▼                             ▼
+M03 Sources & Bibliography     M05 Scene Graph & Coords
+    │                             │
+    ▼                             ├──────────────────────────┐
+M03.5 Scientific Content       ▼                          ▼
+Pipeline (evidence +         M06A Asset Pipeline         M07 Core UI &
+source ingestion,            Tooling                     Navigation
+evidence seeding)              │                            │
+    │                          ├──────────┐                 ▼
+    │                          ▼          ▼               M08 Interaction &
+    │                        M06.5       M08.5            Research Tools
+    │                        Survey      Benchmark          │
+    │                        Acquisition Scene               │
+    │                          │                            │
+    │                          ▼                            │
+    │                        M06B Asset Production           │
+    │                          │                            │
+    │                          │   (artists: rocks,         │
+    │                          │    limestone, granite,      │
+    │                          │    stairs, shafts)          │
+    │                          │                            │
+    └──────────────┬───────────┴────────────────────────────┘
+                   ▼
+                 M09 Osiris Shaft Reconstruction
+                   │
+                   ▼
+                 M10 Simulation Framework MVP
+                   │
+                   ▼
+                 M11 Great Pyramid Reconstruction
+                   │
+                   ▼
+                 M12 Polish, Performance, Release
 ```
 
-Critical path: **M00 → M01 → M04 → M05 → M07 → M08 → M09 → M10 → M11 → M12**
+Critical path: **M-1 → M00 → M01 → M04 → M05 → M07 → M08 → M09 → M10 → M11 → M12**
 
-M02 and M03 (data backend) can proceed in parallel with the frontend track (M04–M08) and feed into M09 when the first environment is assembled.
+Three tracks run in parallel after M01:
+
+* **Data & content track:** M02 → M03 → M03.5 (evidence and sources are ingested and ≥100 evidence records seeded before environment coding needs them).
+* **Asset & survey track:** M06A → M06.5 → M06B (tooling first, then survey-derived geometry, then artist production). M06B is deliberately long-running and overlaps the frontend track so that reusable assets exist before M09.
+* **Frontend track:** M04 → M05 → {M07 → M08, M08.5 benchmark}.
+
+M08.5 (Benchmark Scene) isolates rendering, lighting, PBR, water, shaders, and collisions in a fake scene so that rendering bugs are caught before any archaeology is attached.
 
 ---
 
 ## 4. GitHub Milestone Structure
 
-Create 13 GitHub Milestones, one per milestone below. Each task becomes a GitHub Issue labeled with:
+Create 18 GitHub Milestones, one per milestone below. Each task becomes a GitHub Issue labeled with:
 
-* `milestone: MNN`
-* `type: feature` | `type: infra` | `type: tooling` | `type: content` | `type: test`
-* `layer: data` | `layer: rendering` | `layer: ui` | `layer: simulation` | `layer: asset` | `layer: infra`
+* `milestone: MNN` (or `M-1`, `M03.5`, `M06A`, `M06B`, `M06.5`, `M08.5`)
+* `type: feature` | `type: infra` | `type: tooling` | `type: content` | `type: governance` | `type: survey` | `type: test` | `type: docs`
+* `layer: data` | `layer: rendering` | `layer: ui` | `layer: simulation` | `layer: asset` | `layer: survey` | `layer: infra` | `layer: governance` | `layer: docs`
 * `effort: XS` | `effort: S` | `effort: M` | `effort: L` | `effort: XL` | `effort: XXL`
+* `dosd: required` | `dosd: n/a` (whether the Definition of Scientific Done applies)
 
 Issue body template:
 
@@ -138,19 +218,84 @@ Issue body template:
 **Milestone:** MNN
 **Spec ref:** <section>
 **Effort:** <points>
+**AI-coder estimate:** ~<files> files, ~<loc> LOC, <sessions> sessions
 **Depends on:** #<issue>, #<issue>
 
 ## Definition of Done
 - [ ] <criterion 1>
 - [ ] <criterion 2>
 ...
+
+## Definition of Scientific Done (if `dosd: required`)
+- [ ] Evidence linkage (EV-NNNNNN)
+- [ ] Bibliographic linkage (SRC-NNNNNN)
+- [ ] Confidence assigned (0–100)
+- [ ] Reviewed (Verified/Published)
+- [ ] Reproducible from evidence + sources + survey
+- [ ] Layer separation respected
 ```
 
-Recommended branch naming: `mNN-tKK-<slug>`.
+Recommended branch naming: `mNN-tKK-<slug>` (e.g. `m00-t03-eslint`, `m06a-t08-lod`, `m03.5-t02-extract`).
 
 ---
 
 ## 5. Milestone Details
+
+---
+
+### M-1 — Repository Governance
+
+**Goal:** Establish the repository governance framework before any code is written, so that every subsequent AI coding agent and human contributor works from identical standards and cannot silently diverge. This milestone produces no application code; it produces the rules, templates, automation, and decision records that govern all later milestones.
+
+**Spec ref:** 00 §4 (repo organization), 00 §13 (AI agent instructions), 00 §14 (contributor guidance)
+**Depends on:** —
+**Parallelizable with:** — (must complete before M00)
+**Estimate:** 13 points
+**AI-coder estimate:** ~18 files · ~1,200 LOC · 2 sessions · ~40k tokens
+**Documentation outputs:** `docs/governance/` (this milestone's own deliverables), ADR index
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M-1-T01 | Define branching strategy (trunk-based: short-lived `mNN-tKK-<slug>` feature branches off `master`; squash-merge; delete branch on merge; `release/*` and `hotfix/*` branches) | 1 | — | 00 §14.2 | `CONTRIBUTING.md` documents the strategy; a diagram is included |
+| M-1-T02 | Define semantic versioning policy (`MAJOR.MINOR.PATCH`; pre-release identifiers `alpha`/`beta`/`rc`; spec set versioned separately per 00 §3) | 1 | — | 00 §3 | `VERSIONING.md` defines the policy; package.json `version` follows it |
+| M-1-T03 | Adopt Conventional Commits (`feat`/`fix`/`docs`/`refactor`/`test`/`chore`/`infra`/`content`/`governance`; imperative mood; body explains why; footer for breaks and co-authors) | 1 | — | 00 §13.5 | `CONTRIBUTING.md` documents the convention; commitlint enforces it (M-1-T09) |
+| M-1-T04 | Create PR template (`.github/pull_request_template.md`: spec ref, milestone/task IDs, DoD checklist, DoSD checklist when applicable, evidence linkage, no-spec-modification attestation) | 1 | — | 00 §14.2 | Template renders on every PR; checklists present |
+| M-1-T05 | Create issue templates (`.github/ISSUE_TEMPLATE/`: `bug.md`, `feature.md`, `content-evidence.md`, `spec-change.md`, `adr.md`) | 1 | — | 00 §14.3 | Templates appear in the GitHub issue picker |
+| M-1-T06 | Define coding standards document (strict TS, zero `any`, Zod validation, functional React, TSDoc, path aliases, evidence-first, four-layer separation, coordinate/identifier conventions) | 2 | — | 00 §8, §10 | `docs/governance/coding-standards.md` exists; references specs not duplicates |
+| M-1-T07 | Establish Architecture Decision Records (ADRs): `docs/adr/`, `0000-use-adrs.md` template, index `docs/adr/README.md`, ADR-0001 proposing the GIZA-Core / GIZA-Content two-repo split (status: Proposed) | 2 | T06 | 00 §9 | ADR directory and index exist; ADR-0001 committed; ADR format documented |
+| M-1-T08 | Define release tagging (`vX.Y.Z` tags, signed where possible; spec-set tags `spec-vX.Y` per 00 §3) and changelog generation (`CHANGELOG.md` from Conventional Commits via `standard-version` or equivalent) | 1 | T02, T03 | 00 §3 | `CHANGELOG.md` seeded; release script documented |
+| M-1-T09 | Wire governance automation: commitlint + Husky (M00-T11 also installs Husky for lint; here it enforces commit format), PR labeler, stale-issue bot, branch protection recommendations documented in `docs/governance/branch-protection.md` | 2 | T03, T04 | — | A non-Conventional commit is rejected locally; branch protection rules documented |
+| M-1-T10 | Write governance smoke test (CI verifies CHANGELOG regenerated, ADR index in sync, PR template present, no spec files 00–10 modified by a PR) | 1 | T07, T08 | 00 §13.4 | CI job passes; a PR that touches a spec file fails this check |
+
+#### AI-Coder Prompt for M-1
+
+```
+You are setting up repository governance for the GIZA project BEFORE any
+application code exists. Read GIZA - 00 Master Specification.md (§3, §4,
+§8, §9, §13, §14) and GIZA - 99 Development Playbook.md.
+
+Produce the governance framework (no application code):
+- Branching strategy (trunk-based, short-lived feature branches, squash-merge)
+  in CONTRIBUTING.md
+- Semantic versioning policy in VERSIONING.md (app version + separate spec-set
+  version per 00 §3)
+- Conventional Commits convention (scopes incl. governance/content/infra)
+- PR template with DoD + DoSD checklists and a no-spec-modification attestation
+- Issue templates: bug, feature, content-evidence, spec-change, adr
+- Coding standards in docs/governance/coding-standards.md (reference specs,
+  do not duplicate)
+- ADR framework: docs/adr/ with template + index, and ADR-0001 proposing the
+  GIZA-Core / GIZA-Content two-repo split (status: Proposed, not decided)
+- Release tagging + changelog generation from Conventional Commits
+- Governance automation: commitlint, PR labeler, branch-protection doc
+- CI smoke test verifying CHANGELOG, ADR index, PR template, and that no
+  spec file 00–10 is modified by a PR
+
+Do NOT modify any specification document (00–10). Do NOT create application
+source code. Governance files only.
+```
 
 ---
 
@@ -159,9 +304,11 @@ Recommended branch naming: `mNN-tKK-<slug>`.
 **Goal:** Establish the repository, build tooling, CI, folder structure, and developer documentation so that all subsequent milestones start from a clean, typed, tested baseline.
 
 **Spec ref:** 04 §2 (folder structure), 00 §4 (repo organization)
-**Depends on:** —
+**Depends on:** M-1
 **Parallelizable with:** —
 **Estimate:** 21 points
+**AI-coder estimate:** ~25 files · ~2,000 LOC · 3 sessions · ~60k tokens
+**Documentation outputs:** `docs/api/` scaffold, `docs/schema/` scaffold, `docs/site/` (MkDocs), `AGENTS.md`
 
 #### Tasks
 
@@ -178,6 +325,7 @@ Recommended branch naming: `mNN-tKK-<slug>`.
 | M00-T09 | Add Zustand for state management and configure devtools | 1 | T01 | 02 (state) | A sample store works with devtools in dev mode |
 | M00-T10 | Add `AGENTS.md` with build/test/lint commands and conventions | 1 | T06 | — | File exists, lists `npm run dev/build/test/lint/typecheck`, and is referenced in CI |
 | M00-T11 | Add Husky pre-commit hook running lint + typecheck | 2 | T03 | — | A commit with a type error is rejected locally |
+| M00-T12 | Set up documentation generation pipeline (TypeDoc → `docs/api/`; `json-schema-to-md` → `docs/schema/`; MkDocs Material → `docs/site/` ingesting `AGENTS.md`, `GIZA - 99 Development Playbook.md`, ADRs, architecture docs) and add `npm run docs` + CI regeneration job | 2 | T05, T06 | 00 §13 | `npm run docs` builds all four surfaces; CI regenerates and fails on stale docs |
 
 #### AI-Coder Prompt for M00
 
@@ -195,6 +343,10 @@ Bootstrap the project:
 5. Configure GitHub Actions CI running lint, typecheck, test, build.
 6. Add Zustand, path aliases, typed env vars, Husky pre-commit, and an
    AGENTS.md documenting all commands.
+7. Set up the documentation generation pipeline (M00-T12): TypeDoc →
+   docs/api/, json-schema-to-md → docs/schema/, MkDocs Material → docs/site/
+   ingesting AGENTS.md, GIZA - 99 Development Playbook.md, and ADRs. Add
+   `npm run docs` and a CI regeneration job that fails on stale docs.
 
 Constraints:
 - Do NOT modify any existing specification document (00–10).
@@ -213,6 +365,8 @@ Constraints:
 **Depends on:** M00
 **Parallelizable with:** — (everything downstream needs types)
 **Estimate:** 26 points
+**AI-coder estimate:** ~22 files · ~3,200 LOC · 3 sessions · ~90k tokens
+**Documentation outputs:** `docs/schema/` (Zod → markdown), `docs/api/` (schema barrel)
 
 #### Tasks
 
@@ -271,6 +425,8 @@ Do NOT modify any specification document. Do NOT use `any`.
 **Depends on:** M01
 **Parallelizable with:** M04
 **Estimate:** 34 points
+**AI-coder estimate:** ~38 files · ~6,500 LOC · 6 sessions · ~140k tokens
+**Documentation outputs:** `docs/api/` (evidence endpoints), `docs/data-dictionary.md`, `docs/schema/`
 
 #### Tasks
 
@@ -332,6 +488,8 @@ Write integration tests covering the full lifecycle. Do NOT modify specs.
 **Depends on:** M01
 **Parallelizable with:** M02, M04
 **Estimate:** 23 points
+**AI-coder estimate:** ~28 files · ~4,200 LOC · 4 sessions · ~110k tokens
+**Documentation outputs:** `docs/api/` (source endpoints), `docs/schema/` (Source), bibliography style reference
 
 #### Tasks
 
@@ -376,6 +534,89 @@ Write integration tests. Do NOT modify specs.
 
 ---
 
+### M03.5 — Scientific Content Pipeline
+
+**Goal:** Define and operationalize the end-to-end pipeline by which scientific content enters the software. The roadmap describes how to build software; this milestone describes how data enters it. It covers the full chain — PDF paper → evidence extraction → evidence review → evidence ID → object linkage → hotspot creation → simulation parameters → publication — and seeds the evidence database with ≥100 real evidence records before environment coding (M09) needs them. Without this milestone, developers eventually stop because they have no data.
+
+**Spec ref:** 08 §1.3 (lifecycle), §1.20 (import), §1.17 (linking); 09 §1–4 (sources); 05 §-17 (evidence); 01 §5 (evidence classes)
+**Depends on:** M01, M02, M03
+**Parallelizable with:** M04, M05, M06A
+**Estimate:** 21 points
+**AI-coder estimate:** ~30 files · ~4,500 LOC · 5 sessions · ~130k tokens
+**Documentation outputs:** `docs/architecture/content-pipeline.md`, evidence extraction guide, seed dataset manifest
+
+#### Pipeline Stages
+
+```text
+PDF / scan / field report
+        │
+        ▼
+Evidence extraction (structured capture: dimension, photo, observation)
+        │
+        ▼
+Evidence review (submit → assign → revise → approve → publish, per 08 §1.12)
+        │
+        ▼
+Evidence ID assigned (EV-NNNNNN, immutable)
+        │
+        ▼
+Object linkage (EV → OBJ-NNNN, geometry linkage per 08 §1.18)
+        │
+        ▼
+Hotspot creation (3D marker linked to EV, per 04 §6.16)
+        │
+        ▼
+Simulation parameters (where applicable: SIM-NNN with provenance, per 06 §1.6)
+        │
+        ▼
+Publication (evidence Published; object eligible for release beyond Internal Alpha)
+```
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M03.5-T01 | Document the content pipeline end-to-end (the diagram above; per-stage inputs/outputs/roles; published as `docs/architecture/content-pipeline.md`) | 2 | M02, M03 | 08 §1.3 | Document exists; each stage has inputs, outputs, owner role, and acceptance criteria |
+| M03.5-T02 | Build evidence extraction tooling (semi-structured form / CLI that captures: source PDF/ref, evidence class E1–E8, observed value, units, confidence basis, photos, location) and writes a staged evidence JSON | 3 | M01 | 01 §5, 08 §1.6 | Tool produces staged evidence JSON validated by M01 schemas; class E1–E8 enforced |
+| M03.5-T03 | Build PDF/text ingestion helper (extract dimensions, coordinates, and figure references from archaeological papers; assist, not replace, human extraction) | 3 | T02 | 09 §4 | Helper extracts candidate fields from a sample PDF; human confirms before staging |
+| M03.5-T04 | Wire extraction output into the M02 review workflow (staged JSON → submit → review → publish) | 2 | T02, M02-T04 | 08 §1.12 | Extracted evidence enters review workflow; no bypass to Published |
+| M03.5-T05 | Implement object linkage tooling (link EV-NNNNNN to OBJ-NNNN with geometry relation and confidence contribution per *08* §1.18) | 2 | M02-T09, M02-T10 | 08 §1.17, §1.18 | Bidirectional links created; mesh without evidence flagged |
+| M03.5-T06 | Implement hotspot creation tooling (place 3D marker in scene → link to EV → store camera, label, media refs per *04* §6.16) | 2 | M05, M08-T02 | 04 §6.16 | Hotspots placed and linked; clickable; metadata stored |
+| M03.5-T07 | Implement simulation-parameter capture (where evidence feeds a simulation: capture as SIM-NNN parameter with provenance class per *06* §1.6) | 2 | M10 | 06 §1.5, §1.6 | Parameters captured with provenance (Measured/Published/Estimated); linked to EV |
+| M03.5-T08 | Seed the evidence database with ≥100 real evidence records for the Osiris Shaft and Great Pyramid (dimensions, observations, photos from published sources) | 5 | T04, M03 | 08 §1.20 | ≥100 EV records Published or in review; ≥40 sources (SRC) linked; coverage spans Osiris levels and Pyramid chambers |
+| M03.5-T09 | Produce seed dataset manifest (list of seeded EV/SRC, coverage map vs M06.5 survey gaps, published as `docs/architecture/seed-dataset.md`) | 1 | T08 | — | Manifest generated; gaps explicit; drives M09/M11 evidence hotspot scope |
+| M03.5-T10 | Write content-pipeline integration test (extract → review → publish → link to object → hotspot → export) | 2 | T01–T07 | — | End-to-end test passes in CI |
+
+#### AI-Coder Prompt for M03.5
+
+```
+Read GIZA - 08 Evidence Database Specification.txt (§1.3, §1.12, §1.17,
+§1.18, §1.20), GIZA - 09 Sources & Bibliography Standard.txt (§1–4),
+GIZA - 05 Data Architecture.txt (Evidence), and GIZA - 01 Vision &
+Scientific Foundation.txt (§5 evidence classes). Build the scientific
+content pipeline that gets real data into the software.
+
+Build:
+- Content pipeline documentation (PDF → extraction → review → EV ID →
+  object linkage → hotspot → simulation params → publication)
+- Evidence extraction tooling (structured capture, E1–E8, confidence basis)
+- PDF/text ingestion helper (assists extraction from archaeological papers;
+  human confirms)
+- Wire extraction into the M02 review workflow (no bypass to Published)
+- Object linkage tooling (EV ↔ OBJ, geometry relation, confidence)
+- Hotspot creation tooling (3D marker → EV link, per 04 §6.16)
+- Simulation-parameter capture (SIM-NNN with provenance per 06 §1.6)
+- Seed ≥100 real evidence records for Osiris Shaft + Great Pyramid,
+  ≥40 sources linked
+- Seed dataset manifest (coverage vs M06.5 survey gaps)
+- End-to-end integration test
+
+This milestone is what prevents developers from stopping for lack of data.
+Do NOT modify specs.
+```
+
+---
+
 ### M04 — Application Shell & Rendering Foundation
 
 **Goal:** Stand up the React Three Fiber application shell, rendering pipeline, performance monitoring, and debug mode. This is the empty stage on which all environments are built.
@@ -384,6 +625,8 @@ Write integration tests. Do NOT modify specs.
 **Depends on:** M00
 **Parallelizable with:** M01, M02, M03
 **Estimate:** 25 points
+**AI-coder estimate:** ~24 files · ~3,800 LOC · 4 sessions · ~100k tokens
+**Documentation outputs:** `docs/api/` (rendering systems), `docs/architecture/rendering.md`
 
 #### Tasks
 
@@ -434,6 +677,8 @@ Write e2e smoke tests. Do NOT modify specs.
 **Depends on:** M01, M04
 **Parallelizable with:** M02, M03
 **Estimate:** 22 points
+**AI-coder estimate:** ~30 files · ~5,000 LOC · 4 sessions · ~120k tokens
+**Documentation outputs:** `docs/api/` (scene graph), `docs/architecture/coordinates.md`
 
 #### Tasks
 
@@ -473,35 +718,37 @@ Write unit tests. Do NOT modify specs.
 
 ---
 
-### M06 — Asset Pipeline Tooling
+### M06A — Asset Pipeline Tooling
 
-**Goal:** Build the validation, publishing, and metadata tooling that enforces the asset production pipeline. This ensures every glTF entering the scene is validated, budgeted, and linked to evidence.
+**Goal:** Build the validation, publishing, and metadata tooling that enforces the asset production pipeline. This ensures every glTF entering the scene is validated, budgeted, and linked to evidence. M06A is the tooling half of the former M06; it must complete before any asset is produced (M06B) or survey-derived geometry is validated (M06.5).
 
 **Spec ref:** 10 (entire)
 **Depends on:** M01, M05
 **Parallelizable with:** M07
-**Estimate:** 24 points
+**Estimate:** 18 points
+**AI-coder estimate:** ~30 files · ~5,200 LOC · 4 sessions · ~120k tokens
+**Documentation outputs:** `docs/api/` (asset endpoints), `docs/architecture/asset-pipeline.md`, material library reference
 
 #### Tasks
 
 | ID | Title | Effort | Depends on | Spec ref | DoD |
 | -- | ----- | -----: | ---------- | -------- | --- |
-| M06-T01 | Create asset directory structure (`assets/{source,working,master,export,metadata,validation}/...`) | 1 | M00 | 10 §1.3 | Directories exist with READMEs explaining each |
-| M06-T02 | Implement naming convention validator (`<monument>-<location>-<object>-<lod>.glb`, monument codes GP/OS/KF/MK/PL) | 2 | T01 | 10 §1.4 | Validator accepts valid names, rejects invalid; unit tested |
-| M06-T03 | implement mesh budget validator (Hero/Standard/Background × LOD0–3 triangle limits) | 2 | T01 | 10 §1.14 | Validates triangle counts against all 12 budget cells; rejects over-budget |
-| M06-T04 | Implement texel density validator (2048/1024/512/128 px/m by asset class) | 2 | T01 | 10 §1.11 | Validates texel density; reports violations |
-| M06-T05 | Implement glTF export validator (Y up, -Z forward, PBR, KTX2, no cameras/lights, node hierarchy PlateauRoot→MonumentRoot→LocationRoot→ObjectRoot→Mesh) | 3 | T01 | 10 §1.17 | Validates export settings; rejects non-conforming glTFs |
-| M06-T06 | Implement scientific metadata validator (asset.extras.giza with all 13 fields, node.extras.giza with 4 fields) | 2 | T01 | 10 §1.18 | Validates all required metadata fields present; rejects assets missing evidenceIds |
-| M06-T07 | Implement collision mesh validator (`<objectName>_COL`, not rendered, Rapier-compatible) | 2 | T01 | 10 §1.15 | Collision nodes detected and validated; excluded from render |
-| M06-T08 | Implement LOD generation pipeline (LOD0→LOD1→LOD2→LOD3→Billboard) | 5 | T03 | 10 §1.16 | Generates LODs from master mesh; Hausdorff distance within thresholds; UVs preserved where possible |
-| M06-T09 | Implement survey deviation validator (<1cm green, 1–5cm yellow, >5cm red) | 2 | T01 | 10 §1.25 | Compares mesh to survey data; color-coded report; red threshold blocks Verified status |
-| M06-T10 | Implement validation report generator (JSON with checks, warnings, errors, approved) | 2 | T03–T09 | 10 §1.19 | Report contains all check results; errors block publish; warnings allow Editor approval |
-| M06-T11 | Implement publishing pipeline (validate → manifest → copy to export/ → register → tag → update scene registry) | 3 | T10 | 10 §1.20 | Full pipeline runs; manifest with LODs, materials, collision, evidence, confidence, validation report |
-| M06-T12 | Implement asset manifest store and API (`GET /assets`, `/:id`, `/:id/manifest`, `/:id/versions`, `/:id/validation`, `POST /validate`, `/publish`, `/supersede`) | 2 | T11 | 10 §1.27 | Endpoints return typed manifests; supersession retains prior versions |
-| M06-T13 | Implement PBR material library (17 master materials as JSON descriptors) | 2 | M01 | 10 §1.13 | All 17 materials from §1.13 defined as JSON; sample renders for 3 |
-| M06-T14 | Write pipeline integration test (ingest a sample mesh → validate → publish → load in scene) | 2 | T11, T13 | — | End-to-end test passes in CI |
+| M06A-T01 | Create asset directory structure (`assets/{source,working,master,export,metadata,validation}/...`) | 1 | M00 | 10 §1.3 | Directories exist with READMEs explaining each |
+| M06A-T02 | Implement naming convention validator (`<monument>-<location>-<object>-<lod>.glb`, monument codes GP/OS/KF/MK/PL) | 2 | T01 | 10 §1.4 | Validator accepts valid names, rejects invalid; unit tested |
+| M06A-T03 | Implement mesh budget validator (Hero/Standard/Background × LOD0–3 triangle limits) | 2 | T01 | 10 §1.14 | Validates triangle counts against all 12 budget cells; rejects over-budget |
+| M06A-T04 | Implement texel density validator (2048/1024/512/128 px/m by asset class) | 2 | T01 | 10 §1.11 | Validates texel density; reports violations |
+| M06A-T05 | Implement glTF export validator (Y up, -Z forward, PBR, KTX2, no cameras/lights, node hierarchy PlateauRoot→MonumentRoot→LocationRoot→ObjectRoot→Mesh) | 3 | T01 | 10 §1.17 | Validates export settings; rejects non-conforming glTFs |
+| M06A-T06 | Implement scientific metadata validator (asset.extras.giza with all 13 fields, node.extras.giza with 4 fields) | 2 | T01 | 10 §1.18 | Validates all required metadata fields present; rejects assets missing evidenceIds |
+| M06A-T07 | Implement collision mesh validator (`<objectName>_COL`, not rendered, Rapier-compatible) | 2 | T01 | 10 §1.15 | Collision nodes detected and validated; excluded from render |
+| M06A-T08 | Implement LOD generation pipeline (LOD0→LOD1→LOD2→LOD3→Billboard) | 5 | T03 | 10 §1.16 | Generates LODs from master mesh; Hausdorff distance within thresholds; UVs preserved where possible |
+| M06A-T09 | Implement survey deviation validator (<1cm green, 1–5cm yellow, >5cm red) | 2 | T01 | 10 §1.25 | Compares mesh to survey data; color-coded report; red threshold blocks Verified status |
+| M06A-T10 | Implement validation report generator (JSON with checks, warnings, errors, approved) | 2 | T03–T09 | 10 §1.19 | Report contains all check results; errors block publish; warnings allow Editor approval |
+| M06A-T11 | Implement publishing pipeline (validate → manifest → copy to export/ → register → tag → update scene registry) | 3 | T10 | 10 §1.20 | Full pipeline runs; manifest with LODs, materials, collision, evidence, confidence, validation report |
+| M06A-T12 | Implement asset manifest store and API (`GET /assets`, `/:id`, `/:id/manifest`, `/:id/versions`, `/:id/validation`, `POST /validate`, `/publish`, `/supersede`) | 2 | T11 | 10 §1.27 | Endpoints return typed manifests; supersession retains prior versions |
+| M06A-T13 | Implement PBR material library (17 master materials as JSON descriptors) | 2 | M01 | 10 §1.13 | All 17 materials from §1.13 defined as JSON; sample renders for 3 |
+| M06A-T14 | Write pipeline integration test (ingest a sample mesh → validate → publish → load in scene) | 2 | T11, T13 | — | End-to-end test passes in CI |
 
-#### AI-Coder Prompt for M06
+#### AI-Coder Prompt for M06A
 
 ```
 Read GIZA - 10 Asset Production Pipeline.txt in full. Build the asset
@@ -528,14 +775,116 @@ Write an end-to-end integration test. Do NOT modify specs.
 
 ---
 
+### M06.5 — Survey Acquisition & Geometry Validation
+
+**Goal:** Establish where geometry comes from before any environment is built. Acquire, ingest, and validate survey sources (laser scans, photogrammetry, published CAD, manual reconstruction) so that M09 and M11 start from measured geometry rather than magic. This milestone is the bridge between raw survey data and the asset pipeline; it produces no final game-ready assets (that is M06B) but produces the validated reference geometry and coverage map that M06B and the environment milestones consume.
+
+**Spec ref:** 10 §1.21–1.26 (survey integration), 08 §1.18 (geometry linkage), 03 §2.6, 07 §2.6
+**Depends on:** M05, M06A
+**Parallelizable with:** M07, M08
+**Estimate:** 18 points
+**AI-coder estimate:** ~22 files · ~3,800 LOC · 4 sessions · ~110k tokens
+**Documentation outputs:** `docs/architecture/survey-sources.md`, survey coverage map, geometry confidence reference
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M06.5-T01 | Define survey source registry (laser scan, photogrammetry, published CAD, manual reconstruction) with per-source provenance, license, and reliability per *09* | 2 | M06A | 09 §8, 10 §1.21 | Registry stores source type, date, operator, equipment, license, reliability; queryable |
+| M06.5-T02 | Ingest laser scan data (point clouds in `assets/scans/`; E57/LAS/PLY loaders; reference, not render, geometry) | 3 | T01 | 10 §1.22 | Sample scan loads; point cloud visible as reference overlay; metadata captured |
+| M06.5-T03 | Ingest photogrammetry data (mesh + textures in `assets/source/photogrammetry/`; provenance preserved) | 2 | T01 | 10 §1.23 | Sample photogrammetry mesh loads as reference; not retopologized yet |
+| M06.5-T04 | Ingest published CAD and architectural drawings (Petrie, Maragioglio & Rinaldi, Leclant, Dormion, etc.) with scale and datum metadata | 2 | T01 | 09 §8 | Drawings registered to Local Plateau Coordinates; dimensions extractable |
+| M06.5-T05 | Define manual reconstruction workflow for unmeasured elements (documented assumptions, evidence class E7–E8, confidence ≤ 50, never presented as measured) | 2 | T01 | 01 §5, 08 §1.6 | Workflow documented; manual elements flagged `reconstruction: manual` with confidence cap |
+| M06.5-T06 | Implement survey-to-mesh deviation validation (reuse M06A-T09; produce per-mesh deviation report) | 2 | M06A-T09 | 10 §1.25 | Deviation report generated for sample mesh; color-coded; red blocks Verified |
+| M06.5-T07 | Assign geometry confidence from survey source quality (measured > photogrammetry > CAD > manual; propagated per *08* §1.8) | 2 | T01, M02 | 08 §1.8 | Confidence assigned per geometry node; visible in debug mode; propagated |
+| M06.5-T08 | Produce survey coverage map (per monument: measured / inferred / unknown regions; published as `docs/architecture/survey-coverage.md`) | 2 | T02–T05 | — | Coverage map generated; gaps explicit; drives M09/M11 scope |
+| M06.5-T09 | Write survey ingestion integration test (ingest scan + CAD → validate → confidence → coverage map entry) | 1 | T02, T04, T06 | — | Test passes in CI |
+
+#### AI-Coder Prompt for M06.5
+
+```
+Read GIZA - 10 Asset Production Pipeline.txt (§1.21–1.26), GIZA - 08
+Evidence Database Specification.txt (§1.8, §1.18), and GIZA - 09 Sources
+& Bibliography Standard.txt (§8). Establish where geometry comes from.
+
+Build:
+- Survey source registry (laser scan, photogrammetry, published CAD,
+  manual reconstruction) with provenance, license, reliability
+- Laser scan ingestion (point clouds as reference, not render geometry)
+- Photogrammetry ingestion (mesh + textures as reference)
+- Published CAD ingestion (Petrie, Maragioglio & Rinaldi, Dormion, etc.)
+  registered to Local Plateau Coordinates
+- Manual reconstruction workflow (E7–E8, confidence ≤ 50, flagged)
+- Survey-to-mesh deviation validation (reuse M06A-T09)
+- Geometry confidence assignment from source quality, propagated
+- Survey coverage map (measured / inferred / unknown per monument)
+- Integration test
+
+No environment is built here. This milestone produces validated reference
+geometry and a coverage map. Do NOT modify specs.
+```
+
+---
+
+### M06B — Asset Production
+
+**Goal:** Produce the reusable 3D asset libraries that environment milestones (M09, M11) consume. This is the artist-facing half of the former M06, deliberately scheduled so that rocks, limestone, granite, stairs, and shaft components exist long before environment coding finishes. Every produced asset passes through the M06A pipeline and is linked to evidence (DoSD required).
+
+**Spec ref:** 10 (entire), 03 §2 (Osiris materials), 07 §2 (Pyramid materials)
+**Depends on:** M06A, M06.5
+**Parallelizable with:** M07, M08, M08.5
+**Estimate:** 13 points
+**AI-coder estimate:** ~80 asset files · ~1,500 LOC (validators/configs) · 6 sessions (artist + AI) · ~60k tokens
+**Documentation outputs:** asset catalog (`docs/architecture/asset-catalog.md`), material sample sheet
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M06B-T01 | Produce reusable rock and limestone rubble asset set (multiple LODs, PBR, collision) | 2 | M06A, M06.5 | 10 §1.13 | ≥10 rubble variants; all LODs; pass M06A validation; evidence-linked |
+| M06B-T02 | Produce limestone bedrock and strata asset set (modular, tileable, with stratigraphy metadata) | 2 | M06A, M06.5 | 10 §1.13, 03 §2.16 | Bedrock modules tileable; stratigraphy metadata present; validated |
+| M06B-T03 | Produce granite asset set (Aswan red granite, fine-grained variants; for sarcophagi, King's Chamber) | 1 | M06A, M06.5 | 10 §1.13, 07 §2 | ≥4 granite variants; PBR; validated; evidence-linked |
+| M06B-T04 | Produce stair and shaft component asset set (modular stair segments, shaft sections, lintels) | 2 | M06A, M06.5 | 03 §2.9, 07 §2 | Modular components assemble to ≥5m runs; collision present; validated |
+| M06B-T05 | Produce modular architectural components (doorways, corridors, ceiling blocks, corbel elements) | 2 | M06A, M06.5 | 07 §2 | Components modular; validated; evidence-linked |
+| M06B-T06 | Render and publish the 17 master PBR materials as sample asset instances | 1 | M06A-T13 | 10 §1.13 | All 17 materials rendered as samples; published to export/ |
+| M06B-T07 | Validate every produced asset through the M06A pipeline and publish to `assets/export/` | 2 | T01–T05, M06A-T11 | 10 §1.19, §1.20 | 100% of produced assets pass validation; manifests generated; published |
+| M06B-T08 | Link every produced asset to evidence (EV-) and sources (SRC-); assign confidence; satisfy DoSD | 1 | T01–T05, M03.5 | 08 §1.17, §1.18 | Every asset has ≥1 EV and ≥1 SRC; confidence assigned; DoSD met |
+
+#### AI-Coder Prompt for M06B
+
+```
+Read GIZA - 10 Asset Production Pipeline.txt in full and the material
+sections of GIZA - 03 Osiris Shaft Specification.txt (§2) and GIZA - 07
+Great Pyramid Specification.txt (§2). Produce the reusable asset libraries
+that M09 and M11 will consume.
+
+Produce (each asset: PBR, LOD0–3, collision mesh, glTF extras.giza metadata,
+evidence-linked, confidence-assigned):
+- Rock and limestone rubble set (≥10 variants)
+- Limestone bedrock / strata modules (tileable, stratigraphy metadata)
+- Granite set (Aswan red granite, fine-grained, ≥4 variants)
+- Stair and shaft components (modular, assemblable to ≥5m runs)
+- Modular architectural components (doorways, corridors, ceiling blocks,
+  corbel elements)
+- 17 master PBR materials rendered as sample instances
+
+Validate every asset through the M06A pipeline (M06A-T11) and publish to
+assets/export/. Link every asset to ≥1 EV- and ≥1 SRC- and assign confidence
+(Definition of Scientific Done applies). Do NOT modify specs.
+```
+
+---
+
 ### M07 — Core UI Shell & Navigation Modes
 
 **Goal:** Build the application UI shell (top bar, bottom toolbar, left and right panels) and all navigation modes (Explore, Guided, Research, Documentary, Presentation, Educational, Museum, Developer). Mode switching never reloads the scene.
 
 **Spec ref:** 02 (entire)
 **Depends on:** M04, M05
-**Parallelizable with:** M06, M08 (partially)
+**Parallelizable with:** M06A, M06B, M08 (partially)
 **Estimate:** 28 points
+**AI-coder estimate:** ~42 files · ~6,500 LOC · 5 sessions · ~130k tokens
+**Documentation outputs:** `docs/api/` (UI shell, modes), `docs/architecture/ux.md`
 
 #### Tasks
 
@@ -590,6 +939,8 @@ Do NOT modify specs.
 **Depends on:** M05, M07
 **Parallelizable with:** —
 **Estimate:** 21 points
+**AI-coder estimate:** ~30 files · ~4,400 LOC · 4 sessions · ~110k tokens
+**Documentation outputs:** `docs/api/` (interaction tools), `docs/architecture/research-tools.md`
 
 #### Tasks
 
@@ -631,14 +982,65 @@ Write integration tests. Do NOT modify specs.
 
 ---
 
+### M08.5 — Benchmark Scene
+
+**Goal:** Build a fake, archaeology-free scene that exercises the full rendering and interaction stack — lighting, shadows, PBR, water, shaders, collisions, and FPS — in isolation. This isolates rendering bugs from archaeology bugs before M09 attaches any real content. The benchmark scene is retained as a regression target for every subsequent milestone.
+
+**Spec ref:** 04 §6.6–6.12, §6.26, §6.27; 03 §2.12 (water features, applied to a fake pool)
+**Depends on:** M04, M05, M06A
+**Parallelizable with:** M07, M08
+**Estimate:** 13 points
+**AI-coder estimate:** ~24 files · ~3,200 LOC · 3 sessions · ~90k tokens
+**Documentation outputs:** `docs/architecture/benchmark.md`, performance baseline report
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M08.5-T01 | Build a fake scene module (`<BenchmarkScene>`) with a known set of PBR primitives (cubes, spheres, planes, stairs, a shaft, a flooded pool) using M06B reusable assets where available | 2 | M04, M05, M06A | 04 §6.2 | Scene loads; all primitives present; no archaeological claims made |
+| M08.5-T02 | Exercise all 5 lighting layers and 3 light modes (Documentary, Exploration, Scientific Inspection) on the fake scene | 1 | M04-T05, M04-T06 | 04 §6.11, §6.12 | All layers and modes toggleable; no lighting artifacts on primitives |
+| M08.5-T03 | Exercise the PBR material system with the 17 master materials applied to labeled sample blocks | 1 | M06A-T13 | 04 §6.6, 10 §1.13 | All 17 materials render correctly on sample blocks; screenshot sheet generated |
+| M08.5-T04 | Exercise water rendering in the fake pool (planar reflections, SSR, Fresnel, refraction, ripples; configurable elevation/turbidity) | 2 | M04 | 03 §2.12, 04 §6.9 | All water features functional on fake pool; parameters configurable |
+| M08.5-T05 | Exercise shadow strategy (CSM desktop, single map mobile, baked AO distant) on the fake scene | 1 | M04-T06 | 04 §6.12 | Shadows correct on all primitives; no acne/peter-panning |
+| M08.5-T06 | Exercise collisions and physics (Rapier) on the fake scene (walk the stairs, fall into the shaft, collide with walls) | 2 | M04 | 04 §6.23 | Player collides correctly; no clipping through stairs/shaft walls |
+| M08.5-T07 | Establish FPS baseline and capture a performance report (desktop standard/high-end, mobile mid/high-end vs §6.27 budgets) | 2 | M04-T08 | 04 §6.26, §6.27 | Report captured; baseline stored as `docs/architecture/benchmark-baseline.md`; within budget |
+| M08.5-T08 | Write benchmark regression test (load scene, assert FPS ≥ budget, assert no console errors, assert all material/water/light toggles work) | 2 | T01–T07 | — | E2E test passes in CI; runs on every PR affecting rendering |
+
+#### AI-Coder Prompt for M08.5
+
+```
+Read GIZA - 04 Technical Architecture.txt (§6.6–6.12, §6.26, §6.27) and
+GIZA - 03 Osiris Shaft Specification.txt (§2.12 water features). Build a
+fake, archaeology-free benchmark scene that isolates rendering from
+archaeology.
+
+Build <BenchmarkScene> with PBR primitives (cubes, spheres, planes, stairs,
+a shaft, a flooded pool) using M06B reusable assets where available. Then
+exercise, on this fake scene:
+- All 5 lighting layers + 3 light modes (Documentary, Exploration,
+  Scientific Inspection)
+- The 17 master PBR materials on labeled sample blocks (screenshot sheet)
+- Water rendering (planar reflections, SSR, Fresnel, refraction, ripples)
+- Shadow strategy (CSM desktop, single map mobile, baked AO distant)
+- Collisions and physics (walk stairs, fall into shaft, collide with walls)
+- FPS baseline vs §6.27 budgets (desktop standard/high-end, mobile)
+
+Write a benchmark regression e2e test that runs on every PR affecting
+rendering. This scene makes no archaeological claims. Do NOT modify specs.
+```
+
+---
+
 ### M09 — Osiris Shaft Reconstruction
 
 **Goal:** Build the first fully explorable environment — the Osiris Shaft — as the reference implementation for all subsequent environments. Includes all levels, water, island, sarcophagus, conduit, geology, evidence hotspots, and chronology layers.
 
 **Spec ref:** 03 (entire), 04 §6.1–6.10
-**Depends on:** M05, M06, M07, M08
+**Depends on:** M05, M06A, M06B, M06.5, M07, M08, M03.5
 **Parallelizable with:** M02, M03 (backend feeds in)
 **Estimate:** 30 points
+**AI-coder estimate:** ~55 files · ~9,000 LOC · 8 sessions · ~180k tokens
+**Documentation outputs:** `docs/api/` (Osiris scene), `docs/architecture/osiris.md`, evidence hotspot catalog
 
 #### Tasks
 
@@ -712,6 +1114,8 @@ performance budget. Do NOT modify specs.
 **Depends on:** M05, M09
 **Parallelizable with:** M11 (partially)
 **Estimate:** 26 points
+**AI-coder estimate:** ~40 files · ~7,200 LOC · 5 sessions · ~150k tokens
+**Documentation outputs:** `docs/api/` (simulation), `docs/architecture/simulation.md`, parameter provenance reference
 
 #### Tasks
 
@@ -783,9 +1187,11 @@ Do NOT modify specs.
 **Goal:** Build the second fully explorable environment — the Great Pyramid — at monument scale. All chambers, passages, shafts, relieving chambers, theory variants, chronology layers, and the shaft flythrough interaction.
 
 **Spec ref:** 07 (entire)
-**Depends on:** M09, M10
+**Depends on:** M09, M10, M06B, M06.5
 **Parallelizable with:** M12 (partially)
 **Estimate:** 30 points
+**AI-coder estimate:** ~70 files · ~12,000 LOC · 10 sessions · ~220k tokens
+**Documentation outputs:** `docs/api/` (Great Pyramid scene), `docs/architecture/great-pyramid.md`, theory-variant catalog
 
 #### Tasks
 
@@ -813,7 +1219,7 @@ Do NOT modify specs.
 | M11-T20 | Implement interpretive objects (granite plugs in transit, counterweight assemblies, portcullis systems, hydraulic seals, acoustic resonator arrays, internal ramp segments; only visible when theory active; never in Scientific Evidence mode) | 2 | T19 | 07 §2.32 | All objects; visibility tied to theory; hidden in Scientific Evidence |
 | M11-T21 | Seed evidence hotspots (≥12 hotspots from 07 §2.28 priority table with evidence IDs, sources, confidence) | 2 | M08-T02 | 07 §2.28 | ≥12 hotspots; priorities 1–3; all linked to evidence DB |
 | M11-T22 | Implement pyramid-specific lighting (Grand Gallery + King's Chamber bounce lighting; Subterranean dark by default, ambient lift only in Scientific Inspection; shaft interiors unlit, require inspection/robot lights) | 1 | T07, T08 | 07 §2.27 | All pyramid-specific lighting rules enforced |
-| M11-T23 | Implement materials (local limestone, Tura limestone, Aswan granite, basalt, mortar, gypsum, bedrock, modern wood/steel) | 1 | T02 | 07 §2.25 | All materials from M06 library applied correctly |
+| M11-T23 | Implement materials (local limestone, Tura limestone, Aswan granite, basalt, mortar, gypsum, bedrock, modern wood/steel) | 1 | T02 | 07 §2.25 | All materials from M06A library applied correctly |
 | M11-T24 | Implement environmental rendering (dust, salt efflorescence, smoke blackening, roughness variation, micro cracks, airborne dust, humidity gradients; no fantasy tomb elements) | 1 | T01 | 07 §2.26 | All features; no decorative fantasy elements |
 | M11-T25 | Integrate acoustic simulation with King's Chamber and Grand Gallery | 2 | M10, T08 | 07 §2.36 | Acoustic sim runs on chamber geometry; results visualized |
 | M11-T26 | Write Great Pyramid acceptance test (load, traverse all chambers, shaft flythrough, theory switch, chronology toggle, performance budget) | 2 | T01–T25 | — | E2E test passes; performance within desktop budget |
@@ -875,6 +1281,8 @@ Write an acceptance test. Do NOT modify specs.
 **Depends on:** M09, M10, M11
 **Parallelizable with:** —
 **Estimate:** 18 points
+**AI-coder estimate:** ~28 files · ~3,600 LOC · 3 sessions · ~100k tokens
+**Documentation outputs:** `docs/api/` (a11y, i18n, security), `docs/architecture/release.md`, release runbook
 
 #### Tasks
 
@@ -921,15 +1329,17 @@ Do NOT modify specs.
 
 | Layer | Milestones | Task count |
 | ----- | ---------- | ---------: |
-| Infra | M00, M12 | 19 |
+| Governance | M-1 | 10 |
+| Infra | M00, M12 | 20 |
 | Data | M01, M02, M03 | 51 |
-| Rendering | M04, M05 | 17 |
-| Asset | M06 | 14 |
+| Content pipeline | M03.5 | 10 |
+| Rendering | M04, M05, M08.5 | 29 |
+| Asset | M06A, M06B | 22 |
+| Survey | M06.5 | 9 |
 | UI | M07, M08 | 27 |
 | Content/Environment | M09, M11 | 48 |
 | Simulation | M10 | 19 |
-| Polish | M12 | 8 |
-| **Total** | | **199** |
+| **Total** | | **245** |
 
 ---
 
@@ -937,27 +1347,94 @@ Do NOT modify specs.
 
 | Milestone | Points | Approx. engineer-weeks |
 | --------- | -----: | ---------------------: |
+| M-1 | 13 | 2.6 |
 | M00 | 21 | 4.2 |
 | M01 | 26 | 5.2 |
 | M02 | 34 | 6.8 |
 | M03 | 23 | 4.6 |
+| M03.5 | 21 | 4.2 |
 | M04 | 25 | 5.0 |
 | M05 | 22 | 4.4 |
-| M06 | 24 | 4.8 |
+| M06A | 18 | 3.6 |
+| M06.5 | 18 | 3.6 |
+| M06B | 13 | 2.6 |
 | M07 | 28 | 5.6 |
 | M08 | 21 | 4.2 |
+| M08.5 | 13 | 2.6 |
 | M09 | 30 | 6.0 |
 | M10 | 26 | 5.2 |
 | M11 | 30 | 6.0 |
 | M12 | 18 | 3.6 |
-| **Total** | **328** | **65.6** |
+| **Total** | **400** | **80.0** |
 
-With two parallel tracks (data backend M02/M03 and frontend M04–M08), the effective critical-path duration is approximately **40 engineer-weeks** for a single agent, or ~20 weeks with two agents (one per track) plus integration.
+With three parallel tracks after M01 (data/content M02→M03→M03.5; asset/survey M06A→M06.5→M06B; frontend M04→M05→{M07→M08, M08.5}), the effective critical-path duration is approximately **48 engineer-weeks** for a single agent, or ~18 weeks with three agents (one per track) plus integration. M06B (artist production) overlaps the frontend track so that reusable assets exist before M09.
+
+Per-milestone AI-coder estimates (files, LOC, sessions, context) are stated in each milestone header and explained in §1.3.1. They complement story points and are the primary planning figure for AI coding agents.
 
 ---
 
-## 8. Revision History
+## 8. Risk Register
+
+Large scientific projects carry known risks. Each risk has an owner layer, a likelihood, an impact, and a mitigation that maps to a milestone or specification section. Risks are reviewed at every release gate (§9).
+
+| ID | Risk | Likelihood | Impact | Mitigation |
+| -- | ---- | ---------- | ------ | ---------- |
+| R1 | Missing or incomplete laser scans for key chambers | High | High | M06.5 survey coverage map makes gaps explicit; manual reconstruction workflow (M06.5-T05) with confidence ≤ 50; scope M09/M11 to surveyed regions first |
+| R2 | Licensing issues on scans, photos, or museum images | Medium | High | M03-T10 image licensing (11 types); `All Rights Reserved` display-only and excluded from export (09 §1.15); archival URLs required (09 §1.13) |
+| R3 | Unknown / disputed monument dimensions | High | Medium | Theory independence (00 §8.3); theory variants as overlays (07 §2.32); confidence propagation (08 §1.8); conflict records (08 §1.15) never silently resolved |
+| R4 | Browser GPU limits (memory, draw calls, texture budget) | Medium | High | Performance budgets enforced (04 §6.27); adaptive quality manager (M04-T03); LOD + scene streaming (M05); benchmark scene (M08.5) gates rendering before archaeology |
+| R5 | Mobile performance below 30 FPS | High | Medium | Mobile profile in M04-T03; mobile budgets in 04 §6.27; M12-T06 mobile optimization; KTX2 textures (M04-T10) |
+| R6 | Evidence disagreements between scholars | High | Medium | Conflict records with 4 resolution states (08 §1.15); both sides presented; never silently pick one value; theory overlays let users compare |
+| R7 | AI coders silently diverging in style/structure | High | Medium | M-1 Repository Governance (branching, commits, coding standards, ADRs); PR template; CI governance smoke test (M-1-T10) |
+| R8 | Developers blocked for lack of data | High | High | M03.5 Scientific Content Pipeline seeds ≥100 evidence records before M09; seed dataset manifest (M03.5-T09) |
+| R9 | Rendering bugs mistaken for archaeology bugs | Medium | Medium | M08.5 Benchmark Scene isolates rendering in a fake scene; regression test on every rendering PR |
+| R10 | Spec drift / contradictions between specs | Low | High | Conflict resolution rules (00 §9); ADRs (M-1-T07); CI check that no spec 00–10 is modified by a PR (M-1-T10) |
+| R11 | Asset-heavy commits bloat repository history | Medium | Low | Git LFS for scans/models; M06A asset directory structure; ADR-0001 proposes GIZA-Core / GIZA-Content split to isolate asset history |
+| R12 | Fantasy / decorative archaeology elements introduced | Medium | High | Limestone shader "no baked dirt" (M09-T15); environmental rendering "NO fantasy cave elements" (M09-T12); review checklist in *GIZA - 99 Development Playbook* §8 |
+| R13 | Loss of scientific traceability over time | Medium | High | Definition of Scientific Done (§1.5) enforced; evidence linkage required for release beyond Internal Alpha; audit history immutable (08 §1.22) |
+| R14 | Dependency supply-chain compromise | Low | High | Versions pinned, ≥7 days old, no `latest` (M00-T02, M-1-T06); lockfile committed; reviewed on every update |
+
+---
+
+## 9. Release Strategy
+
+The roadmap does not end at a single release. Releases are staged, each with explicit acceptance criteria. A release may ship a subset of milestones; nothing reaches a later stage until its DoSD (§1.5) is satisfied for every visible element it contains.
+
+```text
+Internal Alpha
+      │
+      ▼
+Research Preview
+      │
+      ▼
+Closed Beta
+      │
+      ▼
+Museum Beta
+      │
+      ▼
+Public Release
+      │
+      ▼
+Scientific Release
+```
+
+| Stage | Audience | Content scope | Acceptance criteria |
+| ----- | -------- | ------------- | ------------------- |
+| Internal Alpha | Project team only | M00–M05 + M08.5 benchmark + partial M09 | DoD met; benchmark FPS within budget; no crash on full Osiris traversal; DoSD not required (internal only) |
+| Research Preview | Invited Egyptologists + engineers | M09 Osiris Shaft complete + M02/M03 backend + M03.5 seed data | DoSD met for all visible Osiris elements; ≥10 evidence hotspots linked; scholar feedback round closed |
+| Closed Beta | NDA external researchers | M09 + M10 simulation MVP + partial M11 | DoSD met; hydraulic + acoustic sims validated; performance within desktop budget on reference hardware |
+| Museum Beta | Partner museums (kiosk/Presentation mode) | M09 + M11 + M07 Presentation/Museum modes | DoSD met; museum-mode auto-loop verified; offline scene packages work; accessibility audit passed |
+| Public Release | Open web access | Full M09 + M11 + M12 polish | DoSD met; 60 FPS desktop / 30–45 FPS mobile; localization EN+FR; security model enforced; e2e smoke test green |
+| Scientific Release | Citation-ready | Public Release + exportable evidence/sources + CITATION.cff + DOI | Full export (08 §1.21) validated; bibliography generated in 11 styles; archival URLs present; reproducible from evidence + sources + survey |
+
+Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track the specification version independently (00 §3). Each release produces a changelog entry from Conventional Commits.
+
+---
+
+## 10. Revision History
 
 | Date | Version | Change |
 | ---- | ------- | ------ |
 | 2026-07-28 | 0.1 Draft | Initial roadmap: 13 milestones, ~203 tasks, dependency graph, AI-coder prompts, GitHub structure, DoD |
+| 2026-07-28 | 0.2 Draft | Added M-1 Repository Governance; M03.5 Scientific Content Pipeline (≥100 seeded evidence records); split M06 into M06A (tooling) + M06.5 (survey acquisition) + M06B (asset production); added M08.5 Benchmark Scene; added AI-coder estimates (files/LOC/sessions/context) per milestone; added Definition of Scientific Done (§1.5); added documentation generation strategy (§1.6) and per-milestone Documentation outputs; added Risk Register (§8) and staged Release Strategy (§9); updated dependency graph, task index (245 tasks), and effort summary (400 points). Companion document *GIZA - 99 Development Playbook* added. |

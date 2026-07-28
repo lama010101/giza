@@ -46,12 +46,14 @@ It is intentionally short. Depth lives in the numbered specifications.
 
 | Field             | Value         |
 | ----------------- | ------------- |
-| Specification set | 0.1 Draft     |
-| Document count    | 11 (00–10)    |
+| Specification set | 0.2 Draft     |
+| Document count    | 14 (00–10, 15, 99, ADR-0001) |
 | Status            | Working specification |
 | Last update       | 2026-07-28    |
 
 The specification set is considered a working draft until the first implementation milestone is reached. Until then, documents may be extended but not rewritten without explicit instruction.
+
+The numbered specifications (00–10) define *what* is built. Two operational documents extend them without overriding them: *GIZA - 15 Implementation Roadmap* (how, in what order, when a task is finished) and *GIZA - 99 Development Playbook* (how development is conducted day to day). Architecture decisions are recorded as ADRs under `docs/adr/`.
 
 ---
 
@@ -70,6 +72,12 @@ giza/
 ├── GIZA - 08 Evidence Database Specification.txt
 ├── GIZA - 09 Sources & Bibliography Standard.txt
 ├── GIZA - 10 Asset Production Pipeline.txt
+├── GIZA - 15 Implementation Roadmap.md
+├── GIZA - 99 Development Playbook.md
+├── docs/
+│   └── adr/
+│       ├── README.md
+│       └── 0001-giza-core-content-split.md
 └── .devin/
     ├── config.json
     └── rules/
@@ -84,9 +92,11 @@ GIZA - <NN> <Title>.<ext>
 
 * `NN` is a two-digit zero-padded number.
 * `00` is reserved for this master document.
-* `01`–`99` are specification documents.
-* The master document uses `.md` to distinguish it as the entry point.
-* All other specifications use `.txt` to preserve compatibility with the existing corpus.
+* `01`–`10` are the canonical numbered specifications.
+* `15` is the Implementation Roadmap (operational; bridges specs to executable work).
+* `99` is the Development Playbook (operational; defines how development is conducted).
+* Numbers `11`–`14` and `16`–`98` are reserved for future numbered specifications (see §11).
+* The master document, the roadmap, and the playbook use `.md`; the numbered specifications use `.txt` to preserve compatibility with the existing corpus.
 
 ### Numbering Rules
 
@@ -447,7 +457,6 @@ The following documents are anticipated. Numbers are reserved.
 | 12     | Menkaure Pyramid Specification     | Planned   |
 | 13     | Sphinx Specification               | Planned   |
 | 14     | Causeways and Temples Specification| Planned   |
-| 15     | Plateau Topography Specification   | Planned   |
 | 16     | Construction Sequence Specification| Planned   |
 | 17     | API Specification                  | Planned   |
 | 18     | Localization Specification         | Planned   |
@@ -457,8 +466,11 @@ The following documents are anticipated. Numbers are reserved.
 | 22     | Security Specification             | Planned   |
 | 23     | Deployment Specification           | Planned   |
 | 24     | Testing & QA Specification         | Planned   |
+| 25     | Plateau Topography Specification   | Planned   |
 
-Numbers 25–99 are reserved for future expansion.
+Number `15` is assigned to the *Implementation Roadmap* (operational document, not a numbered specification). Number `99` is assigned to the *Development Playbook* (operational document). Numbers `26`–`98` are reserved for future numbered specifications.
+
+Architecture Decision Records are not numbered specifications; they live under `docs/adr/` and are indexed in `docs/adr/README.md`.
 
 New specifications must:
 
@@ -474,6 +486,7 @@ New specifications must:
 | Version | Date       | Changes                                              |
 | ------- | ---------- | ---------------------------------------------------- |
 | 0.1     | 2026-07-28 | Initial working specification set (00–10)           |
+| 0.2     | 2026-07-28 | Added operational documents: *GIZA - 15 Implementation Roadmap* and *GIZA - 99 Development Playbook*. Added `docs/adr/` with ADR-0001 (GIZA-Core / GIZA-Content split, Proposed). Updated §3 (document count), §4 (repo organization, naming convention), §11 (15 reassigned to roadmap; Plateau Topography moved to 25; 99 reserved for playbook). No numbered specification 01–10 was modified. |
 
 ### Per-Document Revision History
 
@@ -490,15 +503,18 @@ A new row is added when:
 
 # 13. AI Coding Agent Instructions
 
-This section instructs AI coding agents (Devin, Claude, Copilot, and others) working on the repository.
+This section instructs AI coding agents (Devin, Claude, Copilot, GLM, and others) working on the repository. AI agents must also read *GIZA - 99 Development Playbook* before touching the repository; it defines the day-to-day workflow, prompt templates, git workflow, coding conventions, review checklist, common mistakes, and recovery procedures that complement the rules below.
 
 ## 13.1 Repository Rules
 
-* Do **not** rewrite, reorganize, or modify existing specifications unless explicitly instructed.
+* Do **not** rewrite, reorganize, or modify existing specifications (01–10) unless explicitly instructed.
 * Extend the documentation by adding new specifications or new sections to existing specifications only when instructed.
 * Create one file per new specification.
 * Restart chapter numbering from 1 in each new document.
 * Commit each completed specification before proceeding to the next.
+* Follow the implementation roadmap (*GIZA - 15 Implementation Roadmap*) for ordering, milestone definitions, task Definition of Done, and the Definition of Scientific Done for traceable content.
+* Follow the governance framework (milestone M-1): Conventional Commits, trunk-based branching, PR template, and ADRs for any architectural decision not already settled by a specification.
+* Regenerate documentation (`npm run docs`) on every merge; the global Definition of Done requires it.
 
 ## 13.2 Writing Style
 
