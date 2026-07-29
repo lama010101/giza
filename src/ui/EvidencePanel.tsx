@@ -7,6 +7,19 @@ import {
   searchEvidence,
 } from '@/evidence/repository';
 import { useAppStore } from '@/store/app';
+import { osirisBlockout } from '@db/blockouts/osiris-shaft';
+import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
+
+function findBlockoutPosition(objectId: string): {
+  monument: 'osiris' | 'great-pyramid';
+  position: { x: number; y: number; z: number };
+} | null {
+  const osirisNode = osirisBlockout.nodes.find((n) => n.objectId === objectId);
+  if (osirisNode) return { monument: 'osiris', position: osirisNode.position };
+  const gpNode = greatPyramidBlockout.nodes.find((n) => n.objectId === objectId);
+  if (gpNode) return { monument: 'great-pyramid', position: gpNode.position };
+  return null;
+}
 
 export function EvidencePanel(): JSX.Element {
   const [query, setQuery] = useState('');
@@ -22,6 +35,24 @@ export function EvidencePanel(): JSX.Element {
   const panelData = useMemo(() => {
     return selectedEvidenceId ? getEvidencePanelData(selectedEvidenceId) : undefined;
   }, [selectedEvidenceId]);
+
+  const handleEvidenceClick = (evidenceId: string): void => {
+    setSelectedEvidenceId(evidenceId);
+    const data = getEvidencePanelData(evidenceId);
+    if (!data || data.objects.length === 0) return;
+
+    const firstObject = data.objects[0];
+    const blockout = findBlockoutPosition(firstObject.id);
+    if (!blockout) return;
+
+    const { setActiveMonument, setCameraTarget } = useAppStore.getState();
+    const { activeMonument } = useAppStore.getState();
+
+    if (activeMonument !== blockout.monument) {
+      setActiveMonument(blockout.monument);
+    }
+    setCameraTarget(blockout.position);
+  };
 
   return (
     <div className="evidence-panel">
@@ -43,7 +74,7 @@ export function EvidencePanel(): JSX.Element {
                 className="bookmark-chip"
                 onClick={() => {
                   const ev = getEvidenceByObject(objectId)[0];
-                  if (ev) setSelectedEvidenceId(ev.id);
+                  if (ev) handleEvidenceClick(ev.id);
                 }}
               >
                 {obj?.name ?? objectId}
@@ -55,7 +86,7 @@ export function EvidencePanel(): JSX.Element {
       <ul className="evidence-list">
         {evidenceList.map((ev) => (
           <li key={ev.id} className={selectedEvidenceId === ev.id ? 'selected' : ''}>
-            <button type="button" onClick={() => setSelectedEvidenceId(ev.id)}>
+            <button type="button" onClick={() => handleEvidenceClick(ev.id)}>
               {ev.title}
             </button>
           </li>

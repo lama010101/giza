@@ -299,6 +299,30 @@ body,
   border-color: #3b82f6;
 }
 
+.monument-selector {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+}
+
+.monument-selector button {
+  padding: 0.35rem 0.9rem;
+  background: rgba(26, 26, 26, 0.9);
+  color: #e0e0e0;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.monument-selector button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
 .camera-hint {
   padding: 0.35rem 0.6rem;
   background: rgba(20, 20, 20, 0.85);

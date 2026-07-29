@@ -8,6 +8,13 @@ const LAYER_LABELS: Record<SceneLayer, string> = {
   'level-2': 'Level 2 (Chamber B)',
   'level-3': 'Level 3 (Chamber I)',
   monument: 'Monument',
+  exterior: 'Exterior',
+  passages: 'Passages',
+  subterranean: 'Subterranean',
+  gallery: 'Grand Gallery',
+  'kings-complex': "King's Complex",
+  'queens-complex': "Queen's Complex",
+  relieving: 'Relieving Chambers',
 };
 
 export function LayerPanel(): JSX.Element {

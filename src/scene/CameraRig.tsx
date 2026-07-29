@@ -111,6 +111,7 @@ function FlyControls(): JSX.Element {
 function TeleportControls(): JSX.Element {
   const { camera, gl } = useThree();
   const setCameraMode = useAppStore((s) => s.setCameraMode);
+  const cameraTarget = useAppStore((s) => s.cameraTarget);
 
   useEffect(() => {
     const handleDoubleClick = (event: MouseEvent): void => {
@@ -138,15 +139,16 @@ function TeleportControls(): JSX.Element {
     };
   }, [camera, gl, setCameraMode]);
 
-  return <OrbitControls makeDefault target={[0, -15, 2]} />;
+  return <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />;
 }
 
 export function CameraRig(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
+  const cameraTarget = useAppStore((s) => s.cameraTarget);
 
   if (cameraMode === 'walk') return <WalkControls />;
   if (cameraMode === 'fly') return <FlyControls />;
   if (cameraMode === 'teleport') return <TeleportControls />;
 
-  return <OrbitControls makeDefault target={[0, -15, 2]} />;
+  return <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />;
 }

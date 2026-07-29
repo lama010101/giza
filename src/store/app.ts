@@ -13,12 +13,27 @@ export type AppMode =
   | 'Developer';
 
 export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
+export type Monument = 'osiris' | 'great-pyramid';
 
-export const SCENE_LAYERS = ['shafts', 'level-1', 'level-2', 'level-3', 'monument'] as const;
+export const SCENE_LAYERS = [
+  'shafts',
+  'level-1',
+  'level-2',
+  'level-3',
+  'monument',
+  'exterior',
+  'passages',
+  'subterranean',
+  'gallery',
+  'kings-complex',
+  'queens-complex',
+  'relieving',
+] as const;
 export type SceneLayer = (typeof SCENE_LAYERS)[number];
 
 interface AppState {
   mode: AppMode;
+  activeMonument: Monument;
   activeHypothesisIds: string[];
   activeLocationId: string | null;
   selectedEvidenceId: string | null;
@@ -29,9 +44,12 @@ interface AppState {
   measurementEnd: Vector3 | null;
   bookmarkedObjectIds: string[];
   cameraMode: CameraMode;
+  cameraTarget: Vector3;
   hiddenLayers: SceneLayer[];
   setMode: (mode: AppMode) => void;
+  setActiveMonument: (monument: Monument) => void;
   setCameraMode: (mode: CameraMode) => void;
+  setCameraTarget: (target: Vector3) => void;
   toggleLayer: (layer: SceneLayer) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
@@ -48,6 +66,7 @@ export const useAppStore = create<AppState>()(
   devtools(
     (set) => ({
       mode: 'Explore',
+      activeMonument: 'osiris',
       activeHypothesisIds: [],
       activeLocationId: null,
       selectedEvidenceId: null,
@@ -58,9 +77,12 @@ export const useAppStore = create<AppState>()(
       measurementEnd: null,
       bookmarkedObjectIds: [],
       cameraMode: 'orbit',
+      cameraTarget: { x: 0, y: -15, z: 2 },
       hiddenLayers: [],
       setMode: (mode) => set({ mode }),
+      setActiveMonument: (activeMonument) => set({ activeMonument }),
       setCameraMode: (cameraMode) => set({ cameraMode }),
+      setCameraTarget: (cameraTarget) => set({ cameraTarget }),
       toggleLayer: (layer) =>
         set((state) => ({
           hiddenLayers: state.hiddenLayers.includes(layer)
