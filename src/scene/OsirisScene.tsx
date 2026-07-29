@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import type { BlockoutNode } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -9,6 +8,8 @@ import { useAppStore } from '@/store/app';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
+import { CameraRig } from './CameraRig';
+import { WaterPlane } from './WaterPlane';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
 interface BlockoutMeshProps {
@@ -89,6 +90,8 @@ export function OsirisScene(): JSX.Element {
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
+  const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
+
   const activeRules: VisualizationRule[] = [];
   if (activeHypothesisIds.length > 0) {
     const context = getDefaultHypothesisContext();
@@ -114,13 +117,14 @@ export function OsirisScene(): JSX.Element {
 
   return (
     <Canvas camera={{ position: [16, -6, 22], fov: 55 }}>
-      <OrbitControls makeDefault target={[0, -15, 2]} />
+      <CameraRig />
       <color attach="background" args={['#0f0f0f']} />
       <ambientLight intensity={0.7} />
       <directionalLight position={[12, 20, 8]} intensity={1.2} />
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}
+      {hydraulicActive && <WaterPlane />}
       {measurementStart && <MeasurementMarker point={measurementStart} />}
       {measurementEnd && <MeasurementMarker point={measurementEnd} />}
     </Canvas>

@@ -47,3 +47,28 @@ describe('useAppStore measurement', () => {
     expect(useAppStore.getState().bookmarkedObjectIds).toEqual([]);
   });
 });
+
+describe('useAppStore camera mode', () => {
+  beforeEach(() => {
+    useAppStore.setState({ cameraMode: 'orbit' });
+  });
+
+  it('defaults to orbit camera mode', () => {
+    expect(useAppStore.getState().cameraMode).toBe('orbit');
+  });
+
+  it('sets camera mode to walk', () => {
+    useAppStore.getState().setCameraMode('walk');
+    expect(useAppStore.getState().cameraMode).toBe('walk');
+  });
+
+  it('sets camera mode to fly', () => {
+    useAppStore.getState().setCameraMode('fly');
+    expect(useAppStore.getState().cameraMode).toBe('fly');
+  });
+
+  it('sets camera mode to teleport', () => {
+    useAppStore.getState().setCameraMode('teleport');
+    expect(useAppStore.getState().cameraMode).toBe('teleport');
+  });
+});

@@ -12,6 +12,8 @@ export type AppMode =
   | 'Museum'
   | 'Developer';
 
+export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
+
 interface AppState {
   mode: AppMode;
   activeHypothesisIds: string[];
@@ -23,7 +25,9 @@ interface AppState {
   measurementStart: Vector3 | null;
   measurementEnd: Vector3 | null;
   bookmarkedObjectIds: string[];
+  cameraMode: CameraMode;
   setMode: (mode: AppMode) => void;
+  setCameraMode: (mode: CameraMode) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -48,7 +52,9 @@ export const useAppStore = create<AppState>()(
       measurementStart: null,
       measurementEnd: null,
       bookmarkedObjectIds: [],
+      cameraMode: 'orbit',
       setMode: (mode) => set({ mode }),
+      setCameraMode: (cameraMode) => set({ cameraMode }),
       setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
       setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
       setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),

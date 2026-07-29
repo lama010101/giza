@@ -274,3 +274,102 @@ body,
   font-size: 0.85rem;
   line-height: 1.4;
 }
+
+.camera-controls {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.camera-controls button {
+  padding: 0.35rem 0.7rem;
+  background: rgba(26, 26, 26, 0.9);
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.camera-controls button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.camera-hint {
+  padding: 0.35rem 0.6rem;
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid #2a2a2a;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  color: #9a9a9a;
+}
+
+.sim-panel {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  width: 260px;
+  padding: 1rem;
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid #2a2a2a;
+  border-radius: 0.375rem;
+}
+
+.sim-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sim-panel label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  color: #b0b0b0;
+}
+
+.sim-panel input[type='range'] {
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.sim-panel .sim-value {
+  font-variant-numeric: tabular-nums;
+  color: #60a5fa;
+  min-width: 3rem;
+  text-align: right;
+}
+
+.sim-panel .sim-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.sim-panel .sim-buttons button {
+  flex: 1;
+  padding: 0.4rem;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.sim-panel .sim-buttons button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.sim-panel .sim-status {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #9a9a9a;
+}
