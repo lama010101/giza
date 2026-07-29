@@ -8,12 +8,14 @@ export function LightingPanel(): JSX.Element {
   const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
   const directionalAzimuth = useLightingStore((s) => s.directionalAzimuth);
   const directionalElevation = useLightingStore((s) => s.directionalElevation);
+  const localIntensity = useLightingStore((s) => s.localIntensity);
   const background = useLightingStore((s) => s.background);
 
   const setAmbientIntensity = useLightingStore((s) => s.setAmbientIntensity);
   const setDirectionalIntensity = useLightingStore((s) => s.setDirectionalIntensity);
   const setDirectionalAzimuth = useLightingStore((s) => s.setDirectionalAzimuth);
   const setDirectionalElevation = useLightingStore((s) => s.setDirectionalElevation);
+  const setLocalIntensity = useLightingStore((s) => s.setLocalIntensity);
   const setBackground = useLightingStore((s) => s.setBackground);
   const reset = useLightingStore((s) => s.reset);
 
@@ -80,6 +82,19 @@ export function LightingPanel(): JSX.Element {
               onChange={(e) => setDirectionalElevation(parseFloat(e.target.value))}
             />
             <span className="sim-value">{directionalElevation}°</span>
+          </label>
+
+          <label>
+            Local
+            <input
+              type="range"
+              min="0"
+              max="3"
+              step="0.05"
+              value={localIntensity}
+              onChange={(e) => setLocalIntensity(parseFloat(e.target.value))}
+            />
+            <span className="sim-value">{localIntensity.toFixed(2)}</span>
           </label>
 
           <label>

@@ -13,6 +13,16 @@ import { CameraRig } from './CameraRig';
 import { WaterPlane } from './WaterPlane';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
+const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
+  shafts: { metalness: 0.05, roughness: 0.9 },
+  'level-1': { metalness: 0.1, roughness: 0.8 },
+  'level-2': { metalness: 0.1, roughness: 0.8 },
+  'level-3': { metalness: 0.15, roughness: 0.75 },
+  monument: { metalness: 0.1, roughness: 0.85 },
+};
+
+const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter((n) => n.layer.startsWith('level-'));
+
 interface BlockoutMeshProps {
   node: SceneNodeWithWorld;
   block: BlockoutNode;
@@ -53,6 +63,8 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
     document.body.style.cursor = 'auto';
   };
 
+  const pbr = LAYER_PBR[block.layer] ?? { metalness: 0.1, roughness: 0.85 };
+
   return (
     <mesh
       position={[position.x, position.y, position.z]}
@@ -66,8 +78,8 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
-        metalness={0.1}
-        roughness={0.85}
+        metalness={pbr.metalness}
+        roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
         emissiveIntensity={hovered ? 0.35 : 0}
       />
@@ -88,6 +100,7 @@ export function OsirisScene(): JSX.Element {
   const graph = useMemo(() => buildOsirisSceneGraph(), []);
   const blocks = useMemo(() => new Map(osirisBlockout.nodes.map((n) => [n.id, n])), []);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
+  const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
@@ -95,6 +108,7 @@ export function OsirisScene(): JSX.Element {
   const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
   const directionalAzimuth = useLightingStore((s) => s.directionalAzimuth);
   const directionalElevation = useLightingStore((s) => s.directionalElevation);
+  const localIntensity = useLightingStore((s) => s.localIntensity);
   const background = useLightingStore((s) => s.background);
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
@@ -113,6 +127,10 @@ export function OsirisScene(): JSX.Element {
   const visibleNodes = graph
     .getAllVisibleNodes()
     .filter((node) => blocks.has(node.id))
+    .filter((node) => {
+      const block = blocks.get(node.id)!;
+      return !hiddenLayers.includes(block.layer as never);
+    })
     .map((node) => {
       const block = blocks.get(node.id)!;
       const rule = block.overlay
@@ -139,6 +157,16 @@ export function OsirisScene(): JSX.Element {
         ]}
         intensity={directionalIntensity}
       />
+      {CHAMBER_LIGHT_NODES.map((node) => (
+        <pointLight
+          key={`light-${node.id}`}
+          position={[node.position.x, node.position.y + node.size.y / 2 + 0.5, node.position.z]}
+          intensity={localIntensity}
+          distance={12}
+          decay={1.5}
+          color="#ffe4b5"
+        />
+      ))}
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}

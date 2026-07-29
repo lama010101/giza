@@ -3,6 +3,7 @@ import { useAppStore } from '@/store/app';
 import type { CameraMode } from '@/store/app';
 import { SimulationPanel } from '@/ui/SimulationPanel';
 import { LightingPanel } from '@/ui/LightingPanel';
+import { LayerPanel } from '@/ui/LayerPanel';
 import { OsirisScene } from './OsirisScene';
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
@@ -79,6 +80,7 @@ export function Viewport(): JSX.Element {
         )}
       </div>
       <LightingPanel />
+      <LayerPanel />
       <SimulationPanel />
     </div>
   );

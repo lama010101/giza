@@ -72,3 +72,30 @@ describe('useAppStore camera mode', () => {
     expect(useAppStore.getState().cameraMode).toBe('teleport');
   });
 });
+
+describe('useAppStore layer visibility', () => {
+  beforeEach(() => {
+    useAppStore.setState({ hiddenLayers: [] });
+  });
+
+  it('starts with no hidden layers', () => {
+    expect(useAppStore.getState().hiddenLayers).toEqual([]);
+  });
+
+  it('toggles a layer on (hidden)', () => {
+    useAppStore.getState().toggleLayer('shafts');
+    expect(useAppStore.getState().hiddenLayers).toEqual(['shafts']);
+  });
+
+  it('toggles a layer off (visible again)', () => {
+    useAppStore.getState().toggleLayer('level-3');
+    useAppStore.getState().toggleLayer('level-3');
+    expect(useAppStore.getState().hiddenLayers).toEqual([]);
+  });
+
+  it('can hide multiple layers', () => {
+    useAppStore.getState().toggleLayer('shafts');
+    useAppStore.getState().toggleLayer('level-1');
+    expect(useAppStore.getState().hiddenLayers).toEqual(['shafts', 'level-1']);
+  });
+});

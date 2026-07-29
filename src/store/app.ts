@@ -14,6 +14,9 @@ export type AppMode =
 
 export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
 
+export const SCENE_LAYERS = ['shafts', 'level-1', 'level-2', 'level-3', 'monument'] as const;
+export type SceneLayer = (typeof SCENE_LAYERS)[number];
+
 interface AppState {
   mode: AppMode;
   activeHypothesisIds: string[];
@@ -26,8 +29,10 @@ interface AppState {
   measurementEnd: Vector3 | null;
   bookmarkedObjectIds: string[];
   cameraMode: CameraMode;
+  hiddenLayers: SceneLayer[];
   setMode: (mode: AppMode) => void;
   setCameraMode: (mode: CameraMode) => void;
+  toggleLayer: (layer: SceneLayer) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -53,8 +58,15 @@ export const useAppStore = create<AppState>()(
       measurementEnd: null,
       bookmarkedObjectIds: [],
       cameraMode: 'orbit',
+      hiddenLayers: [],
       setMode: (mode) => set({ mode }),
       setCameraMode: (cameraMode) => set({ cameraMode }),
+      toggleLayer: (layer) =>
+        set((state) => ({
+          hiddenLayers: state.hiddenLayers.includes(layer)
+            ? state.hiddenLayers.filter((l) => l !== layer)
+            : [...state.hiddenLayers, layer],
+        })),
       setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
       setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
       setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
