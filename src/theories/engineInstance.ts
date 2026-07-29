@@ -10,6 +10,7 @@ import {
   osirisMainstreamPlugin,
   gpHydraulicPlugin,
   gpMainstreamPlugin,
+  gpHydraulicAcousticPlugin,
 } from './plugins';
 import type { HypothesisContext } from './types';
 
@@ -18,6 +19,7 @@ hypothesisEngine.register(osirisHydraulicPlugin);
 hypothesisEngine.register(osirisMainstreamPlugin);
 hypothesisEngine.register(gpHydraulicPlugin);
 hypothesisEngine.register(gpMainstreamPlugin);
+hypothesisEngine.register(gpHydraulicAcousticPlugin);
 
 export function getDefaultHypothesisContext(): HypothesisContext {
   return {
