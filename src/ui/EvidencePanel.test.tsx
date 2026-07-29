@@ -1,8 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { useAppStore } from '@/store/app';
 import { EvidencePanel } from './EvidencePanel';
 
 describe('EvidencePanel', () => {
+  beforeEach(() => {
+    useAppStore.setState({ selectedEvidenceId: null, bookmarkedObjectIds: [] });
+  });
   it('renders evidence list and search input', () => {
     render(<EvidencePanel />);
     expect(screen.getByPlaceholderText('Search evidence...')).toBeInTheDocument();
@@ -22,5 +26,18 @@ describe('EvidencePanel', () => {
     render(<EvidencePanel />);
     fireEvent.click(screen.getByText('Shaft A entrance cross-section and depth'));
     expect(screen.getByText(/Entrance opening approximately/i)).toBeInTheDocument();
+  });
+
+  it('bookmarks an object and re-selects its evidence via the chip', () => {
+    render(<EvidencePanel />);
+    fireEvent.click(screen.getByText('Basalt sarcophagus dimensions'));
+    fireEvent.click(screen.getByLabelText('Bookmark Basalt Sarcophagus'));
+
+    expect(useAppStore.getState().bookmarkedObjectIds).toContain('OBJ-0008');
+
+    const chip = screen.getByRole('button', { name: 'Basalt Sarcophagus' });
+    useAppStore.setState({ selectedEvidenceId: null });
+    fireEvent.click(chip);
+    expect(useAppStore.getState().selectedEvidenceId).toBe('EV-000008');
   });
 });

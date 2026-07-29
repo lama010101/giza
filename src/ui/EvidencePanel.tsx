@@ -1,10 +1,19 @@
 import { useMemo, useState } from 'react';
-import { getAllEvidence, getEvidencePanelData, searchEvidence } from '@/evidence/repository';
+import {
+  getAllEvidence,
+  getEvidenceByObject,
+  getEvidencePanelData,
+  getObjectById,
+  searchEvidence,
+} from '@/evidence/repository';
 import { useAppStore } from '@/store/app';
 
 export function EvidencePanel(): JSX.Element {
   const [query, setQuery] = useState('');
-  const { selectedEvidenceId, setSelectedEvidenceId } = useAppStore();
+  const selectedEvidenceId = useAppStore((s) => s.selectedEvidenceId);
+  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
+  const bookmarkedObjectIds = useAppStore((s) => s.bookmarkedObjectIds);
+  const toggleBookmarkedObject = useAppStore((s) => s.toggleBookmarkedObject);
 
   const evidenceList = useMemo(() => {
     return query ? searchEvidence(query) : getAllEvidence();
@@ -23,6 +32,26 @@ export function EvidencePanel(): JSX.Element {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+      {bookmarkedObjectIds.length > 0 && (
+        <div className="bookmark-list">
+          {bookmarkedObjectIds.map((objectId) => {
+            const obj = getObjectById(objectId);
+            return (
+              <button
+                key={objectId}
+                type="button"
+                className="bookmark-chip"
+                onClick={() => {
+                  const ev = getEvidenceByObject(objectId)[0];
+                  if (ev) setSelectedEvidenceId(ev.id);
+                }}
+              >
+                {obj?.name ?? objectId}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <ul className="evidence-list">
         {evidenceList.map((ev) => (
           <li key={ev.id} className={selectedEvidenceId === ev.id ? 'selected' : ''}>
@@ -44,7 +73,22 @@ export function EvidencePanel(): JSX.Element {
             {panelData.sources.map((s) => s.title).join(', ') || 'Unknown'}
           </p>
           <p>
-            <strong>Object(s):</strong> {panelData.objects.map((o) => o.name).join(', ') || 'None'}
+            <strong>Object(s):</strong>{' '}
+            {panelData.objects.length === 0
+              ? 'None'
+              : panelData.objects.map((o) => (
+                  <span key={o.id} className="object-bookmark">
+                    {o.name}
+                    <button
+                      type="button"
+                      aria-label={`Bookmark ${o.name}`}
+                      aria-pressed={bookmarkedObjectIds.includes(o.id)}
+                      onClick={() => toggleBookmarkedObject(o.id)}
+                    >
+                      {bookmarkedObjectIds.includes(o.id) ? '★' : '☆'}
+                    </button>
+                  </span>
+                ))}
           </p>
         </div>
       )}

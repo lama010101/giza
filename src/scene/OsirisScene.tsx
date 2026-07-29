@@ -7,6 +7,7 @@ import type { BlockoutNode } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
 import { useAppStore } from '@/store/app';
 import type { VisualizationRule } from '@/schemas/hypothesis';
+import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
@@ -24,8 +25,15 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
   const color = rule?.color ?? block.color;
   const opacity = rule?.opacity ?? block.opacity ?? 1;
 
+  const measurementMode = useAppStore((s) => s.measurementMode);
+  const addMeasurementPoint = useAppStore((s) => s.addMeasurementPoint);
+
   const handleClick = (event: ThreeEvent<MouseEvent>): void => {
     event.stopPropagation();
+    if (measurementMode) {
+      addMeasurementPoint({ x: event.point.x, y: event.point.y, z: event.point.z });
+      return;
+    }
     const evidenceId = node.metadata.evidenceIds?.[0];
     if (evidenceId) {
       setSelectedEvidenceId(evidenceId);
@@ -65,10 +73,21 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
   );
 }
 
+function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
+  return (
+    <mesh position={[point.x, point.y, point.z]}>
+      <sphereGeometry args={[0.12, 16, 16]} />
+      <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.6} />
+    </mesh>
+  );
+}
+
 export function OsirisScene(): JSX.Element {
   const graph = useMemo(() => buildOsirisSceneGraph(), []);
   const blocks = useMemo(() => new Map(osirisBlockout.nodes.map((n) => [n.id, n])), []);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
+  const measurementStart = useAppStore((s) => s.measurementStart);
+  const measurementEnd = useAppStore((s) => s.measurementEnd);
 
   const activeRules: VisualizationRule[] = [];
   if (activeHypothesisIds.length > 0) {
@@ -102,6 +121,8 @@ export function OsirisScene(): JSX.Element {
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}
+      {measurementStart && <MeasurementMarker point={measurementStart} />}
+      {measurementEnd && <MeasurementMarker point={measurementEnd} />}
     </Canvas>
   );
 }
