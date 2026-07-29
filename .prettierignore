@@ -1,0 +1,10 @@
+# Build artifacts and dependencies
+node_modules
+dist
+coverage
+package-lock.json
+
+# Existing documentation, specifications, and runtime rules
+# Formatting these would create unrelated diffs and may touch protected spec files.
+docs
+.devin

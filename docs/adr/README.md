@@ -24,7 +24,9 @@ Each ADR file is named `NNNN-<kebab-case-title>.md`, zero-padded, monotonically 
 
 | Number | Title | Status |
 | ------ | ----- | ------ |
-| 0001 | GIZA-Core / GIZA-Content two-repository split | Proposed |
+| 0001 | GIZA-Core / GIZA-Content two-repository split | Accepted |
+| 0002 | Scoped MVP Roadmap — Three-Phase Delivery | Accepted |
+| 0003 | Lean MVP Split — Phase 1a / Phase 1b | Accepted |
 
 ## Relation to the Specifications
 

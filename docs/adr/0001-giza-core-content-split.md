@@ -1,6 +1,6 @@
 # ADR-0001: GIZA-Core / GIZA-Content two-repository split
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-28
 **Deciders:** Project maintainer (pending review)
 **Supersedes:** —
@@ -77,11 +77,10 @@ The two repositories are linked by:
 
 ## Status
 
-This ADR is **Proposed**. It is recorded here per *GIZA - 15 Implementation Roadmap* milestone M-1 (Repository Governance), task M-1-T07. It does **not** authorize any repository split or any modification to *GIZA - 00 Master Specification* §4. The split, if accepted, will be enacted only after:
+This ADR is **Accepted** per the CTO decision recorded in ADR-0002 (2026-07-28). The repository split will be enacted when:
 
 1. the engine reaches Internal Alpha (§9),
-2. this ADR is moved to **Accepted** by editorial decision,
-3. *GIZA - 00 Master Specification* §4 (Repository Organization) is explicitly revised to describe the two-repository structure, and
-4. a migration plan is committed as a follow-up ADR.
+2. *GIZA - 00 Master Specification* §4 (Repository Organization) is explicitly revised to describe the two-repository structure, and
+3. a migration plan is committed as a follow-up ADR.
 
-Until then, the project remains a single repository as defined in *GIZA - 00 Master Specification* §4.
+Until Internal Alpha, the project remains a single repository as defined in *GIZA - 00 Master Specification* §4.
