@@ -1,11 +1,12 @@
-import { loadAndValidateSeed } from '@/loaders/seed';
+import { evidenceStore, type CreateEvidenceInput, type UpdateEvidenceInput } from './EvidenceStore';
 import { computeObjectConfidence } from './confidence';
 import type { Evidence } from '@/schemas/evidence';
 import type { Location } from '@/schemas/location';
 import type { SceneObject } from '@/schemas/object';
 import type { Source } from '@/schemas/source';
 
-const seed = loadAndValidateSeed();
+export type { CreateEvidenceInput, UpdateEvidenceInput };
+export { evidenceStore } from './EvidenceStore';
 
 export interface EvidencePanelData {
   evidence: Evidence;
@@ -26,42 +27,53 @@ export interface SearchFilters {
   sourceId?: string;
 }
 
+export function createEvidence(input: CreateEvidenceInput): Evidence {
+  return evidenceStore.create(input);
+}
+
+export function updateEvidence(id: string, updates: UpdateEvidenceInput): Evidence | undefined {
+  return evidenceStore.update(id, updates);
+}
+
+export function deleteEvidence(id: string): Evidence | undefined {
+  return evidenceStore.softDelete(id);
+}
+
 export function getEvidenceById(id: string): Evidence | undefined {
-  return seed.evidence.find((e) => e.id === id);
+  return evidenceStore.getById(id);
 }
 
 export function getSourceById(id: string): Source | undefined {
-  return seed.sources.find((s) => s.id === id);
+  return evidenceStore.getSourceById(id);
 }
 
 export function getObjectById(id: string): SceneObject | undefined {
-  return seed.objects.find((o) => o.id === id);
+  return evidenceStore.getObjectById(id);
 }
 
 export function getLocationById(id: string): Location | undefined {
-  return seed.locations.find((l) => l.id === id);
+  return evidenceStore.getLocationById(id);
 }
 
 export function getEvidenceByObject(objectId: string): Evidence[] {
-  return seed.evidence.filter((e) => e.objectIds.includes(objectId));
+  return evidenceStore.getByObject(objectId);
 }
 
 export function getEvidenceByLocation(locationId: string): Evidence[] {
-  return seed.evidence.filter((e) => e.locationId === locationId);
+  return evidenceStore.getByLocation(locationId);
 }
 
 export function getEvidenceBySource(sourceId: string): Evidence[] {
-  return seed.evidence.filter((e) => e.sourceIds.includes(sourceId));
+  return evidenceStore.getBySource(sourceId);
 }
 
 export function getEvidenceByClass(evidenceClass: Evidence['primaryClass']): Evidence[] {
-  return seed.evidence.filter(
-    (e) => e.primaryClass === evidenceClass || e.secondaryClasses.includes(evidenceClass),
-  );
+  return evidenceStore.getByClass(evidenceClass);
 }
 
 export function getEvidenceByFilters(filters: SearchFilters): Evidence[] {
-  return seed.evidence.filter((ev) => {
+  const all = evidenceStore.getAll();
+  return all.filter((ev) => {
     if (filters.status && ev.status !== filters.status) return false;
     if (
       filters.primaryClass &&
@@ -78,8 +90,8 @@ export function getEvidenceByFilters(filters: SearchFilters): Evidence[] {
 }
 
 export function searchEvidence(query: string, filters?: SearchFilters): Evidence[] {
+  const base = filters ? getEvidenceByFilters(filters) : evidenceStore.getAll();
   const normalized = query.toLowerCase();
-  const base = filters ? getEvidenceByFilters(filters) : seed.evidence;
   return base.filter(
     (ev) =>
       ev.title.toLowerCase().includes(normalized) ||
@@ -89,21 +101,15 @@ export function searchEvidence(query: string, filters?: SearchFilters): Evidence
 }
 
 export function getUpstreamEvidence(id: string): Evidence[] {
-  const ev = getEvidenceById(id);
-  if (!ev) return [];
-  return ev.dependencyIds.map((depId) => getEvidenceById(depId)).filter(Boolean) as Evidence[];
+  return evidenceStore.getUpstream(id);
 }
 
 export function getDownstreamEvidence(id: string): Evidence[] {
-  return seed.evidence.filter((ev) => ev.dependencyIds.includes(id));
+  return evidenceStore.getDownstream(id);
 }
 
 export function getConflictingEvidence(id: string): Evidence[] {
-  const ev = getEvidenceById(id);
-  if (!ev) return [];
-  return ev.conflictIds
-    .map((conflictId) => getEvidenceById(conflictId))
-    .filter(Boolean) as Evidence[];
+  return evidenceStore.getConflicts(id);
 }
 
 export function getEvidencePanelData(id: string): EvidencePanelData | undefined {
@@ -132,17 +138,17 @@ export function getObjectConfidence(objectId: string): number {
 }
 
 export function getAllEvidence(): Evidence[] {
-  return seed.evidence;
+  return evidenceStore.getAll();
 }
 
 export function getAllSources(): Source[] {
-  return seed.sources;
+  return evidenceStore.getSources();
 }
 
 export function getAllObjects(): SceneObject[] {
-  return seed.objects;
+  return evidenceStore.getObjects();
 }
 
 export function getAllLocations(): Location[] {
-  return seed.locations;
+  return evidenceStore.getLocations();
 }

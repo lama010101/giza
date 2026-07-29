@@ -5,12 +5,19 @@ import {
   getAllSources,
 } from '@/evidence/repository';
 import { HypothesisEngine } from './engine';
-import { osirisHydraulicPlugin, osirisMainstreamPlugin } from './plugins';
+import {
+  osirisHydraulicPlugin,
+  osirisMainstreamPlugin,
+  gpHydraulicPlugin,
+  gpMainstreamPlugin,
+} from './plugins';
 import type { HypothesisContext } from './types';
 
 export const hypothesisEngine = new HypothesisEngine();
 hypothesisEngine.register(osirisHydraulicPlugin);
 hypothesisEngine.register(osirisMainstreamPlugin);
+hypothesisEngine.register(gpHydraulicPlugin);
+hypothesisEngine.register(gpMainstreamPlugin);
 
 export function getDefaultHypothesisContext(): HypothesisContext {
   return {

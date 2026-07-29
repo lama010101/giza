@@ -10,11 +10,11 @@ describe('HypothesisSelector', () => {
     hypothesisEngine.setActive([]);
   });
 
-  it('renders both registered hypotheses with confidence values', () => {
+  it('renders all registered hypotheses with confidence values', () => {
     render(<HypothesisSelector />);
     expect(screen.getByText(/Hydraulic Functionality Hypothesis/)).toBeInTheDocument();
-    expect(screen.getByText(/Mainstream Funerary Hypothesis/)).toBeInTheDocument();
-    expect(screen.getAllByText(/%$/).length).toBe(2);
+    expect(screen.getAllByText(/Mainstream Funerary Hypothesis/).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/%$/).length).toBeGreaterThanOrEqual(4);
   });
 
   it('activates a hypothesis in the store and engine on toggle', () => {

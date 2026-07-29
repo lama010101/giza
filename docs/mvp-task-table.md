@@ -26,20 +26,20 @@ M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10
 | M-1 | Full governance, templates, CI smoke test | — | Done |
 | M00 | Vite, TS strict, R3F, Rapier, ESLint, Prettier, Vitest, Playwright, Husky, CI, aliases, AGENTS.md | Full docs generation (TypeDoc + json-schema-to-md + MkDocs + data dictionary) | Done |
 | M01 | Core Zod schemas: Evidence, Source, Object, Hypothesis, Prediction, Simulation, Location; stub Media/User; complete Bookmark + Measurement | — | Done |
-| M02 | CRUD + search + evidence linking; per-object lookup; dependency graph | Review workflow, import/export, conflict resolution, version history, media attachment, audit history | Next |
-| M03 | Basic source CRUD + APA citation style | DOI/ISBN/ORCID automation, duplicate detection, 11 bibliography styles, citation engine | Low |
+| M02 | CRUD + search + evidence linking; per-object lookup; dependency graph | Review workflow, import/export, conflict resolution, version history, media attachment, audit history | Done |
+| M03 | Basic source CRUD + APA citation style | DOI/ISBN/ORCID automation, duplicate detection, 11 bibliography styles, citation engine | Done |
 | M03.5 | 20–30 evidence records for Osiris Shaft | PDF ingestion, simulation parameter capture | Done |
-| M04 | 3 light layers (ambient + directional + local), basic PBR | Volumetric, bounce, frame pacing | Next |
-| M05 | Coordinate system, scene graph, layers, metadata injection | Streaming, LOD manager | Next |
+| M04 | 3 light layers (ambient + directional + local), basic PBR | Volumetric, bounce, frame pacing | Done |
+| M05 | Coordinate system, scene graph, layers, metadata injection | Streaming, LOD manager | Done |
 | M05.5 | Plugin registry + hypothesis store + per-object confidence + visualization rules + selector UI + hypothesis panel; 2 sample plugins | Comparison framework (side-by-side), API endpoints, 3rd sample plugin | Done |
-| M06A | Basic mesh/metadata/collision validators + publishing; 5 master materials | 17 material library, LOD generation, survey deviation | Medium |
-| M06.5 | Published drawing/CAD ingestion; manual reconstruction workflow for Osiris Shaft | Laser scan/photogrammetry ingestion | Medium |
-| M06B | Fewer variants (5 rubble, 3 limestone, 2 granite, minimal architectural) | Full asset production library | Medium |
-| M07 | Layout shell + Explore + Research modes + basic camera (walk/fly/teleport) | Guided, Documentary, Presentation, Educational, Museum, Developer; session persistence; gamepad | Next |
-| M08 | Raycast + hotspots + measurement + search + bookmarks | Cross-section, comparison, screenshot, timeline | Next |
+| M06A | Basic mesh/metadata/collision validators + publishing; 5 master materials | 17 material library, LOD generation, survey deviation | Done |
+| M06.5 | Published drawing/CAD ingestion; manual reconstruction workflow for Osiris Shaft | Laser scan/photogrammetry ingestion | Done |
+| M06B | Fewer variants (5 rubble, 3 limestone, 2 granite, minimal architectural) | Full asset production library | Done |
+| M07 | Layout shell + Explore + Research modes + basic camera (walk/fly/teleport) | Guided, Documentary, Presentation, Educational, Museum, Developer; session persistence; gamepad | Done |
+| M08 | Raycast + hotspots + measurement + search + bookmarks | Cross-section, comparison, screenshot, timeline | Done |
 | M08.5 | 3 light layers + 5 master materials + water plane + collision + FPS baseline | 5 light layers + 17 materials | Done (placeholder) |
-| M09 | Full Osiris Shaft reconstruction | — | Medium |
-| M10 | Hydraulic simulation only | Acoustic solver/visualization/validation, comparison, export, async API, performance modes | Medium |
+| M09 | Full Osiris Shaft reconstruction | — | Done |
+| M10 | Hydraulic simulation only | Acoustic solver/visualization/validation, comparison, export, async API, performance modes | Done |
 
 ## Hypotheses for Phase 1a
 
