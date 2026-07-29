@@ -373,3 +373,66 @@ body,
   font-size: 0.8rem;
   color: #9a9a9a;
 }
+
+.lighting-panel {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 240px;
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid #2a2a2a;
+  border-radius: 0.375rem;
+  z-index: 5;
+}
+
+.lighting-panel .lighting-toggle {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  color: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.lighting-panel .lighting-controls {
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.lighting-panel label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  color: #b0b0b0;
+}
+
+.lighting-panel input[type='range'] {
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.lighting-panel input[type='color'] {
+  margin-left: 0.5rem;
+  width: 2rem;
+  height: 1.5rem;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  background: none;
+}
+
+.lighting-panel .lighting-reset {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.4rem;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}

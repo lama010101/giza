@@ -5,6 +5,7 @@ import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import type { BlockoutNode } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
 import { useAppStore } from '@/store/app';
+import { useLightingStore } from '@/store/lighting';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
@@ -90,6 +91,12 @@ export function OsirisScene(): JSX.Element {
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
+  const ambientIntensity = useLightingStore((s) => s.ambientIntensity);
+  const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
+  const directionalAzimuth = useLightingStore((s) => s.directionalAzimuth);
+  const directionalElevation = useLightingStore((s) => s.directionalElevation);
+  const background = useLightingStore((s) => s.background);
+
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
   const activeRules: VisualizationRule[] = [];
@@ -118,9 +125,20 @@ export function OsirisScene(): JSX.Element {
   return (
     <Canvas camera={{ position: [16, -6, 22], fov: 55 }}>
       <CameraRig />
-      <color attach="background" args={['#0f0f0f']} />
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[12, 20, 8]} intensity={1.2} />
+      <color attach="background" args={[background]} />
+      <ambientLight intensity={ambientIntensity} />
+      <directionalLight
+        position={[
+          Math.cos((directionalAzimuth * Math.PI) / 180) *
+            Math.cos((directionalElevation * Math.PI) / 180) *
+            25,
+          Math.sin((directionalElevation * Math.PI) / 180) * 25,
+          Math.sin((directionalAzimuth * Math.PI) / 180) *
+            Math.cos((directionalElevation * Math.PI) / 180) *
+            25,
+        ]}
+        intensity={directionalIntensity}
+      />
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}

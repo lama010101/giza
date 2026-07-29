@@ -2,6 +2,7 @@ import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { useAppStore } from '@/store/app';
 import type { CameraMode } from '@/store/app';
 import { SimulationPanel } from '@/ui/SimulationPanel';
+import { LightingPanel } from '@/ui/LightingPanel';
 import { OsirisScene } from './OsirisScene';
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
@@ -77,6 +78,7 @@ export function Viewport(): JSX.Element {
           </>
         )}
       </div>
+      <LightingPanel />
       <SimulationPanel />
     </div>
   );
