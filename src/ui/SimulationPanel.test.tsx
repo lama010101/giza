@@ -10,10 +10,11 @@ describe('SimulationPanel', () => {
     useSimulationStore.getState().reset();
   });
 
-  it('returns null when hydraulic hypothesis is not active', () => {
+  it('shows placeholder when hydraulic hypothesis is not active', () => {
     useAppStore.setState({ activeHypothesisIds: [] });
-    const { container } = render(<SimulationPanel />);
-    expect(container.firstChild).toBeNull();
+    render(<SimulationPanel />);
+    expect(screen.getByTestId('sim-panel')).toBeInTheDocument();
+    expect(screen.getByText(/Activate the Hydraulic Functionality hypothesis/)).toBeInTheDocument();
   });
 
   it('renders when hydraulic hypothesis is active', () => {

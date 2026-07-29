@@ -8,16 +8,9 @@ describe('LightingPanel', () => {
     useLightingStore.getState().reset();
   });
 
-  it('renders a collapsed toggle button', () => {
+  it('renders the lighting panel with controls visible', () => {
     render(<LightingPanel />);
     expect(screen.getByTestId('lighting-panel')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Expand lighting/ })).toBeInTheDocument();
-  });
-
-  it('expands to show sliders on click', () => {
-    render(<LightingPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /Expand lighting/ }));
-
     expect(screen.getByText('Ambient')).toBeInTheDocument();
     expect(screen.getByText('Directional')).toBeInTheDocument();
     expect(screen.getByText('Azimuth')).toBeInTheDocument();
@@ -27,7 +20,6 @@ describe('LightingPanel', () => {
 
   it('updates ambient intensity via slider', () => {
     render(<LightingPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /Expand lighting/ }));
 
     const sliders = screen.getAllByRole('slider');
     fireEvent.change(sliders[0], { target: { value: '2.0' } });
@@ -40,7 +32,6 @@ describe('LightingPanel', () => {
     useLightingStore.getState().setDirectionalIntensity(5);
 
     render(<LightingPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /Expand lighting/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
 
     expect(useLightingStore.getState().ambientIntensity).toBe(0.7);

@@ -8,16 +8,9 @@ describe('LayerPanel', () => {
     useAppStore.setState({ hiddenLayers: [] });
   });
 
-  it('renders a collapsed toggle button', () => {
+  it('renders the layer panel with checkboxes visible', () => {
     render(<LayerPanel />);
     expect(screen.getByTestId('layer-panel')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Expand layer/ })).toBeInTheDocument();
-  });
-
-  it('expands to show all layer checkboxes', () => {
-    render(<LayerPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /Expand layer/ }));
-
     expect(screen.getByText('Shafts')).toBeInTheDocument();
     expect(screen.getByText('Level 1 (Chamber A)')).toBeInTheDocument();
     expect(screen.getByText('Level 2 (Chamber B)')).toBeInTheDocument();
@@ -27,7 +20,6 @@ describe('LayerPanel', () => {
 
   it('toggles layer visibility on checkbox click', () => {
     render(<LayerPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /Expand layer/ }));
 
     const shaftsCheckbox = screen.getByLabelText('Shafts');
     expect(shaftsCheckbox).toBeChecked();

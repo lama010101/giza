@@ -38,7 +38,6 @@ export function HypothesisSelector(): JSX.Element {
 
   return (
     <div className="hypothesis-selector">
-      <h2>Hypotheses</h2>
       {hypotheses.map((h) => (
         <label key={h.id} className="hypothesis-option">
           <input

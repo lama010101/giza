@@ -20,7 +20,15 @@ export function SimulationPanel(): JSX.Element | null {
   const setChannelWidth = useSimulationStore((s) => s.setChannelWidth);
   const reset = useSimulationStore((s) => s.reset);
 
-  if (!hydraulicActive) return null;
+  if (!hydraulicActive) {
+    return (
+      <div className="sim-panel" data-testid="sim-panel">
+        <p className="sim-empty">
+          Activate the Hydraulic Functionality hypothesis to enable simulation controls.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="sim-panel" data-testid="sim-panel">
