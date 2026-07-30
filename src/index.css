@@ -120,6 +120,8 @@ body,
   align-items: stretch;
   border-bottom: 1px solid #2a2a2a;
   flex-shrink: 0;
+  padding: 0.5rem 0.4rem;
+  gap: 0.2rem;
 }
 
 .side-panel-header .side-primary-tabs {
@@ -182,19 +184,21 @@ body,
 
 .side-primary-tabs button {
   flex: 1;
-  padding: 0.7rem 0.5rem;
-  background: transparent;
-  color: #9a9a9a;
-  border: none;
-  border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.5rem;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
+  margin: 0 0.15rem;
 }
 
 .side-primary-tabs button.active {
-  color: #e0e0e0;
-  border-bottom-color: #3b82f6;
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
 }
 
 .side-primary-tabs button:hover {

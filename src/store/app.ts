@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import type { Vector3 } from '@/schemas/location';
 import type { LODLevel } from '@/loaders/validators';
 
@@ -85,65 +85,107 @@ interface AppState {
   toggleBookmarkedObject: (id: string) => void;
 }
 
+const PERSISTED_KEYS: (keyof AppState)[] = [
+  'mode',
+  'activeMonument',
+  'activeHypothesisIds',
+  'activeLocationId',
+  'evidencePanelOpen',
+  'sidePanelTab',
+  'bookmarkedObjectIds',
+  'cameraMode',
+  'cameraTarget',
+  'hiddenLayers',
+  'lod',
+];
+
 export const useAppStore = create<AppState>()(
   devtools(
-    (set) => ({
-      mode: 'Explore',
-      activeMonument: 'osiris',
-      activeHypothesisIds: [],
-      activeLocationId: null,
-      selectedEvidenceId: null,
-      evidencePanelOpen: true,
-      lightingPanelOpen: false,
-      sidePanelTab: 'scene',
-      hoveredNodeId: null,
-      measurementMode: false,
-      measurementStart: null,
-      measurementEnd: null,
-      bookmarkedObjectIds: [],
-      cameraMode: 'orbit',
-      cameraTarget: { x: 0, y: -15, z: 2 },
-      hiddenLayers: [],
-      lod: 'LOD0',
-      setLOD: (lod) => set({ lod }),
-      setMode: (mode) => set({ mode }),
-      setActiveMonument: (activeMonument) => set({ activeMonument }),
-      setCameraMode: (cameraMode) => set({ cameraMode }),
-      setCameraTarget: (cameraTarget) => set({ cameraTarget }),
-      toggleLayer: (layer) =>
-        set((state) => ({
-          hiddenLayers: state.hiddenLayers.includes(layer)
-            ? state.hiddenLayers.filter((l) => l !== layer)
-            : [...state.hiddenLayers, layer],
-        })),
-      setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
-      setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
-      setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
-      setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
-      setEvidencePanelOpen: (evidencePanelOpen) => set({ evidencePanelOpen }),
-      setLightingPanelOpen: (lightingPanelOpen) => set({ lightingPanelOpen }),
-      setSidePanelTab: (sidePanelTab) => set({ sidePanelTab }),
-      setHoveredNodeId: (hoveredNodeId) => set({ hoveredNodeId }),
-      setMeasurementMode: (measurementMode) =>
-        set(
-          measurementMode
-            ? { measurementMode }
-            : { measurementMode, measurementStart: null, measurementEnd: null },
-        ),
-      addMeasurementPoint: (point) =>
-        set((state) =>
-          state.measurementStart === null || state.measurementEnd !== null
-            ? { measurementStart: point, measurementEnd: null }
-            : { measurementEnd: point },
-        ),
-      clearMeasurement: () => set({ measurementStart: null, measurementEnd: null }),
-      toggleBookmarkedObject: (id) =>
-        set((state) => ({
-          bookmarkedObjectIds: state.bookmarkedObjectIds.includes(id)
-            ? state.bookmarkedObjectIds.filter((existing) => existing !== id)
-            : [...state.bookmarkedObjectIds, id],
-        })),
-    }),
+    persist(
+      (set) => ({
+        mode: 'Explore',
+        activeMonument: 'great-pyramid',
+        activeHypothesisIds: [],
+        activeLocationId: null,
+        selectedEvidenceId: null,
+        evidencePanelOpen: true,
+        lightingPanelOpen: false,
+        sidePanelTab: 'scene',
+        hoveredNodeId: null,
+        measurementMode: false,
+        measurementStart: null,
+        measurementEnd: null,
+        bookmarkedObjectIds: [],
+        cameraMode: 'orbit',
+        cameraTarget: { x: 0, y: 70, z: 0 },
+        hiddenLayers: [],
+        lod: 'LOD0',
+        setLOD: (lod) => set({ lod }),
+        setMode: (mode) => set({ mode }),
+        setActiveMonument: (activeMonument) => set({ activeMonument }),
+        setCameraMode: (cameraMode) => set({ cameraMode }),
+        setCameraTarget: (cameraTarget) => set({ cameraTarget }),
+        toggleLayer: (layer) =>
+          set((state) => ({
+            hiddenLayers: state.hiddenLayers.includes(layer)
+              ? state.hiddenLayers.filter((l) => l !== layer)
+              : [...state.hiddenLayers, layer],
+          })),
+        setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
+        setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
+        setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
+        setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
+        setEvidencePanelOpen: (evidencePanelOpen) => set({ evidencePanelOpen }),
+        setLightingPanelOpen: (lightingPanelOpen) => set({ lightingPanelOpen }),
+        setSidePanelTab: (sidePanelTab) => set({ sidePanelTab }),
+        setHoveredNodeId: (hoveredNodeId) => set({ hoveredNodeId }),
+        setMeasurementMode: (measurementMode) =>
+          set(
+            measurementMode
+              ? { measurementMode }
+              : { measurementMode, measurementStart: null, measurementEnd: null },
+          ),
+        addMeasurementPoint: (point) =>
+          set((state) =>
+            state.measurementStart === null || state.measurementEnd !== null
+              ? { measurementStart: point, measurementEnd: null }
+              : { measurementEnd: point },
+          ),
+        clearMeasurement: () => set({ measurementStart: null, measurementEnd: null }),
+        toggleBookmarkedObject: (id) =>
+          set((state) => ({
+            bookmarkedObjectIds: state.bookmarkedObjectIds.includes(id)
+              ? state.bookmarkedObjectIds.filter((existing) => existing !== id)
+              : [...state.bookmarkedObjectIds, id],
+          })),
+      }),
+      {
+        name: 'giza-session',
+        version: 2,
+        partialize: (state) =>
+          Object.fromEntries(PERSISTED_KEYS.map((key) => [key, state[key]])) as Partial<AppState>,
+        migrate: (persisted, version) => {
+          const state = (persisted ?? {}) as Partial<AppState>;
+          // v1 defaulted to the Osiris Shaft monument with an underground camera
+          // target. v2 makes the Great Pyramid the default view; adopt the new
+          // defaults for users who never explicitly switched monuments.
+          if (version < 2) {
+            if (state.activeMonument === undefined || state.activeMonument === 'osiris') {
+              state.activeMonument = 'great-pyramid';
+            }
+            if (
+              state.cameraTarget === undefined ||
+              (state.cameraTarget.x === 0 &&
+                state.cameraTarget.y === -15 &&
+                state.cameraTarget.z === 2)
+            ) {
+              state.cameraTarget = { x: 0, y: 70, z: 0 };
+            }
+          }
+          return state;
+        },
+      },
+    ),
     { name: 'GIZA App Store' },
   ),
 );

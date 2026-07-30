@@ -18,6 +18,7 @@ import {
   slopedBoxFromFloorEndpoints,
   distance3D,
   chamberCenterY,
+  faceZAtHeight,
   midpoint,
 } from '@db/geometry/gp-geometry-utils';
 import { generateGreatPyramidLOD1 } from '@db/geometry/gp-lod1';
@@ -180,11 +181,18 @@ describe('generateGreatPyramidLOD1', () => {
     expect(entrance!.position.y).toBeCloseTo(GP_ENTRANCE.heightAboveBase, 1);
   });
 
-  it('descending-passage is calculated from measurements', () => {
+  it('descending-passage (sloped) is calculated from measurements', () => {
     const dp = lod1Nodes.find((n) => n.id === 'descending-passage');
     expect(dp).toBeDefined();
     expect(dp!.derivation).toBe('calculated');
-    expect(dp!.size.z).toBeCloseTo(GP_DESCENDING_PASSAGE.totalLength, 1);
+    const slopedLen = GP_DESCENDING_PASSAGE.totalLength - 9.0; // minus horizontal section
+    expect(dp!.size.z).toBeCloseTo(slopedLen, 1);
+  });
+
+  it('descending-passage-horizontal exists', () => {
+    const dph = lod1Nodes.find((n) => n.id === 'descending-passage-horizontal');
+    expect(dph).toBeDefined();
+    expect(dph!.derivation).toBe('calculated');
   });
 
   it('ascending-passage is calculated from measurements', () => {
@@ -240,17 +248,62 @@ describe('generateGreatPyramidLOD1', () => {
   it('kc-south-shaft uses measurement-derived angle', () => {
     const shaft = lod1Nodes.find((n) => n.id === 'kc-south-shaft');
     expect(shaft).toBeDefined();
-    expect(shaft!.rotation?.x).toBeCloseTo(degToRad(GP_KC_SHAFTS.south.angleDeg), 2);
+    // South shaft goes up toward +Z, so rotation.x is negative (same as ascending)
+    expect(shaft!.rotation?.x).toBeCloseTo(-degToRad(GP_KC_SHAFTS.south.angleDeg), 2);
   });
 
-  it('LOD1 node count matches LOD0 node count', () => {
-    expect(lod1Nodes.length).toBe(greatPyramidBlockout.nodes.length);
+  it('entrance z matches faceZAtHeight(16.97)', () => {
+    const entrance = lod1Nodes.find((n) => n.id === 'original-entrance');
+    expect(entrance).toBeDefined();
+    const expectedZ = faceZAtHeight(
+      GP_ENTRANCE.heightAboveBase,
+      GP_EXTERNAL.baseMean / 2,
+      GP_EXTERNAL.casingAngleDeg,
+    );
+    expect(entrance!.position.z).toBeCloseTo(expectedZ, 1);
   });
 
-  it('all LOD1 node IDs match LOD0 node IDs', () => {
+  it('queens-chamber is at x=0 (centre axis)', () => {
+    const qc = lod1Nodes.find((n) => n.id === 'queens-chamber');
+    expect(qc).toBeDefined();
+    expect(qc!.position.x).toBeCloseTo(0, 1);
+  });
+
+  it('subterranean chamber z is near DP endpoint', () => {
+    const sub = lod1Nodes.find((n) => n.id === 'subterranean-chamber');
+    expect(sub).toBeDefined();
+    // Subterranean chamber is slightly north of centre per Petrie
+    // Just verify it's in a reasonable range (within pyramid base)
+    expect(sub!.position.z).toBeGreaterThan(-GP_EXTERNAL.baseMean / 2);
+    expect(sub!.position.z).toBeLessThan(GP_EXTERNAL.baseMean / 2);
+  });
+
+  it('relieving chambers z matches KC z', () => {
+    const kc = lod1Nodes.find((n) => n.id === 'kings-chamber');
+    const davison = lod1Nodes.find((n) => n.id === 'relieving-davison');
+    expect(kc).toBeDefined();
+    expect(davison).toBeDefined();
+    expect(davison!.position.z).toBeCloseTo(kc!.position.z, 1);
+  });
+
+  it('KC north shaft starts at KC north wall ceiling level', () => {
+    const shaft = lod1Nodes.find((n) => n.id === 'kc-north-shaft');
+    expect(shaft).toBeDefined();
+    // Shaft starts at KC ceiling and goes up — midpoint will be well above KC floor
+    expect(shaft!.position.y).toBeGreaterThan(GP_KINGS_CHAMBER.floorY);
+  });
+
+  it('LOD1 node count is >= LOD0 node count', () => {
+    // LOD1 may have additional nodes (e.g. descending-passage-horizontal)
+    expect(lod1Nodes.length).toBeGreaterThanOrEqual(greatPyramidBlockout.nodes.length);
+  });
+
+  it('all LOD1 node IDs are valid', () => {
     const lod0Ids = new Set(greatPyramidBlockout.nodes.map((n) => n.id));
+    // Nodes that exist only in LOD1 (not in LOD0 blockout)
+    const lod1OnlyIds = new Set(['descending-passage-horizontal']);
     for (const node of lod1Nodes) {
-      expect(lod0Ids.has(node.id)).toBe(true);
+      expect(lod0Ids.has(node.id) || lod1OnlyIds.has(node.id)).toBe(true);
     }
   });
 });

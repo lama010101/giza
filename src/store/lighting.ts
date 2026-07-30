@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 
 interface LightingState {
   ambientIntensity: number;
@@ -28,16 +28,19 @@ const DEFAULTS = {
 
 export const useLightingStore = create<LightingState>()(
   devtools(
-    (set) => ({
-      ...DEFAULTS,
-      setAmbientIntensity: (ambientIntensity) => set({ ambientIntensity }),
-      setDirectionalIntensity: (directionalIntensity) => set({ directionalIntensity }),
-      setDirectionalAzimuth: (directionalAzimuth) => set({ directionalAzimuth }),
-      setDirectionalElevation: (directionalElevation) => set({ directionalElevation }),
-      setLocalIntensity: (localIntensity) => set({ localIntensity }),
-      setBackground: (background) => set({ background }),
-      reset: () => set({ ...DEFAULTS }),
-    }),
+    persist(
+      (set) => ({
+        ...DEFAULTS,
+        setAmbientIntensity: (ambientIntensity) => set({ ambientIntensity }),
+        setDirectionalIntensity: (directionalIntensity) => set({ directionalIntensity }),
+        setDirectionalAzimuth: (directionalAzimuth) => set({ directionalAzimuth }),
+        setDirectionalElevation: (directionalElevation) => set({ directionalElevation }),
+        setLocalIntensity: (localIntensity) => set({ localIntensity }),
+        setBackground: (background) => set({ background }),
+        reset: () => set({ ...DEFAULTS }),
+      }),
+      { name: 'giza-lighting' },
+    ),
     { name: 'GIZA Lighting Store' },
   ),
 );

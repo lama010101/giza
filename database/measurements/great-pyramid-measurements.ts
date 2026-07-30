@@ -117,6 +117,10 @@ export const GP_QUEENS_CHAMBER = {
   height: 6.23,
   /** Depth (m) */
   depth: 5.75,
+  /** Center X (m) — QC is on the pyramid centre axis, not offset east like KC/GG */
+  centerX: 0,
+  /** Center Z (m south of centre) — Petrie places QC ~249 B" south of centre */
+  centerZ: 6.32,
 } as const;
 
 export const GP_KC_SHAFTS = {
@@ -152,4 +156,52 @@ export const GP_QC_SHAFTS = {
 export const GP_WELL_SHAFT = {
   /** Width (m) — Petrie 30.75 in */
   width: 0.78,
+} as const;
+
+/** Point of Intersection — where AP branches off DP */
+export const GP_POI = {
+  /** Distance along DP from entrance to AP junction (m) — Petrie ~980.5 B" */
+  distanceAlongDP: 24.9,
+} as const;
+
+/** Antechamber — between GG south wall and King's Chamber */
+export const GP_ANTECHAMBER = {
+  /** Depth N-S (m) — Petrie 116.3 B" */
+  depth: 2.954,
+  /** Width E-W (m) — Petrie 65.0 B" */
+  width: 1.651,
+  /** Height (m) — Petrie 149.6 B" */
+  height: 3.794,
+  /** Floor Y (m above pavement) — same as GG south floor ~42.92 */
+  floorY: 42.92,
+  /** Gap between GG south wall and antechamber north wall (m) — step + short passage */
+  gapFromGG: 0.6,
+  /** Gap between antechamber south wall and KC north wall (m) */
+  gapToKC: 1.0,
+} as const;
+
+/** Subterranean Chamber — below pyramid centre */
+export const GP_SUBTERRANEAN = {
+  /** Chamber floor Y (m below pavement) — derived from DP geometry */
+  floorY: -29.8,
+  /** Chamber width E-W (m) — Petrie ~327 B" */
+  width: 8.3,
+  /** Chamber height (m) — Petrie ~140 B" */
+  height: 3.56,
+  /** Chamber depth N-S (m) — Petrie ~205 B" */
+  depth: 5.2,
+  /** Horizontal passage length at bottom of DP (m) */
+  horizontalPassageLength: 9.0,
+} as const;
+
+/** Queen's Chamber Passage — horizontal, connects AP/GG junction to QC */
+export const GP_QC_PASSAGE = {
+  /** Total length (m) — Petrie 1731.6 B" */
+  length: 43.96,
+  /** Width (m) — Petrie ~41.4 B" */
+  width: 1.05,
+  /** Height before step (m) — Petrie ~46.2 B" */
+  heightBeforeStep: 1.17,
+  /** Height after step (m) — Petrie ~68.1 B" */
+  heightAfterStep: 1.73,
 } as const;
