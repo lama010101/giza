@@ -5,7 +5,7 @@ import { LayerPanel } from './LayerPanel';
 
 describe('LayerPanel', () => {
   beforeEach(() => {
-    useAppStore.setState({ hiddenLayers: [] });
+    useAppStore.setState({ hiddenLayers: [], activeMonument: 'osiris' });
   });
 
   it('renders the layer panel with checkboxes visible', () => {

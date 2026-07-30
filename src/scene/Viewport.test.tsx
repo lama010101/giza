@@ -13,6 +13,7 @@ describe('Viewport', () => {
       hoveredNodeId: null,
       cameraMode: 'orbit',
       mode: 'Explore',
+      activeMonument: 'osiris',
       measurementStart: null,
       measurementEnd: null,
     });

@@ -6,7 +6,7 @@ import { HypothesisSelector } from './HypothesisSelector';
 
 describe('HypothesisSelector', () => {
   beforeEach(() => {
-    useAppStore.setState({ activeHypothesisIds: [] });
+    useAppStore.setState({ activeHypothesisIds: [], activeMonument: 'osiris' });
     hypothesisEngine.setActive([]);
   });
 
