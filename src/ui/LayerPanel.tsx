@@ -1,4 +1,4 @@
-import { useAppStore, SCENE_LAYERS } from '@/store/app';
+import { useAppStore, MONUMENT_LAYERS } from '@/store/app';
 import type { SceneLayer } from '@/store/app';
 
 const LAYER_LABELS: Record<SceneLayer, string> = {
@@ -17,14 +17,32 @@ const LAYER_LABELS: Record<SceneLayer, string> = {
 };
 
 export function LayerPanel(): JSX.Element {
+  const activeMonument = useAppStore((s) => s.activeMonument);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const toggleLayer = useAppStore((s) => s.toggleLayer);
+  const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
+
+  const monumentLayers = MONUMENT_LAYERS[activeMonument];
+  const allVisible = monumentLayers.every((l) => !hiddenLayers.includes(l));
+
+  const handleToggleAll = (): void => {
+    if (allVisible) {
+      setHiddenLayers([...monumentLayers]);
+    } else {
+      setHiddenLayers(hiddenLayers.filter((l) => !monumentLayers.includes(l)));
+    }
+  };
 
   return (
     <div className="layer-panel" data-testid="layer-panel">
       <h3>Layers</h3>
       <div className="layer-controls">
-        {SCENE_LAYERS.map((layer) => (
+        <div className="layer-toggle-all">
+          <button type="button" className="layer-all-btn" onClick={handleToggleAll}>
+            {allVisible ? 'Hide All' : 'Show All'}
+          </button>
+        </div>
+        {monumentLayers.map((layer) => (
           <label key={layer} className="layer-option">
             <input
               type="checkbox"

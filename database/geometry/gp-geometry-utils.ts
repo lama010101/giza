@@ -1,0 +1,139 @@
+/**
+ * Great Pyramid — Geometry Derivation Utilities
+ *
+ * Pure functions for computing 3D positions, rotations, and sizes
+ * from raw measurement constants. No hardcoded coordinates.
+ *
+ * Coordinate system: +X=east, +Y=up, +Z=south, origin at pyramid centre.
+ */
+
+import type { Vector3 } from '@/schemas/location';
+
+const DEG = Math.PI / 180;
+
+/** Convert degrees to radians */
+export function degToRad(deg: number): number {
+  return deg * DEG;
+}
+
+/** Midpoint of two 3D points */
+export function midpoint(a: Vector3, b: Vector3): Vector3 {
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+    z: (a.z + b.z) / 2,
+  };
+}
+
+/**
+ * Compute the endpoint of a sloped passage starting from a given point.
+ * The passage slopes in the Y-Z plane (rotation around X-axis).
+ * Positive angle = downward toward +Z (south).
+ * Negative angle = upward toward +Z (south).
+ */
+export function slopedEndpoint(
+  start: Vector3,
+  angleDeg: number,
+  length: number,
+  direction: 1 | -1 = 1,
+): Vector3 {
+  const rad = degToRad(angleDeg);
+  return {
+    x: start.x,
+    y: start.y - direction * length * Math.sin(rad),
+    z: start.z + direction * length * Math.cos(rad),
+  };
+}
+
+/**
+ * 3D distance between two points.
+ */
+export function distance3D(a: Vector3, b: Vector3): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const dz = b.z - a.z;
+  return Math.sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+/**
+ * Derive a sloped passage box from two floor endpoints.
+ * The box length (size.z) is the 3D distance between endpoints.
+ * The rotation is around X, computed from the Y-Z slope.
+ * The box center is offset from the floor midpoint by half the height in the
+ * perpendicular direction (so the floor face aligns with the endpoints).
+ */
+export function slopedBoxFromFloorEndpoints(
+  start: Vector3,
+  end: Vector3,
+  width: number,
+  height: number,
+): { position: Vector3; rotation: Vector3; size: Vector3 } {
+  const len = distance3D(start, end);
+  const dy = end.y - start.y;
+  const dz = end.z - start.z;
+  // Negate to match Three.js X-rotation convention:
+  // positive rotation → +Z end goes down (descending passage)
+  // negative rotation → +Z end goes up (ascending, grand gallery)
+  const angle = -Math.atan2(dy, Math.abs(dz) > 1e-9 ? dz : 1e-9);
+  const floorMid = midpoint(start, end);
+  // Offset from floor midpoint to box center (half height in perpendicular direction)
+  // For rotation.x = angle, local +Y in world = (0, cos(angle), sin(angle))
+  const offsetY = (height / 2) * Math.cos(angle);
+  const offsetZ = (height / 2) * Math.sin(angle);
+  return {
+    position: { x: floorMid.x, y: floorMid.y + offsetY, z: floorMid.z + offsetZ },
+    rotation: { x: angle, y: 0, z: 0 },
+    size: { x: width, y: height, z: len },
+  };
+}
+
+/**
+ * Compute the center position of a sloped box from its two endpoints.
+ * The center is the midpoint of the start and end points.
+ */
+export function slopedBoxCenter(start: Vector3, end: Vector3): Vector3 {
+  return midpoint(start, end);
+}
+
+/**
+ * Compute the rotation for a sloped element.
+ * Positive angle (e.g., descending passage) → positive rotation.x (slopes down toward +Z).
+ * Negative angle (e.g., ascending passage) → negative rotation.x (slopes up toward +Z).
+ */
+export function slopedBoxRotation(angleDeg: number): Vector3 {
+  return { x: degToRad(angleDeg), y: 0, z: 0 };
+}
+
+/**
+ * Compute the center of a horizontal (non-sloped) element from its start point and length.
+ * The element extends in the +Z direction.
+ */
+export function horizontalCenter(start: Vector3, length: number): Vector3 {
+  return {
+    x: start.x,
+    y: start.y,
+    z: start.z + length / 2,
+  };
+}
+
+/**
+ * Compute the center Y of a chamber given its floor Y and height.
+ */
+export function chamberCenterY(floorY: number, height: number): number {
+  return floorY + height / 2;
+}
+
+/**
+ * Compute the center Z of a chamber given its south wall Z and depth (N-S).
+ * The chamber extends from southWallZ toward -Z (north).
+ */
+export function chamberCenterZ(southWallZ: number, depth: number): number {
+  return southWallZ - depth / 2;
+}
+
+/**
+ * Compute the center X of a chamber given its east offset and width (E-W).
+ */
+export function chamberCenterX(xOffset: number): number {
+  return xOffset;
+}

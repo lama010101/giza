@@ -1,29 +1,23 @@
-import { useState } from 'react';
 import { useAppStore } from '@/store/app';
-import type { CameraMode, Monument } from '@/store/app';
+import type { CameraMode, Monument, SidePanelTab } from '@/store/app';
 import { EvidencePanel } from './EvidencePanel';
-import { LightingPanel } from './LightingPanel';
 import { LayerPanel } from './LayerPanel';
 import { SimulationPanel } from './SimulationPanel';
-import { HypothesisSelector } from './HypothesisSelector';
 
-type Tab = 'scene' | 'evidence' | 'simulation';
+const PRIMARY_TABS: { id: Monument; label: string }[] = [
+  { id: 'osiris', label: 'Osiris' },
+  { id: 'great-pyramid', label: 'Pyramid' },
+];
 
-const TABS: { id: Tab; label: string }[] = [
+const SECONDARY_TABS: { id: SidePanelTab; label: string }[] = [
   { id: 'scene', label: 'Scene' },
   { id: 'evidence', label: 'Evidence' },
   { id: 'simulation', label: 'Simulation' },
 ];
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
-const MONUMENTS: { id: Monument; label: string }[] = [
-  { id: 'osiris', label: 'Osiris Shaft' },
-  { id: 'great-pyramid', label: 'Great Pyramid' },
-];
 
 function SceneTab(): JSX.Element {
-  const activeMonument = useAppStore((s) => s.activeMonument);
-  const setActiveMonument = useAppStore((s) => s.setActiveMonument);
   const cameraMode = useAppStore((s) => s.cameraMode);
   const setCameraMode = useAppStore((s) => s.setCameraMode);
   const mode = useAppStore((s) => s.mode);
@@ -46,28 +40,6 @@ function SceneTab(): JSX.Element {
 
   return (
     <div className="side-tab-content">
-      <section className="side-section">
-        <h3>Monument</h3>
-        <div className="side-btn-group">
-          {MONUMENTS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              className={activeMonument === m.id ? 'active' : ''}
-              aria-pressed={activeMonument === m.id}
-              onClick={() => setActiveMonument(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="side-section">
-        <h3>Hypotheses</h3>
-        <HypothesisSelector />
-      </section>
-
       {showCameraControls && (
         <section className="side-section">
           <h3>Camera</h3>
@@ -118,24 +90,23 @@ function SceneTab(): JSX.Element {
       <section className="side-section">
         <LayerPanel />
       </section>
-
-      <section className="side-section">
-        <LightingPanel />
-      </section>
     </div>
   );
 }
 
 export function SidePanel(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<Tab>('scene');
   const evidencePanelOpen = useAppStore((s) => s.evidencePanelOpen);
   const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
+  const activeMonument = useAppStore((s) => s.activeMonument);
+  const setActiveMonument = useAppStore((s) => s.setActiveMonument);
+  const sidePanelTab = useAppStore((s) => s.sidePanelTab);
+  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
 
   if (!evidencePanelOpen) {
     return (
       <button
         type="button"
-        className="panel-toggle"
+        className="panel-toggle-collapsed"
         aria-label="Expand side panel"
         aria-expanded={false}
         onClick={() => setEvidencePanelOpen(true)}
@@ -146,36 +117,49 @@ export function SidePanel(): JSX.Element {
   }
 
   return (
-    <>
-      <div className="side-panel" data-testid="side-panel">
-        <div className="side-tabs">
-          {TABS.map((tab) => (
+    <div className="side-panel" data-testid="side-panel">
+      <div className="side-panel-header">
+        <div className="side-primary-tabs">
+          {PRIMARY_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
-              className={activeTab === tab.id ? 'active' : ''}
-              aria-pressed={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              className={activeMonument === tab.id ? 'active' : ''}
+              aria-pressed={activeMonument === tab.id}
+              onClick={() => setActiveMonument(tab.id)}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <div className="side-panel-body">
-          {activeTab === 'scene' && <SceneTab />}
-          {activeTab === 'evidence' && <EvidencePanel />}
-          {activeTab === 'simulation' && <SimulationPanel />}
-        </div>
+        <button
+          type="button"
+          className="panel-toggle-open"
+          aria-label="Collapse side panel"
+          aria-expanded={true}
+          onClick={() => setEvidencePanelOpen(false)}
+        >
+          »
+        </button>
       </div>
-      <button
-        type="button"
-        className="panel-toggle"
-        aria-label="Collapse side panel"
-        aria-expanded={true}
-        onClick={() => setEvidencePanelOpen(false)}
-      >
-        »
-      </button>
-    </>
+      <div className="side-secondary-tabs">
+        {SECONDARY_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={sidePanelTab === tab.id ? 'active' : ''}
+            aria-pressed={sidePanelTab === tab.id}
+            onClick={() => setSidePanelTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="side-panel-body">
+        {sidePanelTab === 'scene' && <SceneTab />}
+        {sidePanelTab === 'evidence' && <EvidencePanel />}
+        {sidePanelTab === 'simulation' && <SimulationPanel />}
+      </div>
+    </div>
   );
 }

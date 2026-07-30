@@ -1,5 +1,6 @@
 import { useAppStore } from '@/store/app';
 import { useSimulationStore } from '@/store/simulation';
+import { HypothesisSelector } from './HypothesisSelector';
 
 export function SimulationPanel(): JSX.Element | null {
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
@@ -23,6 +24,10 @@ export function SimulationPanel(): JSX.Element | null {
   if (!hydraulicActive) {
     return (
       <div className="sim-panel" data-testid="sim-panel">
+        <section className="sim-section">
+          <h3>Hypotheses</h3>
+          <HypothesisSelector />
+        </section>
         <p className="sim-empty">
           Activate the Hydraulic Functionality hypothesis to enable simulation controls.
         </p>
@@ -32,6 +37,11 @@ export function SimulationPanel(): JSX.Element | null {
 
   return (
     <div className="sim-panel" data-testid="sim-panel">
+      <section className="sim-section">
+        <h3>Hypotheses</h3>
+        <HypothesisSelector />
+      </section>
+
       <h3>Hydraulic Simulation</h3>
 
       <label>

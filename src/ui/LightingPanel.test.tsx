@@ -34,7 +34,7 @@ describe('LightingPanel', () => {
     render(<LightingPanel />);
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
 
-    expect(useLightingStore.getState().ambientIntensity).toBe(0.7);
+    expect(useLightingStore.getState().ambientIntensity).toBe(4);
     expect(useLightingStore.getState().directionalIntensity).toBe(1.2);
   });
 });

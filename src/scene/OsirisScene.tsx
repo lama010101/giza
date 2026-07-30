@@ -31,6 +31,8 @@ interface BlockoutMeshProps {
 
 function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
   const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
+  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
+  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
   const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
   const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
   const { position } = node.worldTransform;
@@ -49,6 +51,8 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
     const evidenceId = node.metadata.evidenceIds?.[0];
     if (evidenceId) {
       setSelectedEvidenceId(evidenceId);
+      setSidePanelTab('evidence');
+      setEvidencePanelOpen(true);
     }
   };
 

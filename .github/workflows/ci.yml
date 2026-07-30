@@ -36,7 +36,7 @@ jobs:
       - name: Governance smoke test
         run: npm run governance
 
-      - name: Test
+      - name: Test (includes scientific smoke test)
         run: npm run test
 
       - name: Build

@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
-import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
-import type { BlockoutNode } from '@db/blockouts/great-pyramid';
+import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
+import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
+import type { HypothesisGeometryNode } from '@/theories/types';
 import { useAppStore } from '@/store/app';
 import { useLightingStore } from '@/store/lighting';
 import type { VisualizationRule } from '@/schemas/hypothesis';
@@ -11,6 +12,8 @@ import type { Vector3 } from '@/schemas/location';
 import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
 import { CameraRig } from './CameraRig';
 import type { SceneNodeWithWorld } from './sceneGraph';
+
+type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
   exterior: { metalness: 0.05, roughness: 0.9 },
@@ -25,7 +28,7 @@ const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
 
 interface BlockoutMeshProps {
   node: SceneNodeWithWorld;
-  block: BlockoutNode;
+  block: UnifiedBlock;
   rule?: VisualizationRule;
 }
 
@@ -100,9 +103,34 @@ function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
   );
 }
 
+function HypothesisMesh({ node }: { node: HypothesisGeometryNode }): JSX.Element {
+  const pos = node.position;
+  const rot = node.rotation ?? { x: 0, y: 0, z: 0 };
+  const size = node.size;
+  return (
+    <mesh position={[pos.x, pos.y, pos.z]} rotation={[rot.x, rot.y, rot.z]}>
+      <boxGeometry args={[size.x, size.y, size.z]} />
+      <meshStandardMaterial
+        color={node.color}
+        transparent={node.opacity < 1}
+        opacity={node.opacity}
+        metalness={0.1}
+        roughness={0.85}
+        emissive={node.color}
+        emissiveIntensity={0.1}
+      />
+    </mesh>
+  );
+}
+
 export function GreatPyramidScene(): JSX.Element {
-  const graph = useMemo(() => buildGreatPyramidSceneGraph(), []);
-  const blocks = useMemo(() => new Map(greatPyramidBlockout.nodes.map((n) => [n.id, n])), []);
+  const lod = useAppStore((s) => s.lod);
+  const graph = useMemo(() => buildGreatPyramidSceneGraph(lod), [lod]);
+  const blocks = useMemo<Map<string, UnifiedBlock>>(() => {
+    const source: UnifiedBlock[] =
+      lod === 'LOD1' ? generateGreatPyramidLOD1() : greatPyramidBlockout.nodes;
+    return new Map(source.map((n) => [n.id, n]));
+  }, [lod]);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
@@ -116,6 +144,12 @@ export function GreatPyramidScene(): JSX.Element {
   const background = useLightingStore((s) => s.background);
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-GP-001');
+
+  const hypothesisGeometryNodes: HypothesisGeometryNode[] = useMemo(() => {
+    if (activeHypothesisIds.length === 0) return [];
+    const context = getDefaultHypothesisContext();
+    return hypothesisEngine.getGeometryNodes(context);
+  }, [activeHypothesisIds]);
 
   const activeRules: VisualizationRule[] = [];
   if (activeHypothesisIds.length > 0) {
@@ -177,6 +211,9 @@ export function GreatPyramidScene(): JSX.Element {
       ))}
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
+      ))}
+      {hypothesisGeometryNodes.map((hnode) => (
+        <HypothesisMesh key={hnode.id} node={hnode} />
       ))}
       {hydraulicActive && (
         <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>

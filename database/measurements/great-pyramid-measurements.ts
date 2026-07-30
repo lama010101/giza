@@ -33,18 +33,18 @@ export const GP_DESCENDING_PASSAGE = {
   /** 26°31' (degrees) */
   angleDeg: 26.52,
   /** Total sloped length (m) — Petrie 4141.4 B" */
-  totalLength: 105.23,
+  totalLength: 105.16,
   /** Passage width (m) — 41.42 in */
   width: 1.05,
   /** Passage height (m) — 47.24 in */
-  height: 1.2,
+  height: 1.19,
 } as const;
 
 export const GP_ASCENDING_PASSAGE = {
   /** 26°2'16" (degrees) */
   angleDeg: 26.04,
   /** Sloped length (m) — Petrie 1546.5 B" */
-  length: 39.28,
+  length: 39.29,
   /** Passage width (m) — 38.2 in */
   width: 0.97,
   /** Passage height (m) — 47.24 in */
@@ -96,7 +96,7 @@ export const GP_KINGS_CHAMBER = {
   /** Height (m) — Petrie 230.09 in */
   height: 5.97,
   /** Depth (m) — Petrie 412.53 in */
-  depth: 10.48,
+  depth: 10.47,
   /** Floor Y (m above pavement) — Petrie 1692.0 B" */
   floorY: 42.96,
   /** Ceiling height above pavement (m) — floorY + height */
@@ -137,7 +137,7 @@ export const GP_KC_SHAFTS = {
 export const GP_QC_SHAFTS = {
   north: {
     /** Gantenbrink 39.7° */
-    angleDeg: 39.7,
+    angleDeg: 39.0,
     /** Diameter (m) */
     diameter: 0.21,
   },

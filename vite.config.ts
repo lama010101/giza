@@ -20,8 +20,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ['react', 'react-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/rapier'],
+          'react-vendor': ['react', 'react-dom'],
+          'three-core': ['three'],
+          r3f: ['@react-three/fiber', '@react-three/drei', '@react-three/rapier'],
+          state: ['zustand', 'zod'],
         },
       },
     },

@@ -43,6 +43,52 @@ body,
   font-weight: 600;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lighting-dropdown {
+  position: relative;
+}
+
+.lighting-btn {
+  padding: 0.4rem 0.8rem;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.lighting-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.lighting-btn:hover {
+  background: #3a3a3a;
+}
+
+.lighting-btn.active:hover {
+  background: #4a8cf6;
+}
+
+.lighting-popover {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 280px;
+  padding: 0.75rem;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
 .app-main {
   position: relative;
   display: flex;
@@ -50,22 +96,51 @@ body,
   min-height: 0;
 }
 
-.panel-toggle {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  z-index: 10;
-  padding: 0.75rem 0.3rem;
+.panel-toggle-collapsed {
+  width: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #1a1a1a;
   color: #9a9a9a;
   border: 1px solid #2a2a2a;
-  border-right: none;
   border-radius: 0.25rem 0 0 0.25rem;
   cursor: pointer;
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
-.panel-toggle:hover {
+.panel-toggle-collapsed:hover {
+  color: #e0e0e0;
+  background: #2a2a2a;
+}
+
+.side-panel-header {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #2a2a2a;
+  flex-shrink: 0;
+}
+
+.side-panel-header .side-primary-tabs {
+  flex: 1;
+}
+
+.panel-toggle-open {
+  width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #9a9a9a;
+  border: none;
+  border-left: 1px solid #2a2a2a;
+  cursor: pointer;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.panel-toggle-open:hover {
   color: #e0e0e0;
   background: #2a2a2a;
 }
@@ -99,30 +174,58 @@ body,
   overflow: hidden;
 }
 
-.side-tabs {
+.side-primary-tabs {
   display: flex;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: none;
   flex-shrink: 0;
 }
 
-.side-tabs button {
+.side-primary-tabs button {
   flex: 1;
-  padding: 0.6rem 0.5rem;
+  padding: 0.7rem 0.5rem;
   background: transparent;
   color: #9a9a9a;
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.side-tabs button.active {
+.side-primary-tabs button.active {
   color: #e0e0e0;
   border-bottom-color: #3b82f6;
 }
 
-.side-tabs button:hover {
+.side-primary-tabs button:hover {
+  color: #e0e0e0;
+}
+
+.side-secondary-tabs {
+  display: flex;
+  border-bottom: 1px solid #2a2a2a;
+  flex-shrink: 0;
+  background: #181818;
+}
+
+.side-secondary-tabs button {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
+  background: transparent;
+  color: #8a8a8a;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.side-secondary-tabs button.active {
+  color: #e0e0e0;
+  border-bottom-color: #3b82f6;
+}
+
+.side-secondary-tabs button:hover {
   color: #e0e0e0;
 }
 
@@ -187,14 +290,36 @@ body,
   margin-bottom: 0.75rem;
 }
 
+.bookmark-chip-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
 .bookmark-chip {
   padding: 0.25rem 0.6rem;
   background: #1e293b;
   color: #60a5fa;
   border: 1px solid #2a3a52;
-  border-radius: 1rem;
+  border-radius: 1rem 0 0 1rem;
   cursor: pointer;
   font-size: 0.8rem;
+}
+
+.bookmark-chip-remove {
+  padding: 0.25rem 0.4rem;
+  background: #1e293b;
+  color: #9a9a9a;
+  border: 1px solid #2a3a52;
+  border-left: none;
+  border-radius: 0 1rem 1rem 0;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.bookmark-chip-remove:hover {
+  color: #ef4444;
+  background: #2a1a1a;
 }
 
 .object-bookmark button {
@@ -281,6 +406,8 @@ body,
   list-style: none;
   margin: 0 0 1rem;
   padding: 0;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
 }
 
 .evidence-list li {
@@ -292,7 +419,7 @@ body,
   border-radius: 0.25rem;
 }
 
-.evidence-list button {
+.evidence-title {
   width: 100%;
   padding: 0.4rem 0.5rem;
   text-align: left;
@@ -301,17 +428,32 @@ body,
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.evidence-list li.selected button {
+.evidence-list li.selected .evidence-title {
+  color: #60a5fa;
+}
+
+.evidence-toggle-icon {
+  font-size: 0.7rem;
+  color: #9a9a9a;
+  flex-shrink: 0;
+}
+
+.evidence-list li.selected .evidence-toggle-icon {
   color: #60a5fa;
 }
 
 .evidence-detail {
-  padding: 0.75rem;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  background: #1e293b;
+  border: 1px solid #2a3a52;
+  border-radius: 0 0 0.25rem 0.25rem;
+  margin-top: -0.1rem;
 }
 
 .evidence-detail h3 {
@@ -470,4 +612,22 @@ body,
 
 .layer-panel .layer-option input {
   cursor: pointer;
+}
+
+.layer-toggle-all {
+  margin-bottom: 0.5rem;
+}
+
+.layer-all-btn {
+  padding: 0.3rem 0.7rem;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.layer-all-btn:hover {
+  background: #3a3a3a;
 }

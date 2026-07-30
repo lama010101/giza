@@ -27,6 +27,6 @@
     },
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
-  "include": ["src", "scripts", "tests", "*.config.ts", "*.config.js"],
+  "include": ["src", "database", "scripts", "tests", "*.config.ts", "*.config.js"],
   "exclude": ["node_modules", "dist"]
 }

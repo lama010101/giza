@@ -5,3 +5,5 @@ osiris conduit
 
 https://gregorspoerri.com/info/the-osiris-tomb-in-giza/?lang=en
 
+math
+http://thegreatpyramidofgiza.ca/content/index.html#cross-section-of-great-pyramid

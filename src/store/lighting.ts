@@ -18,7 +18,7 @@ interface LightingState {
 }
 
 const DEFAULTS = {
-  ambientIntensity: 0.7,
+  ambientIntensity: 4,
   directionalIntensity: 1.2,
   directionalAzimuth: 45,
   directionalElevation: 60,

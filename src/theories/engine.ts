@@ -5,7 +5,7 @@ import {
 import type { Evidence } from '@/schemas/evidence';
 import type { Hypothesis, VisualizationRule } from '@/schemas/hypothesis';
 import type { Source } from '@/schemas/source';
-import type { HypothesisContext, HypothesisPlugin } from './types';
+import type { HypothesisContext, HypothesisPlugin, HypothesisGeometryNode } from './types';
 
 export class HypothesisEngine {
   private readonly plugins = new Map<string, HypothesisPlugin>();
@@ -142,6 +142,18 @@ export class HypothesisEngine {
       ids.push(...hypothesis.simulations);
     }
     return [...new Set(ids)];
+  }
+
+  getGeometryNodes(context: HypothesisContext): HypothesisGeometryNode[] {
+    const nodes: HypothesisGeometryNode[] = [];
+    for (const id of this.getActiveIds()) {
+      const plugin = this.plugins.get(id);
+      if (!plugin) continue;
+      if (plugin.getGeometryNodes) {
+        nodes.push(...plugin.getGeometryNodes(context));
+      }
+    }
+    return nodes;
   }
 
   private resolveEvidence(evidenceIds: string[], context: HypothesisContext): Evidence[] {

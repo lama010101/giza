@@ -8,7 +8,7 @@ describe('useLightingStore', () => {
 
   it('starts with default values', () => {
     const s = useLightingStore.getState();
-    expect(s.ambientIntensity).toBe(0.7);
+    expect(s.ambientIntensity).toBe(4);
     expect(s.directionalIntensity).toBe(1.2);
     expect(s.directionalAzimuth).toBe(45);
     expect(s.directionalElevation).toBe(60);
@@ -51,7 +51,7 @@ describe('useLightingStore', () => {
 
     useLightingStore.getState().reset();
 
-    expect(useLightingStore.getState().ambientIntensity).toBe(0.7);
+    expect(useLightingStore.getState().ambientIntensity).toBe(4);
     expect(useLightingStore.getState().directionalIntensity).toBe(1.2);
     expect(useLightingStore.getState().localIntensity).toBe(0.8);
     expect(useLightingStore.getState().background).toBe('#0f0f0f');

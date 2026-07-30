@@ -1,7 +1,11 @@
 import { SceneGraph, IDENTITY_TRANSFORM, type SceneNode } from './sceneGraph';
-import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
+import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
+import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
+import type { LODLevel } from '@/loaders/validators';
 
-export function buildGreatPyramidSceneGraph(): SceneGraph {
+type UnifiedNode = BlockoutNode | BlockoutNodeLOD1;
+
+export function buildGreatPyramidSceneGraph(lod: LODLevel = 'LOD0'): SceneGraph {
   const graph = new SceneGraph();
 
   graph.setRootOrigin({ x: 0, y: 0, z: 0 });
@@ -42,7 +46,10 @@ export function buildGreatPyramidSceneGraph(): SceneGraph {
     layerParents[layer] = node;
   }
 
-  for (const blockoutNode of greatPyramidBlockout.nodes) {
+  const nodes: UnifiedNode[] =
+    lod === 'LOD1' ? generateGreatPyramidLOD1() : greatPyramidBlockout.nodes;
+
+  for (const blockoutNode of nodes) {
     const parentId = layerParents[blockoutNode.layer]?.id ?? 'gp-root';
 
     graph.addNode({

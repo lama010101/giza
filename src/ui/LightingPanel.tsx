@@ -25,7 +25,7 @@ export function LightingPanel(): JSX.Element {
           <input
             type="range"
             min="0"
-            max="3"
+            max="8"
             step="0.05"
             value={ambientIntensity}
             onChange={(e) => setAmbientIntensity(parseFloat(e.target.value))}

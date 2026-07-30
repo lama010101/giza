@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type { Vector3 } from '@/schemas/location';
+import type { LODLevel } from '@/loaders/validators';
 
 export type AppMode =
   | 'Explore'
@@ -14,6 +15,7 @@ export type AppMode =
 
 export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
 export type Monument = 'osiris' | 'great-pyramid';
+export type SidePanelTab = 'scene' | 'evidence' | 'simulation';
 
 export const SCENE_LAYERS = [
   'shafts',
@@ -31,6 +33,20 @@ export const SCENE_LAYERS = [
 ] as const;
 export type SceneLayer = (typeof SCENE_LAYERS)[number];
 
+export const MONUMENT_LAYERS: Record<Monument, readonly SceneLayer[]> = {
+  osiris: ['shafts', 'level-1', 'level-2', 'level-3', 'monument'] as const,
+  'great-pyramid': [
+    'exterior',
+    'passages',
+    'subterranean',
+    'gallery',
+    'kings-complex',
+    'queens-complex',
+    'relieving',
+    'shafts',
+  ] as const,
+};
+
 interface AppState {
   mode: AppMode;
   activeMonument: Monument;
@@ -38,6 +54,8 @@ interface AppState {
   activeLocationId: string | null;
   selectedEvidenceId: string | null;
   evidencePanelOpen: boolean;
+  lightingPanelOpen: boolean;
+  sidePanelTab: SidePanelTab;
   hoveredNodeId: string | null;
   measurementMode: boolean;
   measurementStart: Vector3 | null;
@@ -46,15 +64,20 @@ interface AppState {
   cameraMode: CameraMode;
   cameraTarget: Vector3;
   hiddenLayers: SceneLayer[];
+  lod: LODLevel;
+  setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
   setCameraMode: (mode: CameraMode) => void;
   setCameraTarget: (target: Vector3) => void;
   toggleLayer: (layer: SceneLayer) => void;
+  setHiddenLayers: (layers: SceneLayer[]) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
   setEvidencePanelOpen: (open: boolean) => void;
+  setLightingPanelOpen: (open: boolean) => void;
+  setSidePanelTab: (tab: SidePanelTab) => void;
   setHoveredNodeId: (id: string | null) => void;
   setMeasurementMode: (on: boolean) => void;
   addMeasurementPoint: (point: Vector3) => void;
@@ -71,6 +94,8 @@ export const useAppStore = create<AppState>()(
       activeLocationId: null,
       selectedEvidenceId: null,
       evidencePanelOpen: true,
+      lightingPanelOpen: false,
+      sidePanelTab: 'scene',
       hoveredNodeId: null,
       measurementMode: false,
       measurementStart: null,
@@ -79,6 +104,8 @@ export const useAppStore = create<AppState>()(
       cameraMode: 'orbit',
       cameraTarget: { x: 0, y: -15, z: 2 },
       hiddenLayers: [],
+      lod: 'LOD0',
+      setLOD: (lod) => set({ lod }),
       setMode: (mode) => set({ mode }),
       setActiveMonument: (activeMonument) => set({ activeMonument }),
       setCameraMode: (cameraMode) => set({ cameraMode }),
@@ -89,10 +116,13 @@ export const useAppStore = create<AppState>()(
             ? state.hiddenLayers.filter((l) => l !== layer)
             : [...state.hiddenLayers, layer],
         })),
+      setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
       setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
       setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
       setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
       setEvidencePanelOpen: (evidencePanelOpen) => set({ evidencePanelOpen }),
+      setLightingPanelOpen: (lightingPanelOpen) => set({ lightingPanelOpen }),
+      setSidePanelTab: (sidePanelTab) => set({ sidePanelTab }),
       setHoveredNodeId: (hoveredNodeId) => set({ hoveredNodeId }),
       setMeasurementMode: (measurementMode) =>
         set(

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildCorbelSegments } from './GrandGalleryMesh';
+import { buildCorbelSegments } from './grandGallerySegments';
 import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
 
 describe('Grand Gallery Corbel Vault Geometry', () => {

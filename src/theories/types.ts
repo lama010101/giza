@@ -5,6 +5,7 @@ import type { SceneObject } from '@/schemas/object';
 import type { Simulation } from '@/schemas/simulation';
 import type { Source } from '@/schemas/source';
 import type { VisualizationRule } from '@/schemas/hypothesis';
+import type { Vector3 } from '@/schemas/location';
 
 export interface HypothesisContext {
   evidence: Evidence[];
@@ -12,6 +13,19 @@ export interface HypothesisContext {
   locations: Location[];
   sources: Source[];
   simulations: Simulation[];
+}
+
+export interface HypothesisGeometryNode {
+  id: string;
+  name: string;
+  position: Vector3;
+  rotation?: Vector3;
+  size: Vector3;
+  color: string;
+  opacity: number;
+  hypothesisId: string;
+  evidenceIds: string[];
+  metadata?: Record<string, unknown>;
 }
 
 export interface HypothesisPlugin {
@@ -22,4 +36,5 @@ export interface HypothesisPlugin {
   getHypothesis(context: HypothesisContext): Hypothesis;
   getSimulations?(): Simulation[];
   getVisualizationRules?(objectId: string, context: HypothesisContext): VisualizationRule[];
+  getGeometryNodes?(context: HypothesisContext): HypothesisGeometryNode[];
 }
