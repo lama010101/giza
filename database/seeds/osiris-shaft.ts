@@ -266,7 +266,8 @@ export const evidence: z.input<typeof EvidenceSchema>[] = [
   {
     id: 'EV-000010',
     title: 'Total vertical depth of the Osiris Shaft',
-    description: 'Sum of Shaft A, B, and C depths: 9.62 + 13.25 + 7.50 = 30.37 m.',
+    description:
+      'Sum of Shaft A, B, and C depths: 9.62 + 13.25 + 7.50 = 30.37 m. The Level 2 floor is 0.28 m below the bottom of Shaft B, so the Level 3 floor lies at approximately 30.65 m below the causeway entrance.',
     category: 'Measurement',
     primaryClass: 'E2',
     confidence: 98,
