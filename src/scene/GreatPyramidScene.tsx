@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
+import { DoubleSide, FrontSide } from 'three';
 import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
 import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -95,6 +96,7 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
+        side={isPyramid ? DoubleSide : FrontSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
