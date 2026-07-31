@@ -6,11 +6,13 @@ import type { BlockoutNode } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
 import { useAppStore } from '@/store/app';
 import { useLightingStore } from '@/store/lighting';
+import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import { CameraRig } from './CameraRig';
 import { WaterPlane } from './WaterPlane';
+import { WaterMesh } from './WaterMesh';
 import { Level0Surface } from './Level0Surface';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
@@ -117,6 +119,8 @@ export function OsirisScene(): JSX.Element {
   const localIntensity = useLightingStore((s) => s.localIntensity);
   const background = useLightingStore((s) => s.background);
 
+  const waterLevel = useSimulationStore((s) => s.waterLevel);
+
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
   const activeRules: VisualizationRule[] = [];
@@ -179,6 +183,15 @@ export function OsirisScene(): JSX.Element {
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}
       {hydraulicActive && <WaterPlane />}
+      {hydraulicActive && (
+        <WaterMesh
+          position={[-1.4, -30.4, -7.0]}
+          size={6.5}
+          elevation={waterLevel}
+          turbidity={0.3}
+          color="#0a4a6b"
+        />
+      )}
       {measurementStart && <MeasurementMarker point={measurementStart} />}
       {measurementEnd && <MeasurementMarker point={measurementEnd} />}
     </Canvas>

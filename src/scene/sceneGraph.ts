@@ -12,6 +12,43 @@ export const IDENTITY_TRANSFORM: Transform = {
   scale: { x: 1, y: 1, z: 1 },
 };
 
+/**
+ * Computes an axis-aligned bounding box from a center position and size.
+ * Used by blockout-based scene graphs where nodes have position + size.
+ */
+export function boundingBoxFromSize(center: Vector3, size: Vector3): BoundingBox {
+  return {
+    min: {
+      x: center.x - size.x / 2,
+      y: center.y - size.y / 2,
+      z: center.z - size.z / 2,
+    },
+    max: {
+      x: center.x + size.x / 2,
+      y: center.y + size.y / 2,
+      z: center.z + size.z / 2,
+    },
+  };
+}
+
+export interface BoundingBox {
+  min: Vector3;
+  max: Vector3;
+}
+
+export interface SurveyReference {
+  /** Survey point ID (e.g., "SP-001") */
+  id: string;
+  /** Survey method used (e.g., "total-station", "photogrammetry", "laser-scan") */
+  method: string;
+  /** Date of survey (ISO 8601) */
+  date: string;
+  /** Surveyor or team name */
+  surveyor: string;
+  /** Coordinate system (e.g., "UTM-36N", "local") */
+  coordinateSystem: string;
+}
+
 export interface SceneNodeMetadata {
   objectId?: string;
   evidenceIds?: string[];
@@ -19,6 +56,10 @@ export interface SceneNodeMetadata {
   confidence?: number;
   hypothesisIds?: string[];
   layer?: string;
+  /** Axis-aligned bounding box in local coordinates (M09-T02) */
+  boundingBox?: BoundingBox;
+  /** Survey reference for georeferencing (M09-T02) */
+  surveyReference?: SurveyReference;
 }
 
 export interface SceneNode {
