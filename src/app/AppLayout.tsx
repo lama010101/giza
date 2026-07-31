@@ -1,6 +1,7 @@
 import { ModeSelector } from '@/ui/ModeSelector';
 import { SidePanel } from '@/ui/SidePanel';
 import { LightingPanel } from '@/ui/LightingPanel';
+import { BottomToolbar } from '@/ui/BottomToolbar';
 import { Viewport } from '@/scene/Viewport';
 import { useAppStore } from '@/store/app';
 
@@ -35,6 +36,7 @@ export function AppLayout(): JSX.Element {
         <Viewport />
         <SidePanel />
       </main>
+      <BottomToolbar />
     </div>
   );
 }
