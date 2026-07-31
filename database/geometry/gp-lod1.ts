@@ -374,8 +374,11 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   nodes.push(fromBlockout('kings-sarcophagus', 'measured'));
 
   // --- Relieving Chambers ---
-  // Aligned with corrected KC z, stacked above KC ceiling
+  // Aligned with corrected KC z and preserving the measured vertical spacing
+  // (Vyse total height from KC floor to Campbell's roof = 21.11 m).
   const kcCeilingY = GP_KINGS_CHAMBER.floorY + GP_KINGS_CHAMBER.height;
+  const blockoutKC = getBlockoutNode('kings-chamber');
+  const blockoutKCCeilingY = blockoutKC.position.y + blockoutKC.size.y / 2;
   const relievingNames = [
     'relieving-davison',
     'relieving-wellington',
@@ -383,23 +386,20 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     'relieving-arbuthnot',
     'relieving-campbell',
   ] as const;
-  let relievingY = kcCeilingY;
   for (const id of relievingNames) {
     const blockout = getBlockoutNode(id);
-    const h = blockout.size.y;
     nodes.push(
       calculated({
         ...blockout,
         position: {
           x: GP_GRAND_GALLERY.xOffset,
-          y: relievingY + h / 2,
+          y: kcCeilingY + (blockout.position.y - blockoutKCCeilingY),
           z: kcCenterZ,
         },
         lod: 'LOD1',
         derivation: 'calculated',
       } as BlockoutNodeLOD1),
     );
-    relievingY += h;
   }
 
   // --- Queen's Chamber ---
@@ -432,19 +432,24 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   nodes.push(fromBlockout('queens-niche', 'measured'));
 
   // --- Queen's Chamber Passage ---
-  // Horizontal passage from AP (at QC floor elevation) southward to QC north wall
+  // Measured-length horizontal passage from the Grand Gallery lower end to the
+  // Queen's Chamber north wall (Petrie 43.96 m). The start z is derived from the
+  // known length and the x offset between the GG axis and the QC axis.
   {
-    const apDistToQC =
-      (GP_QUEENS_CHAMBER.floorY - poiY) / Math.sin(degToRad(GP_ASCENDING_PASSAGE.angleDeg));
-    const apQCJunctionZ = poiZ + apDistToQC * Math.cos(degToRad(GP_ASCENDING_PASSAGE.angleDeg));
     const qcNorthZ = GP_QUEENS_CHAMBER.centerZ - GP_QUEENS_CHAMBER.depth / 2;
+    const qcPassageStartX = GP_GRAND_GALLERY.xOffset;
+    const qcPassageEndX = GP_QUEENS_CHAMBER.centerX;
+    const qcPassageRun = Math.sqrt(
+      GP_QC_PASSAGE.length ** 2 - (qcPassageStartX - qcPassageEndX) ** 2,
+    );
+    const qcPassageStartZ = qcNorthZ - qcPassageRun;
     const qcPassageStart: Vector3 = {
-      x: GP_ENTRANCE.xOffset,
+      x: qcPassageStartX,
       y: GP_QUEENS_CHAMBER.floorY,
-      z: apQCJunctionZ,
+      z: qcPassageStartZ,
     };
     const qcPassageEnd: Vector3 = {
-      x: GP_QUEENS_CHAMBER.centerX,
+      x: qcPassageEndX,
       y: GP_QUEENS_CHAMBER.floorY,
       z: qcNorthZ,
     };
