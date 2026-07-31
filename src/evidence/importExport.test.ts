@@ -47,19 +47,18 @@ function makeEvidence(overrides: Partial<Evidence> = {}): Evidence {
 
 function makeSource(overrides: Partial<Source> = {}): Source {
   return {
-    id: 'SRC-001',
-    type: 'Journal Article',
+    id: 'SRC-0001',
+    type: 'Journal',
     title: 'The Osiris Shaft: A Reassessment',
     authors: [{ name: 'Jane Doe', orcid: '0000-0000-0000-0000' }],
     year: 2020,
     publication: 'Journal of Egyptian Archaeology',
     doi: '10.1234/example',
     url: 'https://example.com',
-    reliability: 0.9,
+    reliability: 90,
     license: 'CC-BY',
-    tags: [],
     ...overrides,
-  } as Source;
+  } as unknown as Source;
 }
 
 describe('Import/Export (M02-T12/T13)', () => {

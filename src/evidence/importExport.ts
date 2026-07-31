@@ -100,14 +100,21 @@ function sourceToBibTeX(source: Source): string {
 
 function bibTeXType(sourceType: string): string {
   const map: Record<string, string> = {
+    Journal: 'article',
     'Journal Article': 'article',
     Book: 'book',
     'Book Chapter': 'incollection',
+    Conference: 'inproceedings',
     'Conference Paper': 'inproceedings',
     'Archaeological Report': 'techreport',
     Survey: 'techreport',
     Thesis: 'phdthesis',
     Website: 'misc',
+    Museum: 'misc',
+    Government: 'techreport',
+    Video: 'misc',
+    Photograph: 'misc',
+    'Personal Communication': 'misc',
   };
   return map[sourceType] ?? 'misc';
 }
@@ -161,14 +168,21 @@ function sourceToRIS(source: Source): string {
 
 function risTypeMap(sourceType: string): string {
   const map: Record<string, string> = {
+    Journal: 'JOUR',
     'Journal Article': 'JOUR',
     Book: 'BOOK',
     'Book Chapter': 'CHAP',
+    Conference: 'CONF',
     'Conference Paper': 'CONF',
     'Archaeological Report': 'RPRT',
     Survey: 'RPRT',
     Thesis: 'THES',
     Website: 'ELEC',
+    Museum: 'GEN',
+    Government: 'RPRT',
+    Video: 'ELEC',
+    Photograph: 'ART',
+    'Personal Communication': 'PCOMM',
   };
   return map[sourceType] ?? 'GEN';
 }
@@ -226,8 +240,12 @@ export function importFromJSON(json: string): ImportResult {
       if (parsed.success) {
         imported.push(parsed.data);
       } else {
+        const recordId =
+          typeof record === 'object' && record !== null && 'id' in record
+            ? String((record as Record<string, unknown>).id)
+            : 'unknown';
         errors.push(
-          `Failed to validate ${record.id ?? 'unknown'}: ${parsed.error.issues[0]?.message ?? 'validation error'}`,
+          `Failed to validate ${recordId}: ${parsed.error.issues[0]?.message ?? 'validation error'}`,
         );
       }
     }
