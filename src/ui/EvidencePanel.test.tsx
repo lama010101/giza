@@ -6,9 +6,9 @@ import { EvidencePanel } from './EvidencePanel';
 describe('EvidencePanel', () => {
   beforeEach(() => {
     useAppStore.setState({
-      activeMonument: 'osiris',
       selectedEvidenceId: null,
       bookmarkedObjectIds: [],
+      activeMonument: 'osiris',
     });
   });
   it('renders evidence list and search input', () => {
