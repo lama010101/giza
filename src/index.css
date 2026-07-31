@@ -700,6 +700,43 @@ body,
   cursor: pointer;
 }
 
+/* ─── Lighting Panel Extensions (M04-T05) ─── */
+
+.lighting-mode-select {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  background: var(--stone-800);
+  color: var(--stone-10);
+  border: 1px solid var(--stone-600);
+  border-radius: 0.25rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.lighting-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.lighting-layer-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--stone-100);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  background: var(--stone-800);
+  border: 1px solid var(--stone-600);
+  border-radius: 0.25rem;
+}
+
+.lighting-layer-toggle input {
+  cursor: pointer;
+}
+
 .layer-toggle-all {
   margin-bottom: 0.5rem;
 }
