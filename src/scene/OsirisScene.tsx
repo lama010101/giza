@@ -11,9 +11,11 @@ import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import { CameraRig } from './CameraRig';
 import { WaterPlane } from './WaterPlane';
+import { Level0Surface } from './Level0Surface';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
+  'level-0': { metalness: 0.0, roughness: 0.95 },
   shafts: { metalness: 0.05, roughness: 0.9 },
   'level-1': { metalness: 0.1, roughness: 0.8 },
   'level-2': { metalness: 0.1, roughness: 0.8 },
@@ -171,6 +173,8 @@ export function OsirisScene(): JSX.Element {
           color="#ffe4b5"
         />
       ))}
+      {/* Level 0 — Surface context (M09-T03) */}
+      <Level0Surface />
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
       ))}

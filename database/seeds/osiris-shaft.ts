@@ -35,6 +35,7 @@ export const locations: z.input<typeof LocationSchema>[] = [
     parent: 'LOC-001',
   },
   { id: 'LOC-005', name: 'Level 3 — Vault and Tunnels', parent: 'LOC-001' },
+  { id: 'LOC-006', name: 'Level 0 — Surface', parent: 'LOC-001' },
 ];
 
 export const objects: z.input<typeof ObjectSchema>[] = [
@@ -172,6 +173,24 @@ export const objects: z.input<typeof ObjectSchema>[] = [
     confidence: 65,
     evidence: ['EV-000017'],
     sourceIds: ['SRC-0002'],
+  },
+  {
+    id: 'OBJ-0016',
+    name: 'Surface Reference Marker 1',
+    type: 'Architecture',
+    objectClass: 'Modern Installations',
+    confidence: 100,
+    evidence: ['EV-000018'],
+    sourceIds: ['SRC-0001'],
+  },
+  {
+    id: 'OBJ-0017',
+    name: 'Surface Reference Marker 2',
+    type: 'Architecture',
+    objectClass: 'Modern Installations',
+    confidence: 100,
+    evidence: ['EV-000019'],
+    sourceIds: ['SRC-0001'],
   },
 ];
 
@@ -455,6 +474,30 @@ export const evidence: z.input<typeof EvidenceSchema>[] = [
     sourceIds: ['SRC-0002'],
     locationId: 'LOC-005',
     objectIds: ['OBJ-0015'],
+  },
+  {
+    id: 'EV-000018',
+    title: 'Surface reference marker 1 (northeast)',
+    description:
+      'Modern survey marker placed at the northeast perimeter of the excavation area. Used for georeferencing and coordinate system alignment.',
+    category: 'Survey',
+    confidence: 100,
+    status: 'Published',
+    sourceIds: ['SRC-0001'],
+    locationId: 'LOC-006',
+    objectIds: ['OBJ-0016'],
+  },
+  {
+    id: 'EV-000019',
+    title: 'Surface reference marker 2 (southwest)',
+    description:
+      'Modern survey marker placed at the southwest perimeter of the excavation area. Used for georeferencing and coordinate system alignment.',
+    category: 'Survey',
+    confidence: 100,
+    status: 'Published',
+    sourceIds: ['SRC-0001'],
+    locationId: 'LOC-006',
+    objectIds: ['OBJ-0017'],
   },
 ];
 
