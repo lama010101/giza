@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
+import { DoubleSide, FrontSide } from 'three';
 import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
 import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -72,20 +73,30 @@ function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
   };
 
   const pbr = LAYER_PBR[block.layer] ?? { metalness: 0.1, roughness: 0.85 };
+  const isPyramid = node.id === 'pyramid-exterior';
+  const baseSide = Math.max(block.size.x, block.size.z);
+  const rotationX = block.rotation?.x ?? 0;
+  const rotationY = (block.rotation?.y ?? 0) + (isPyramid ? Math.PI / 4 : 0);
+  const rotationZ = block.rotation?.z ?? 0;
 
   return (
     <mesh
       position={[position.x, position.y, position.z]}
-      rotation={[block.rotation?.x ?? 0, block.rotation?.y ?? 0, block.rotation?.z ?? 0]}
+      rotation={[rotationX, rotationY, rotationZ]}
       onClick={handleClick}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
     >
-      <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
+      {isPyramid ? (
+        <coneGeometry args={[baseSide / Math.sqrt(2), block.size.y, 4]} />
+      ) : (
+        <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
+      )}
       <meshStandardMaterial
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
+        side={isPyramid ? DoubleSide : FrontSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
