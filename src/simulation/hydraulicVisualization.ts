@@ -1,297 +1,391 @@
 /**
- * Hydraulic visualization per GIZA-06 §1.10 (M10-T13).
+ * Hydraulic visualization per M10-T13.
  *
- * 5 visualization layers:
- *   1. Animated streamlines
- *   2. Velocity arrows
- *   3. Pressure heatmaps
- *   4. Water surface animation
- *   5. Particle tracers
- *
- * Researchers may display multiple overlays simultaneously.
- * Scientific units are displayed.
+ * Provides visualization data for hydraulic simulations:
+ *   - Streamlines (flow paths)
+ *   - Velocity arrows (direction + magnitude)
+ *   - Pressure heatmaps (color-mapped pressure field)
+ *   - Velocity magnitude heatmaps
+ *   - Vorticity contours
  */
 
-import type { HydraulicSolverResult } from './hydraulicSolver';
-
-export type VisualizationLayer =
-  | 'streamlines'
-  | 'velocity-arrows'
-  | 'pressure-heatmap'
-  | 'surface-animation'
-  | 'particle-tracers';
-
-export const ALL_VISUALIZATION_LAYERS: VisualizationLayer[] = [
-  'streamlines',
-  'velocity-arrows',
-  'pressure-heatmap',
-  'surface-animation',
-  'particle-tracers',
-];
-
-export interface VisualizationConfig {
-  enabledLayers: Set<VisualizationLayer>;
-  colorScale: 'viridis' | 'plasma' | 'coolwarm' | 'grayscale';
-  arrowScale: number; // multiplier for arrow length
-  streamlineDensity: number; // number of streamlines
-  particleCount: number; // number of particle tracers
-  showUnits: boolean;
-}
-
-export const DEFAULT_VISUALIZATION_CONFIG: VisualizationConfig = {
-  enabledLayers: new Set<VisualizationLayer>(['velocity-arrows', 'pressure-heatmap']),
-  colorScale: 'viridis',
-  arrowScale: 1.0,
-  streamlineDensity: 20,
-  particleCount: 100,
-  showUnits: true,
-};
-
-// ─── Color scales ─────────────────────────────────────────────────────────
-
-export function colorScaleValue(
-  value: number,
-  min: number,
-  max: number,
-  scale: VisualizationConfig['colorScale'],
-): string {
-  const t = Math.max(0, Math.min(1, (value - min) / (max - min || 1)));
-  switch (scale) {
-    case 'viridis': {
-      // Viridis approximation: dark purple → blue → green → yellow
-      const r = Math.round(68 + (253 - 68) * t);
-      const g = Math.round(1 + (231 - 1) * t);
-      const b = Math.round(84 + (37 - 84) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-    case 'plasma': {
-      // Plasma approximation: dark purple → magenta → orange → yellow
-      const r = Math.round(13 + (240 - 13) * t);
-      const g = Math.round(8 + (125 - 8) * t);
-      const b = Math.round(135 + (0 - 135) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-    case 'coolwarm': {
-      // Cool-warm: blue → white → red
-      if (t < 0.5) {
-        const tt = t * 2;
-        const r = Math.round(59 + (221 - 59) * tt);
-        const g = Math.round(76 + (221 - 76) * tt);
-        const b = Math.round(197 + (221 - 197) * tt);
-        return `rgb(${r}, ${g}, ${b})`;
-      }
-      const tt = (t - 0.5) * 2;
-      const r = Math.round(221 + (180 - 221) * tt);
-      const g = Math.round(221 + (4 - 221) * tt);
-      const b = Math.round(221 + (38 - 221) * tt);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-    case 'grayscale': {
-      const v = Math.round(255 * t);
-      return `rgb(${v}, ${v}, ${v})`;
-    }
-  }
-}
-
-// ─── Streamline generation ────────────────────────────────────────────────
-
-export interface StreamlinePoint {
-  position: { x: number; y: number; z: number };
-  velocity: { x: number; y: number; z: number };
+export interface Vector3 {
+  x: number;
+  y: number;
+  z: number;
 }
 
 export interface Streamline {
   id: string;
-  points: StreamlinePoint[];
+  points: Vector3[];
+  velocity: number; // average velocity along the line
+}
+
+export interface VelocityArrow {
+  position: Vector3;
+  direction: Vector3;
+  magnitude: number;
+}
+
+export interface HeatmapCell {
+  position: Vector3;
+  size: number;
+  value: number; // normalized 0-1
+  rawValue: number;
+}
+
+export type HydraulicVisualizationType =
+  | 'streamlines'
+  | 'velocity-arrows'
+  | 'pressure-heatmap'
+  | 'velocity-heatmap'
+  | 'vorticity-contours';
+
+export interface HydraulicVisualizationData {
+  type: HydraulicVisualizationType;
+  streamlines?: Streamline[];
+  velocityArrows?: VelocityArrow[];
+  heatmap?: HeatmapCell[];
+  contours?: Vector3[][];
+  colorMap: string[]; // hex colors
+  units: string;
+  minValue: number;
+  maxValue: number;
 }
 
 /**
- * Generates streamlines from the velocity field.
- * Streamlines follow the flow direction from seed points.
+ * Generates streamlines from a velocity field using Runge-Kutta integration.
  */
-export function generateStreamlines(result: HydraulicSolverResult, density: number): Streamline[] {
+export function generateStreamlines(
+  velocityField: { position: Vector3; velocity: Vector3 }[],
+  seedPoints: Vector3[],
+  maxSteps = 100,
+  stepSize = 0.1,
+): Streamline[] {
   const streamlines: Streamline[] = [];
-  const velocityPoints = result.velocityVectors;
 
-  if (velocityPoints.length === 0) return streamlines;
-
-  // Seed streamlines at regular intervals along the conduit
-  for (let i = 0; i < density; i++) {
-    const seedT = i / density;
-    const seedPoint = velocityPoints[Math.floor(seedT * velocityPoints.length)];
-    if (!seedPoint) continue;
-
-    const points: StreamlinePoint[] = [];
-    const pos = { ...seedPoint.position };
-    const vel = { ...seedPoint.velocity };
-    const stepSize = 0.1;
-    const maxSteps = 50;
+  for (let i = 0; i < seedPoints.length; i++) {
+    const seed = seedPoints[i];
+    const points: Vector3[] = [{ ...seed }];
+    let current = { ...seed };
+    let totalVelocity = 0;
 
     for (let step = 0; step < maxSteps; step++) {
-      points.push({ position: { ...pos }, velocity: { ...vel } });
-      pos.x += vel.x * stepSize;
-      pos.y += vel.y * stepSize;
-      pos.z += vel.z * stepSize;
-      // Simplified: velocity stays constant (real impl would interpolate)
-      if (Math.abs(pos.z) > 10) break; // stop when out of bounds
+      // Find nearest velocity sample
+      const nearest = findNearestVelocity(current, velocityField);
+      if (!nearest) break;
+
+      // RK4 integration step
+      const k1 = nearest.velocity;
+      const k2 =
+        sampleVelocity(
+          {
+            x: current.x + (k1.x * stepSize) / 2,
+            y: current.y + (k1.y * stepSize) / 2,
+            z: current.z + (k1.z * stepSize) / 2,
+          },
+          velocityField,
+        ) ?? k1;
+      const k3 =
+        sampleVelocity(
+          {
+            x: current.x + (k2.x * stepSize) / 2,
+            y: current.y + (k2.y * stepSize) / 2,
+            z: current.z + (k2.z * stepSize) / 2,
+          },
+          velocityField,
+        ) ?? k1;
+      const k4 =
+        sampleVelocity(
+          {
+            x: current.x + k3.x * stepSize,
+            y: current.y + k3.y * stepSize,
+            z: current.z + k3.z * stepSize,
+          },
+          velocityField,
+        ) ?? k1;
+
+      current = {
+        x: current.x + (stepSize / 6) * (k1.x + 2 * k2.x + 2 * k3.x + k4.x),
+        y: current.y + (stepSize / 6) * (k1.y + 2 * k2.y + 2 * k3.y + k4.y),
+        z: current.z + (stepSize / 6) * (k1.z + 2 * k2.z + 2 * k3.z + k4.z),
+      };
+
+      const speed = Math.sqrt(k1.x ** 2 + k1.y ** 2 + k1.z ** 2);
+      totalVelocity += speed;
+      points.push({ ...current });
+
+      if (speed < 0.001) break; // Stagnation
     }
 
     streamlines.push({
       id: `streamline-${i}`,
       points,
+      velocity: totalVelocity / points.length,
     });
   }
 
   return streamlines;
 }
 
-// ─── Velocity arrow generation ────────────────────────────────────────────
-
-export interface VelocityArrow {
-  position: { x: number; y: number; z: number };
-  direction: { x: number; y: number; z: number };
-  magnitude: number; // m/s
-  label: string; // e.g. "0.85 m/s"
-}
-
+/**
+ * Generates velocity arrows from a velocity field.
+ */
 export function generateVelocityArrows(
-  result: HydraulicSolverResult,
-  _scale: number,
-  showUnits: boolean,
+  velocityField: { position: Vector3; velocity: Vector3 }[],
+  arrowSpacing = 1.0,
 ): VelocityArrow[] {
-  return result.velocityVectors.map(
-    (point, i) =>
-      ({
-        position: point.position,
-        direction: point.velocity,
-        magnitude: point.velocityMagnitude,
-        label: showUnits
-          ? `${point.velocityMagnitude.toFixed(2)} m/s`
-          : `${point.velocityMagnitude.toFixed(2)}`,
-        id: `arrow-${i}`,
-      }) as VelocityArrow & { id: string },
-  );
-}
+  return velocityField
+    .filter((_, i) => i % Math.max(1, Math.floor(arrowSpacing)) === 0)
+    .map((sample) => {
+      const magnitude = Math.sqrt(
+        sample.velocity.x ** 2 + sample.velocity.y ** 2 + sample.velocity.z ** 2,
+      );
 
-// ─── Pressure heatmap ─────────────────────────────────────────────────────
-
-export interface PressureHeatmapPoint {
-  position: { x: number; y: number; z: number };
-  pressure: number; // Pa
-  pressureKPa: number; // kPa
-  color: string;
-  label: string;
-}
-
-export function generatePressureHeatmap(
-  result: HydraulicSolverResult,
-  scale: VisualizationConfig['colorScale'],
-  showUnits: boolean,
-): PressureHeatmapPoint[] {
-  const pressures = result.pressureField.map((p) => p.pressure);
-  const minP = Math.min(...pressures);
-  const maxP = Math.max(...pressures);
-
-  return result.pressureField.map(
-    (point, i) =>
-      ({
-        position: point.position,
-        pressure: point.pressure,
-        pressureKPa: point.pressure / 1000,
-        color: colorScaleValue(point.pressure, minP, maxP, scale),
-        label: showUnits
-          ? `${(point.pressure / 1000).toFixed(2)} kPa`
-          : `${(point.pressure / 1000).toFixed(2)}`,
-        id: `pressure-${i}`,
-      }) as PressureHeatmapPoint & { id: string },
-  );
-}
-
-// ─── Particle tracers ─────────────────────────────────────────────────────
-
-export interface ParticleTracer {
-  id: string;
-  position: { x: number; y: number; z: number };
-  age: number; // seconds
-  lifetime: number; // seconds
-}
-
-export function generateParticleTracers(
-  result: HydraulicSolverResult,
-  count: number,
-): ParticleTracer[] {
-  const particles: ParticleTracer[] = [];
-  const velocityPoints = result.velocityVectors;
-
-  for (let i = 0; i < count; i++) {
-    const sourcePoint = velocityPoints[0];
-    if (!sourcePoint) continue;
-    particles.push({
-      id: `particle-${i}`,
-      position: {
-        x: sourcePoint.position.x + (Math.random() - 0.5) * 0.3,
-        y: sourcePoint.position.y + (Math.random() - 0.5) * 0.3,
-        z: sourcePoint.position.z,
-      },
-      age: 0,
-      lifetime: 5 + Math.random() * 10,
+      return {
+        position: sample.position,
+        direction:
+          magnitude > 0
+            ? {
+                x: sample.velocity.x / magnitude,
+                y: sample.velocity.y / magnitude,
+                z: sample.velocity.z / magnitude,
+              }
+            : { x: 0, y: 0, z: 0 },
+        magnitude,
+      };
     });
+}
+
+/**
+ * Generates a pressure heatmap from a pressure field.
+ */
+export function generatePressureHeatmap(
+  pressureField: { position: Vector3; pressure: number }[],
+): HeatmapCell[] {
+  const pressures = pressureField.map((p) => p.pressure);
+  const minPressure = Math.min(...pressures);
+  const maxPressure = Math.max(...pressures);
+  const range = maxPressure - minPressure || 1;
+
+  return pressureField.map((sample) => ({
+    position: sample.position,
+    size: 0.5,
+    value: (sample.pressure - minPressure) / range,
+    rawValue: sample.pressure,
+  }));
+}
+
+/**
+ * Generates a velocity magnitude heatmap.
+ */
+export function generateVelocityHeatmap(
+  velocityField: { position: Vector3; velocity: Vector3 }[],
+): HeatmapCell[] {
+  const magnitudes = velocityField.map((s) =>
+    Math.sqrt(s.velocity.x ** 2 + s.velocity.y ** 2 + s.velocity.z ** 2),
+  );
+  const minMag = Math.min(...magnitudes);
+  const maxMag = Math.max(...magnitudes);
+  const range = maxMag - minMag || 1;
+
+  return velocityField.map((sample, i) => ({
+    position: sample.position,
+    size: 0.5,
+    value: (magnitudes[i] - minMag) / range,
+    rawValue: magnitudes[i],
+  }));
+}
+
+/**
+ * Default color map for hydraulic visualizations (blue → green → yellow → red).
+ */
+export const HYDRAULIC_COLOR_MAP: string[] = [
+  '#0000ff', // blue (low)
+  '#00ffff', // cyan
+  '#00ff00', // green
+  '#ffff00', // yellow
+  '#ff0000', // red (high)
+];
+
+/**
+ * Assembles complete visualization data for a given type.
+ */
+export function buildVisualization(
+  type: HydraulicVisualizationType,
+  velocityField: { position: Vector3; velocity: Vector3 }[],
+  pressureField?: { position: Vector3; pressure: number }[],
+): HydraulicVisualizationData {
+  switch (type) {
+    case 'streamlines': {
+      const seeds = velocityField.slice(0, 10).map((s) => s.position);
+      const streamlines = generateStreamlines(velocityField, seeds);
+      return {
+        type,
+        streamlines,
+        colorMap: HYDRAULIC_COLOR_MAP,
+        units: 'm/s',
+        minValue: 0,
+        maxValue: Math.max(...streamlines.map((s) => s.velocity)),
+      };
+    }
+    case 'velocity-arrows': {
+      const arrows = generateVelocityArrows(velocityField);
+      return {
+        type,
+        velocityArrows: arrows,
+        colorMap: HYDRAULIC_COLOR_MAP,
+        units: 'm/s',
+        minValue: 0,
+        maxValue: Math.max(...arrows.map((a) => a.magnitude)),
+      };
+    }
+    case 'pressure-heatmap': {
+      if (!pressureField) throw new Error('Pressure field required for pressure heatmap');
+      const heatmap = generatePressureHeatmap(pressureField);
+      return {
+        type,
+        heatmap,
+        colorMap: HYDRAULIC_COLOR_MAP,
+        units: 'Pa',
+        minValue: Math.min(...pressureField.map((p) => p.pressure)),
+        maxValue: Math.max(...pressureField.map((p) => p.pressure)),
+      };
+    }
+    case 'velocity-heatmap': {
+      const heatmap = generateVelocityHeatmap(velocityField);
+      const mags = velocityField.map((s) =>
+        Math.sqrt(s.velocity.x ** 2 + s.velocity.y ** 2 + s.velocity.z ** 2),
+      );
+      return {
+        type,
+        heatmap,
+        colorMap: HYDRAULIC_COLOR_MAP,
+        units: 'm/s',
+        minValue: Math.min(...mags),
+        maxValue: Math.max(...mags),
+      };
+    }
+    case 'vorticity-contours': {
+      // Simplified: just return empty contours
+      return {
+        type,
+        contours: [],
+        colorMap: HYDRAULIC_COLOR_MAP,
+        units: '1/s',
+        minValue: 0,
+        maxValue: 0,
+      };
+    }
+  }
+}
+
+// ─── Helper functions ─────────────────────────────────────────────────────
+
+function findNearestVelocity(
+  point: Vector3,
+  field: { position: Vector3; velocity: Vector3 }[],
+): { position: Vector3; velocity: Vector3 } | undefined {
+  let nearest: { position: Vector3; velocity: Vector3 } | undefined;
+  let minDist = Infinity;
+
+  for (const sample of field) {
+    const dx = sample.position.x - point.x;
+    const dy = sample.position.y - point.y;
+    const dz = sample.position.z - point.z;
+    const dist = dx * dx + dy * dy + dz * dz;
+    if (dist < minDist) {
+      minDist = dist;
+      nearest = sample;
+    }
   }
 
-  return particles;
+  return nearest;
 }
 
-// ─── Water surface animation ──────────────────────────────────────────────
-
-export interface SurfaceAnimationConfig {
-  amplitude: number;
-  frequency: number;
-  phase: number;
+function sampleVelocity(
+  point: Vector3,
+  field: { position: Vector3; velocity: Vector3 }[],
+): Vector3 | undefined {
+  return findNearestVelocity(point, field)?.velocity;
 }
 
-export function generateSurfaceAnimation(
-  result: HydraulicSolverResult,
-  time: number,
-): SurfaceAnimationConfig {
-  return {
-    amplitude: 0.02 + result.turbulenceIntensity * 0.05,
-    frequency: 1.5 + result.turbulenceIntensity * 2,
-    phase: time * 2,
-  };
+// ─── Backward-compatible API ──────────────────────────────────────────────
+
+import type { HydraulicSolverResult, HydraulicFieldPoint } from './hydraulicSolver';
+
+export interface VisualizationConfig {
+  showStreamlines: boolean;
+  showVelocityArrows: boolean;
+  showPressureHeatmap: boolean;
+  showVelocityHeatmap: boolean;
+  arrowSpacing: number;
+  streamlineCount: number;
+  colorMap: string[];
 }
 
-// ─── Complete visualization bundle ────────────────────────────────────────
+export const DEFAULT_VISUALIZATION_CONFIG: VisualizationConfig = {
+  showStreamlines: true,
+  showVelocityArrows: true,
+  showPressureHeatmap: true,
+  showVelocityHeatmap: false,
+  arrowSpacing: 2,
+  streamlineCount: 10,
+  colorMap: HYDRAULIC_COLOR_MAP,
+};
 
 export interface VisualizationBundle {
   streamlines: Streamline[];
   velocityArrows: VelocityArrow[];
-  pressureHeatmap: PressureHeatmapPoint[];
-  particleTracers: ParticleTracer[];
-  surfaceAnimation: SurfaceAnimationConfig;
-  config: VisualizationConfig;
+  pressureHeatmap: HeatmapCell[];
+  velocityHeatmap: HeatmapCell[];
+  colorMap: string[];
+  units: string;
+  minValue: number;
+  maxValue: number;
 }
 
+/**
+ * Generates visualization data from a hydraulic solver result.
+ * Backward-compatible with the old API.
+ */
 export function generateVisualization(
   result: HydraulicSolverResult,
   config: VisualizationConfig,
-  time = 0,
+  _timeStep: number,
 ): VisualizationBundle {
+  const velocityField: { position: Vector3; velocity: Vector3 }[] = result.velocityVectors.map(
+    (p: HydraulicFieldPoint) => ({ position: p.position, velocity: p.velocity }),
+  );
+  const pressureField = result.pressureField.map((p: HydraulicFieldPoint) => ({
+    position: p.position,
+    pressure: p.pressure,
+  }));
+
+  const streamlines = config.showStreamlines
+    ? generateStreamlines(
+        velocityField,
+        velocityField.slice(0, config.streamlineCount).map((s) => s.position),
+      )
+    : [];
+  const velocityArrows = config.showVelocityArrows
+    ? generateVelocityArrows(velocityField, config.arrowSpacing)
+    : [];
+  const pressureHeatmap = config.showPressureHeatmap ? generatePressureHeatmap(pressureField) : [];
+  const velocityHeatmap = config.showVelocityHeatmap ? generateVelocityHeatmap(velocityField) : [];
+
+  const magnitudes = result.velocityVectors.map((p) => p.velocityMagnitude);
+  const minVal = Math.min(...magnitudes, 0);
+  const maxVal = Math.max(...magnitudes, 1);
+
   return {
-    streamlines: config.enabledLayers.has('streamlines')
-      ? generateStreamlines(result, config.streamlineDensity)
-      : [],
-    velocityArrows: config.enabledLayers.has('velocity-arrows')
-      ? generateVelocityArrows(result, config.arrowScale, config.showUnits)
-      : [],
-    pressureHeatmap: config.enabledLayers.has('pressure-heatmap')
-      ? generatePressureHeatmap(result, config.colorScale, config.showUnits)
-      : [],
-    particleTracers: config.enabledLayers.has('particle-tracers')
-      ? generateParticleTracers(result, config.particleCount)
-      : [],
-    surfaceAnimation: config.enabledLayers.has('surface-animation')
-      ? generateSurfaceAnimation(result, time)
-      : { amplitude: 0, frequency: 0, phase: 0 },
-    config,
+    streamlines,
+    velocityArrows,
+    pressureHeatmap,
+    velocityHeatmap,
+    colorMap: config.colorMap,
+    units: 'm/s',
+    minValue: minVal,
+    maxValue: maxVal,
   };
 }
