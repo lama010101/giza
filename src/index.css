@@ -2,6 +2,88 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Stone — neutral surfaces */
+  --stone-950: #0d0d0d;
+  --stone-900: #141414;
+  --stone-850: #1a1a1a;
+  --stone-800: #222222;
+  --stone-700: #2a2a2a;
+  --stone-600: #333333;
+  --stone-500: #3a3a3a;
+  --stone-400: #555555;
+  --stone-300: #777777;
+  --stone-200: #9a9a9a;
+  --stone-100: #b0b0b0;
+  --stone-50: #d0d0d0;
+  --stone-10: #e0e0e0;
+
+  /* Sand — warm desert accents */
+  --sand-900: #3d2f1f;
+  --sand-800: #5a4630;
+  --sand-700: #7a6244;
+  --sand-600: #9c8060;
+  --sand-500: #b89a78;
+  --sand-400: #cdaa82;
+  --sand-300: #dabf9a;
+  --sand-200: #e8d2b0;
+  --sand-100: #f0e0c4;
+
+  /* Copper — interactive accents */
+  --copper-900: #4a2c1a;
+  --copper-800: #6b3e26;
+  --copper-700: #8a5232;
+  --copper-600: #a86842;
+  --copper-500: #b87333;
+  --copper-400: #c8853e;
+  --copper-300: #d99a5a;
+  --copper-200: #e8b07a;
+  --copper-100: #f0c89a;
+
+  /* Dark Slate — secondary surfaces */
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #273449;
+  --slate-600: #334155;
+  --slate-500: #3b4d63;
+  --slate-400: #4a5d75;
+  --slate-300: #647890;
+  --slate-200: #8aa0b8;
+  --slate-100: #a8bdd0;
+
+  /* Soft Blue — primary actions */
+  --blue-900: #1a3a5c;
+  --blue-800: #1e4373;
+  --blue-700: #1e5089;
+  --blue-600: #2a5fa3;
+  --blue-500: #3b82f6;
+  --blue-400: #4a8cf6;
+  --blue-300: #60a5fa;
+  --blue-200: #7dbef8;
+  --blue-100: #9ad0fa;
+
+  /* Evidence overlay colors (GIZA - 04 §6.20) */
+  --ev-green: #22c55e;
+  --ev-blue: #3b82f6;
+  --ev-orange: #f59e0b;
+  --ev-purple: #a855f7;
+  --ev-red: #ef4444;
+
+  /* Semantic aliases */
+  --bg-primary: var(--stone-950);
+  --bg-surface: var(--stone-900);
+  --bg-elevated: var(--stone-850);
+  --bg-hover: var(--stone-700);
+  --border-default: var(--stone-700);
+  --border-subtle: var(--stone-800);
+  --text-primary: var(--stone-10);
+  --text-secondary: var(--stone-200);
+  --text-muted: var(--stone-300);
+  --accent: var(--blue-500);
+  --accent-hover: var(--blue-400);
+  --accent-active: var(--blue-600);
+}
+
 html,
 body,
 #root {
