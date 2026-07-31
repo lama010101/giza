@@ -479,14 +479,15 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
 
   // --- Shafts ---
   // KC shafts: computed from corrected KC geometry, exit at pyramid face
+  // Shafts originate from the chamber walls at floor level
   {
-    const kcCeilingY = GP_KINGS_CHAMBER.floorY + GP_KINGS_CHAMBER.height;
+    const kcFloorY = GP_KINGS_CHAMBER.floorY;
     const kcSouthZ = kcCenterZ + GP_KINGS_CHAMBER.depth / 2;
 
-    // KC north shaft: starts at KC north wall ceiling, goes up toward north face
+    // KC north shaft: starts at KC north wall floor, goes up toward north face
     const kcNorthStart: Vector3 = {
       x: GP_GRAND_GALLERY.xOffset,
-      y: kcCeilingY,
+      y: kcFloorY,
       z: kcNorthZ,
     };
     // Solve for t where shaft meets north face:
@@ -530,10 +531,10 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
       }),
     );
 
-    // KC south shaft: starts at KC south wall ceiling, goes up toward south face
+    // KC south shaft: starts at KC south wall floor, goes up toward south face
     const kcSouthStart: Vector3 = {
       x: GP_GRAND_GALLERY.xOffset,
-      y: kcCeilingY,
+      y: kcFloorY,
       z: kcSouthZ,
     };
     const sAng = GP_KC_SHAFTS.south.angleDeg;
@@ -575,9 +576,9 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     );
   }
 
-  // QC shafts: start from QC walls, don't exit pyramid — cap at ~60m
+  // QC shafts: start from QC walls at floor level, don't exit pyramid — cap at ~60m
   {
-    const qcCeilingY = GP_QUEENS_CHAMBER.floorY + GP_QUEENS_CHAMBER.height;
+    const qcFloorY = GP_QUEENS_CHAMBER.floorY;
     const qcNorthZ = GP_QUEENS_CHAMBER.centerZ - GP_QUEENS_CHAMBER.depth / 2;
     const qcSouthZ = GP_QUEENS_CHAMBER.centerZ + GP_QUEENS_CHAMBER.depth / 2;
     const qcShaftMaxLen = 60;
@@ -585,7 +586,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     // QC north shaft
     const qcNorthStart: Vector3 = {
       x: GP_QUEENS_CHAMBER.centerX,
-      y: qcCeilingY,
+      y: qcFloorY,
       z: qcNorthZ,
     };
     const qcNorthEnd = slopedEndpoint(qcNorthStart, GP_QC_SHAFTS.north.angleDeg, qcShaftMaxLen, -1);
@@ -615,7 +616,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     // QC south shaft
     const qcSouthStart: Vector3 = {
       x: GP_QUEENS_CHAMBER.centerX,
-      y: qcCeilingY,
+      y: qcFloorY,
       z: qcSouthZ,
     };
     const qcSouthEnd = slopedEndpoint(qcSouthStart, -GP_QC_SHAFTS.south.angleDeg, qcShaftMaxLen);

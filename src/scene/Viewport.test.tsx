@@ -10,7 +10,6 @@ vi.mock('@react-three/fiber', () => ({
 describe('Viewport', () => {
   beforeEach(() => {
     useAppStore.setState({
-      activeMonument: 'osiris',
       hoveredNodeId: null,
       cameraMode: 'orbit',
       mode: 'Explore',

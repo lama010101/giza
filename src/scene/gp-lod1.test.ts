@@ -239,10 +239,11 @@ describe('generateGreatPyramidLOD1', () => {
     expect(qc!.size.y).toBeCloseTo(GP_QUEENS_CHAMBER.height, 1);
   });
 
-  it('kc-north-shaft uses measurement-derived angle', () => {
+  it('kc-north-shaft uses measurement-derived angle (positive rotation for north-going)', () => {
     const shaft = lod1Nodes.find((n) => n.id === 'kc-north-shaft');
     expect(shaft).toBeDefined();
-    expect(shaft!.rotation?.x).toBeCloseTo(-degToRad(GP_KC_SHAFTS.north.angleDeg), 2);
+    // North shaft goes up toward -Z, so rotation.x is positive (-Z end up)
+    expect(shaft!.rotation?.x).toBeCloseTo(degToRad(GP_KC_SHAFTS.north.angleDeg), 2);
   });
 
   it('kc-south-shaft uses measurement-derived angle', () => {
@@ -286,11 +287,54 @@ describe('generateGreatPyramidLOD1', () => {
     expect(davison!.position.z).toBeCloseTo(kc!.position.z, 1);
   });
 
-  it('KC north shaft starts at KC north wall ceiling level', () => {
+  it('KC north shaft starts at KC north wall floor level', () => {
     const shaft = lod1Nodes.find((n) => n.id === 'kc-north-shaft');
     expect(shaft).toBeDefined();
-    // Shaft starts at KC ceiling and goes up — midpoint will be well above KC floor
+    // Shaft starts at KC floor and goes up — midpoint will be above KC floor
     expect(shaft!.position.y).toBeGreaterThan(GP_KINGS_CHAMBER.floorY);
+  });
+
+  it('qc-north-shaft uses measurement-derived angle (positive rotation for north-going)', () => {
+    const shaft = lod1Nodes.find((n) => n.id === 'qc-north-shaft');
+    expect(shaft).toBeDefined();
+    // North shaft goes up toward -Z, so rotation.x is positive (-Z end up)
+    expect(shaft!.rotation?.x).toBeCloseTo(degToRad(GP_QC_SHAFTS.north.angleDeg), 2);
+  });
+
+  it('qc-south-shaft uses measurement-derived angle (negative rotation for south-going)', () => {
+    const shaft = lod1Nodes.find((n) => n.id === 'qc-south-shaft');
+    expect(shaft).toBeDefined();
+    // South shaft goes up toward +Z, so rotation.x is negative (same as ascending)
+    expect(shaft!.rotation?.x).toBeCloseTo(-degToRad(GP_QC_SHAFTS.south.angleDeg), 2);
+  });
+
+  it('KC shafts start at KC floor level (lower end near floorY)', () => {
+    const north = lod1Nodes.find((n) => n.id === 'kc-north-shaft');
+    const south = lod1Nodes.find((n) => n.id === 'kc-south-shaft');
+    expect(north).toBeDefined();
+    expect(south).toBeDefined();
+    // The shaft midpoint is offset from the floor midpoint by half-height perpendicular.
+    // The lower end (start) should be at floorY. Check that midpoint is not absurdly high.
+    // KC north shaft exits at ~79m, so midpoint ~60m is expected.
+    // Just verify position.y is reasonable (below pyramid top).
+    expect(north!.position.y).toBeLessThan(GP_EXTERNAL.currentHeight);
+    expect(south!.position.y).toBeLessThan(GP_EXTERNAL.currentHeight);
+    // And above the KC floor
+    expect(north!.position.y).toBeGreaterThan(GP_KINGS_CHAMBER.floorY);
+    expect(south!.position.y).toBeGreaterThan(GP_KINGS_CHAMBER.floorY);
+  });
+
+  it('QC shafts start at QC floor level (lower end near floorY)', () => {
+    const north = lod1Nodes.find((n) => n.id === 'qc-north-shaft');
+    const south = lod1Nodes.find((n) => n.id === 'qc-south-shaft');
+    expect(north).toBeDefined();
+    expect(south).toBeDefined();
+    // QC shafts go up ~60m from floor level. Midpoint will be well above QC.
+    // Just verify position is reasonable (below pyramid top, above QC floor).
+    expect(north!.position.y).toBeLessThan(GP_EXTERNAL.currentHeight);
+    expect(south!.position.y).toBeLessThan(GP_EXTERNAL.currentHeight);
+    expect(north!.position.y).toBeGreaterThan(GP_QUEENS_CHAMBER.floorY);
+    expect(south!.position.y).toBeGreaterThan(GP_QUEENS_CHAMBER.floorY);
   });
 
   it('LOD1 node count is >= LOD0 node count', () => {

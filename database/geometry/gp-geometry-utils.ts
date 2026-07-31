@@ -72,18 +72,18 @@ export function slopedBoxFromFloorEndpoints(
   const dy = end.y - start.y;
   const dz = end.z - start.z;
   const absDz = Math.abs(dz);
-  // Use abs(dz) so the angle is always the acute slope angle.
-  // Negate to match Three.js X-rotation convention:
-  // positive rotation → +Z end goes down (descending passage)
-  // negative rotation → +Z end goes up (ascending, grand gallery, north shafts)
-  const angle = -Math.atan2(dy, absDz > 1e-9 ? absDz : 1e-9);
+  // Compute the acute slope angle magnitude
+  const slopeAngle = Math.atan2(Math.abs(dy), absDz > 1e-9 ? absDz : 1e-9);
+  // Three.js X-rotation convention:
+  //   positive rotation → +Z end goes down (descending passage)
+  //   negative rotation → +Z end goes up (ascending, grand gallery, south shafts)
+  // For south-going elements (dz >= 0): negative angle = +Z end up
+  // For north-going elements (dz < 0): positive angle = -Z end up
+  const angle = dz >= 0 ? -slopeAngle : slopeAngle;
   const floorMid = midpoint(start, end);
   // Offset from floor midpoint to box center (half height in perpendicular direction)
-  // For +Z passages: offsetZ = (h/2)*sin(angle)
-  // For -Z passages: offsetZ must be flipped to keep ceiling on the correct side
-  const zSign = dz >= 0 ? 1 : -1;
   const offsetY = (height / 2) * Math.cos(angle);
-  const offsetZ = zSign * (height / 2) * Math.sin(angle);
+  const offsetZ = (height / 2) * Math.sin(angle);
   return {
     position: { x: floorMid.x, y: floorMid.y + offsetY, z: floorMid.z + offsetZ },
     rotation: { x: angle, y: 0, z: 0 },
