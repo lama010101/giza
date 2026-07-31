@@ -42,6 +42,7 @@ export interface UpdateEvidenceInput {
   dependencyIds?: string[];
   conflictIds?: string[];
   tags?: string[];
+  reviewLog?: Evidence['reviewLog'];
   updatedBy?: string;
 }
 
