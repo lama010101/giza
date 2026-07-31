@@ -55,7 +55,7 @@ function BenchmarkSceneContent(): JSX.Element {
           shadow-camera-top={shadowConfig.cameraTop}
           shadow-camera-bottom={shadowConfig.cameraBottom}
           shadow-bias={shadowConfig.bias}
-          shadow-normalBias={shadowConfig.normalBias}
+          shadow-normalBias={0.02}
           data-testid="shadow-light"
         />
       )}

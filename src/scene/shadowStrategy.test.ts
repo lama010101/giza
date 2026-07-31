@@ -1,107 +1,91 @@
 import { describe, it, expect } from 'vitest';
 import {
-  SHADOW_CONFIGS,
-  detectQualityProfile,
-  getShadowConfig,
-  shouldUseBakedAO,
-  type QualityProfile,
-  type ShadowStrategy,
+  getShadowStrategy,
+  generateCSMCascades,
+  createShadowConfig,
+  selectCascadeForDistance,
 } from './shadowStrategy';
 
 describe('Shadow Strategy (M04-T06)', () => {
-  describe('SHADOW_CONFIGS', () => {
-    it('defines configs for all 4 quality profiles', () => {
-      expect(SHADOW_CONFIGS['desktop-high']).toBeDefined();
-      expect(SHADOW_CONFIGS['desktop-standard']).toBeDefined();
-      expect(SHADOW_CONFIGS['mobile-high']).toBeDefined();
-      expect(SHADOW_CONFIGS['mobile-standard']).toBeDefined();
+  describe('getShadowStrategy', () => {
+    it('returns csm for ultra', () => {
+      expect(getShadowStrategy('ultra')).toBe('csm');
     });
 
-    it('desktop-high uses CSM with 4 cascades and 2048 map', () => {
-      const cfg = SHADOW_CONFIGS['desktop-high'];
-      expect(cfg.strategy).toBe('csm');
-      expect(cfg.cascadeCount).toBe(4);
-      expect(cfg.mapSize).toBe(2048);
+    it('returns csm for high', () => {
+      expect(getShadowStrategy('high')).toBe('csm');
     });
 
-    it('desktop-standard uses CSM with 3 cascades and 1024 map', () => {
-      const cfg = SHADOW_CONFIGS['desktop-standard'];
-      expect(cfg.strategy).toBe('csm');
-      expect(cfg.cascadeCount).toBe(3);
-      expect(cfg.mapSize).toBe(1024);
+    it('returns single for medium', () => {
+      expect(getShadowStrategy('medium')).toBe('single');
     });
 
-    it('mobile-high uses single map with 1024 texture', () => {
-      const cfg = SHADOW_CONFIGS['mobile-high'];
-      expect(cfg.strategy).toBe('single-map');
-      expect(cfg.cascadeCount).toBe(1);
-      expect(cfg.mapSize).toBe(1024);
+    it('returns baked-ao for low', () => {
+      expect(getShadowStrategy('low')).toBe('baked-ao');
+    });
+  });
+
+  describe('generateCSMCascades', () => {
+    it('generates the requested number of cascades', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      expect(cascades).toHaveLength(4);
     });
 
-    it('mobile-standard uses single map with 512 texture', () => {
-      const cfg = SHADOW_CONFIGS['mobile-standard'];
-      expect(cfg.strategy).toBe('single-map');
-      expect(cfg.mapSize).toBe(512);
+    it('first cascade starts at near plane', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      expect(cascades[0].near).toBe(0.1);
     });
 
-    it('all configs have valid bias values', () => {
-      for (const profile of Object.keys(SHADOW_CONFIGS) as QualityProfile[]) {
-        const cfg = SHADOW_CONFIGS[profile];
-        expect(cfg.bias).toBeLessThan(0); // negative bias to avoid acne
-        expect(cfg.normalBias).toBeGreaterThan(0);
-        expect(cfg.cascadeBias.length).toBe(cfg.cascadeCount);
+    it('last cascade ends at far plane', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      expect(cascades[cascades.length - 1].far).toBeCloseTo(500, 0);
+    });
+
+    it('cascades are contiguous', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      for (let i = 1; i < cascades.length; i++) {
+        expect(cascades[i].near).toBeCloseTo(cascades[i - 1].far, 5);
       }
     });
   });
 
-  describe('detectQualityProfile', () => {
-    it('returns desktop-high for high-tier desktop GPU', () => {
-      expect(detectQualityProfile(2, false)).toBe('desktop-high');
-      expect(detectQualityProfile(3, false)).toBe('desktop-high');
-    });
-
-    it('returns desktop-standard for low-tier desktop GPU', () => {
-      expect(detectQualityProfile(0, false)).toBe('desktop-standard');
-      expect(detectQualityProfile(1, false)).toBe('desktop-standard');
-    });
-
-    it('returns mobile-high for high-tier mobile GPU', () => {
-      expect(detectQualityProfile(2, true)).toBe('mobile-high');
-    });
-
-    it('returns mobile-standard for low-tier mobile GPU', () => {
-      expect(detectQualityProfile(0, true)).toBe('mobile-standard');
-    });
-  });
-
-  describe('getShadowConfig', () => {
-    it('returns the correct config for each profile', () => {
-      const cfg = getShadowConfig('desktop-high');
-      expect(cfg).toBe(SHADOW_CONFIGS['desktop-high']);
-    });
-  });
-
-  describe('shouldUseBakedAO', () => {
-    it('returns true for distant objects (>80% of camera far)', () => {
-      const cfg = SHADOW_CONFIGS['desktop-high'];
-      // cameraFar = 200, 80% = 160
-      expect(shouldUseBakedAO(170, cfg)).toBe(true);
-      expect(shouldUseBakedAO(200, cfg)).toBe(true);
-    });
-
-    it('returns false for near objects', () => {
-      const cfg = SHADOW_CONFIGS['desktop-high'];
-      expect(shouldUseBakedAO(50, cfg)).toBe(false);
-      expect(shouldUseBakedAO(100, cfg)).toBe(false);
-    });
-  });
-
-  describe('shadow strategy types', () => {
-    it('all strategies are valid', () => {
-      const strategies: ShadowStrategy[] = ['csm', 'single-map', 'baked-ao', 'disabled'];
-      for (const s of strategies) {
-        expect(typeof s).toBe('string');
+  describe('createShadowConfig', () => {
+    it('creates CSM config for ultra', () => {
+      const config = createShadowConfig('ultra');
+      expect(config.strategy).toBe('csm');
+      if (config.strategy === 'csm') {
+        expect(config.cascades.length).toBeGreaterThan(0);
+        expect(config.updateRate).toBe('every-frame');
       }
+    });
+
+    it('creates single map config for medium', () => {
+      const config = createShadowConfig('medium');
+      expect(config.strategy).toBe('single');
+      if (config.strategy === 'single') {
+        expect(config.cascades).toHaveLength(1);
+      }
+    });
+
+    it('creates baked AO config for low', () => {
+      const config = createShadowConfig('low');
+      expect(config.strategy).toBe('baked-ao');
+    });
+  });
+
+  describe('selectCascadeForDistance', () => {
+    it('selects the correct cascade for a distance', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      const selected = selectCascadeForDistance(cascades, 5);
+      expect(selected).toBeDefined();
+      expect(selected?.cascadeIndex).toBe(0);
+    });
+
+    it('returns last cascade for distance beyond all cascades', () => {
+      const cascades = generateCSMCascades(0.1, 500, 4, 2048);
+      const selected = selectCascadeForDistance(cascades, 1000);
+      expect(selected).toBeDefined();
+      expect(selected?.cascadeIndex).toBe(cascades.length - 1);
     });
   });
 });

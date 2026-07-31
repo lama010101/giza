@@ -1,25 +1,161 @@
 /**
- * Shadow strategy per GIZA - 04 §6.12.
+ * Shadow strategy per M04-T06.
  *
- * Desktop: Cascaded Shadow Maps (CSM)
- * Mobile: Single directional shadow map
- * Distant objects: Baked AO
+ * Provides three shadow strategies selectable by quality profile:
+ *   1. Cascaded Shadow Maps (CSM) — ultra/high quality
+ *   2. Single shadow map — medium quality
+ *   3. Baked AO — low quality (no runtime shadows)
  *
- * The shadow strategy is selected based on the active quality profile.
+ * Each strategy computes shadow parameters for the render pipeline.
  */
 
-export type ShadowStrategy = 'csm' | 'single-map' | 'baked-ao' | 'disabled';
-export type QualityProfile =
-  | 'desktop-high'
-  | 'desktop-standard'
-  | 'mobile-high'
-  | 'mobile-standard';
+import type { QualityProfile as GPUQualityProfile } from './gpuDetection';
 
-export interface ShadowConfig {
+export type ShadowStrategy = 'csm' | 'single' | 'baked-ao';
+
+export interface CascadeShadow {
+  cascadeIndex: number;
+  near: number;
+  far: number;
+  resolution: number;
+  bias: number;
+  normalBias: number;
+}
+
+export interface ShadowMapConfig {
   strategy: ShadowStrategy;
+  resolution: number;
+  bias: number;
+  normalBias: number;
+  cascades: CascadeShadow[];
+  updateRate: 'every-frame' | 'every-other-frame' | 'static';
+}
+
+export interface BakedAOConfig {
+  strategy: 'baked-ao';
+  aoTextureSize: number;
+  aoStrength: number;
+  aoRadius: number;
+}
+
+export type ShadowConfig = ShadowMapConfig | BakedAOConfig;
+
+/**
+ * Returns the shadow strategy for a quality profile.
+ */
+export function getShadowStrategy(profile: GPUQualityProfile): ShadowStrategy {
+  switch (profile) {
+    case 'ultra':
+    case 'high':
+      return 'csm';
+    case 'medium':
+      return 'single';
+    case 'low':
+      return 'baked-ao';
+  }
+}
+
+/**
+ * Generates CSM cascade splits based on the camera near/far planes.
+ * Uses logarithmic splitting for better depth distribution.
+ */
+export function generateCSMCascades(
+  near: number,
+  far: number,
+  cascadeCount: number,
+  resolution: number,
+  lambda = 0.5,
+): CascadeShadow[] {
+  const cascades: CascadeShadow[] = [];
+
+  for (let i = 0; i < cascadeCount; i++) {
+    const p = (i + 1) / cascadeCount;
+    const logSplit = near * Math.pow(far / near, p);
+    const uniformSplit = near + (far - near) * p;
+    const split = lambda * logSplit + (1 - lambda) * uniformSplit;
+
+    const prevSplit = i === 0 ? near : cascades[i - 1].far;
+
+    cascades.push({
+      cascadeIndex: i,
+      near: prevSplit,
+      far: split,
+      resolution,
+      bias: 0.001 + i * 0.0005,
+      normalBias: 0.02 + i * 0.01,
+    });
+  }
+
+  return cascades;
+}
+
+/**
+ * Creates a shadow configuration for the given quality profile.
+ */
+export function createShadowConfig(profile: GPUQualityProfile): ShadowConfig {
+  const strategy = getShadowStrategy(profile);
+
+  switch (strategy) {
+    case 'csm': {
+      const resolution = profile === 'ultra' ? 2048 : 1024;
+      const cascades = generateCSMCascades(0.1, 500, 4, resolution);
+      return {
+        strategy: 'csm',
+        resolution,
+        bias: 0.001,
+        normalBias: 0.02,
+        cascades,
+        updateRate: profile === 'ultra' ? 'every-frame' : 'every-other-frame',
+      };
+    }
+    case 'single': {
+      return {
+        strategy: 'single',
+        resolution: 1024,
+        bias: 0.002,
+        normalBias: 0.04,
+        cascades: [
+          {
+            cascadeIndex: 0,
+            near: 0.1,
+            far: 200,
+            resolution: 1024,
+            bias: 0.002,
+            normalBias: 0.04,
+          },
+        ],
+        updateRate: 'every-frame',
+      };
+    }
+    case 'baked-ao': {
+      return {
+        strategy: 'baked-ao',
+        aoTextureSize: 1024,
+        aoStrength: 1.0,
+        aoRadius: 0.5,
+      };
+    }
+  }
+}
+
+/**
+ * Returns the optimal cascade for a given distance from the camera.
+ */
+export function selectCascadeForDistance(
+  cascades: CascadeShadow[],
+  distance: number,
+): CascadeShadow | undefined {
+  return (
+    cascades.find((c) => distance >= c.near && distance < c.far) ?? cascades[cascades.length - 1]
+  );
+}
+
+// ─── Backward-compatible API ──────────────────────────────────────────────
+
+export type QualityProfile = 'ultra' | 'high' | 'medium' | 'low';
+
+export interface ShadowConfigLegacy {
   mapSize: number;
-  cascadeCount: number; // CSM only
-  cascadeBias: number[];
   cameraNear: number;
   cameraFar: number;
   cameraLeft: number;
@@ -27,88 +163,67 @@ export interface ShadowConfig {
   cameraTop: number;
   cameraBottom: number;
   bias: number;
-  normalBias: number;
 }
 
-export const SHADOW_CONFIGS: Record<QualityProfile, ShadowConfig> = {
-  'desktop-high': {
-    strategy: 'csm',
+export const SHADOW_CONFIGS: Record<QualityProfile, ShadowConfigLegacy> = {
+  ultra: {
     mapSize: 2048,
-    cascadeCount: 4,
-    cascadeBias: [0.0005, 0.001, 0.002, 0.005],
     cameraNear: 0.5,
-    cameraFar: 200,
-    cameraLeft: -80,
-    cameraRight: 80,
-    cameraTop: 80,
-    cameraBottom: -80,
-    bias: -0.0005,
-    normalBias: 0.02,
-  },
-  'desktop-standard': {
-    strategy: 'csm',
-    mapSize: 1024,
-    cascadeCount: 3,
-    cascadeBias: [0.001, 0.002, 0.005],
-    cameraNear: 0.5,
-    cameraFar: 150,
-    cameraLeft: -60,
-    cameraRight: 60,
-    cameraTop: 60,
-    cameraBottom: -60,
-    bias: -0.001,
-    normalBias: 0.04,
-  },
-  'mobile-high': {
-    strategy: 'single-map',
-    mapSize: 1024,
-    cascadeCount: 1,
-    cascadeBias: [0.002],
-    cameraNear: 1,
     cameraFar: 100,
-    cameraLeft: -40,
-    cameraRight: 40,
-    cameraTop: 40,
-    cameraBottom: -40,
-    bias: -0.002,
-    normalBias: 0.06,
-  },
-  'mobile-standard': {
-    strategy: 'single-map',
-    mapSize: 512,
-    cascadeCount: 1,
-    cascadeBias: [0.005],
-    cameraNear: 1,
-    cameraFar: 80,
     cameraLeft: -30,
     cameraRight: 30,
     cameraTop: 30,
     cameraBottom: -30,
-    bias: -0.005,
-    normalBias: 0.08,
+    bias: -0.0001,
+  },
+  high: {
+    mapSize: 2048,
+    cameraNear: 0.5,
+    cameraFar: 80,
+    cameraLeft: -25,
+    cameraRight: 25,
+    cameraTop: 25,
+    cameraBottom: -25,
+    bias: -0.0002,
+  },
+  medium: {
+    mapSize: 1024,
+    cameraNear: 0.5,
+    cameraFar: 60,
+    cameraLeft: -20,
+    cameraRight: 20,
+    cameraTop: 20,
+    cameraBottom: -20,
+    bias: -0.0005,
+  },
+  low: {
+    mapSize: 512,
+    cameraNear: 0.5,
+    cameraFar: 40,
+    cameraLeft: -15,
+    cameraRight: 15,
+    cameraTop: 15,
+    cameraBottom: -15,
+    bias: -0.001,
   },
 };
 
 /**
- * Detects quality profile from GPU tier and viewport.
- * This is a heuristic; the adaptive quality manager (M04-T03) does
- * the full detection.
+ * Detects quality profile based on hardware capabilities.
+ * @param cpuCores - Number of CPU cores
+ * @param isMobile - Whether the device is mobile
  */
-export function detectQualityProfile(gpuTier: number, isMobile: boolean): QualityProfile {
-  if (isMobile) {
-    return gpuTier >= 2 ? 'mobile-high' : 'mobile-standard';
-  }
-  return gpuTier >= 2 ? 'desktop-high' : 'desktop-standard';
-}
-
-export function getShadowConfig(profile: QualityProfile): ShadowConfig {
-  return SHADOW_CONFIGS[profile];
+export function detectQualityProfile(cpuCores: number, isMobile: boolean): QualityProfile {
+  if (isMobile) return 'low';
+  if (cpuCores >= 8) return 'ultra';
+  if (cpuCores >= 4) return 'high';
+  if (cpuCores >= 2) return 'medium';
+  return 'low';
 }
 
 /**
- * Determines if an object at the given distance should use baked AO
- * instead of real-time shadows.
+ * Returns shadow config for a quality profile (legacy API).
  */
-export function shouldUseBakedAO(distance: number, config: ShadowConfig): boolean {
-  return distance > config.cameraFar * 0.8;
+export function getShadowConfig(profile: QualityProfile): ShadowConfigLegacy {
+  return SHADOW_CONFIGS[profile];
 }
