@@ -18,8 +18,8 @@ describe('Great Pyramid Seed Data', () => {
     expect(seed.objects).toHaveLength(26);
   });
 
-  it('has 26 evidence records', () => {
-    expect(seed.evidence).toHaveLength(26);
+  it('has 30 evidence records', () => {
+    expect(seed.evidence).toHaveLength(30);
   });
 
   it('every source has a valid ID matching SRC-NNNN', () => {
