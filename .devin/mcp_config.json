@@ -1,12 +1,10 @@
 {
   "mcpServers": {
     "vercel": {
-      "url": "https://mcp.vercel.com",
-      "disabled": true
+      "url": "https://mcp.vercel.com"
     },
     "github-mcp-server": {
-      "url": "https://api.githubcopilot.com/mcp",
-      "disabled": true
+      "url": "https://api.githubcopilot.com/mcp"
     },
     "supabase": {
       "command": "npx",
