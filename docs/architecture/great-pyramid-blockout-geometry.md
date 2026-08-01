@@ -2,6 +2,8 @@
 
 > **Purpose:** This document details every 3D element in the `greatPyramidBlockout` data structure (`database/blockouts/great-pyramid.ts`), its reference measurements, the calculations used to derive its `position`, `rotation`, and `size` values, and any approximations or known discrepancies. It is intended to allow an AI agent to independently review and correct any errors.
 
+> **Correction notice (2026-07):** The summary table in §4 and the per-element calculations in §5 reflect the **pre-correction** LOD0 blockout values. Several positions have since been corrected (KC Z-offset, DP horizontal split, subterranean X-offset, casing Z, shaft rotation signs, QC axis). The **authoritative** corrected values are in `monument-geometry.md` §1.2–§1.3 and `geometry-dump.json`, both regenerated from the live source. See `monument-geometry.md` Appendix C for the full correction log. The table below has been updated to match the corrected source; the per-element calculation sections (§5) are retained as historical reference and may not reflect the current values.
+
 ## Table of Contents
 
 1. [Coordinate System](#1-coordinate-system)
@@ -66,29 +68,30 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | ID | Layer | Position (x, y, z) | Rotation (x°, y°, z°) | Size (x, y, z) | Source |
 |---|---|---|---|---|---|
 | `pyramid-exterior` | exterior | (0, 69.3, 0) | — | (230.36, 138.6, 230.36) | Cole 1925 |
-| `casing-north` | exterior | (0, 5, −115.18) | (51.84, 0, 0) | (230.36, 10, 1) | Petrie |
-| `original-entrance` | exterior | (7.29, 16.97, −115.18) | — | (1.05, 1.19, 1) | Petrie |
-| `modern-entrance` | exterior | (0, 17, −115.18) | — | (2, 2, 3) | Historical |
-| `descending-passage` | passages | (7.29, −5.92, −52.57) | (26.52, 0, 0) | (1.05, 1.19, 105.16) | Petrie |
-| `subterranean-chamber` | subterranean | (7.29, −29.8, 0.5) | — | (8.3, 3.56, 5.2) | Petrie |
-| `subterranean-pit` | subterranean | (7.29, −34.07, 0.5) | — | (2.54, 5.03, 2.54) | Petrie |
-| `ascending-passage` | passages | (7.29, 18.0, −14.2) | (−26.04, 0, 0) | (1.0, 1.2, 39.29) | Petrie |
-| `grand-gallery` | gallery | (7.22, 34.8, 9.66) | (−26.28, 0, 0) | (2.09, 8.74, 46.11) | Petrie |
-| `antechamber` | kings-complex | (7.22, 44.8, 31.84) | — | (1.651, 3.794, 2.954) | Petrie |
-| `kings-chamber` | kings-complex | (7.22, 45.94, 40.5) | — | (5.24, 5.97, 10.47) | Petrie |
-| `kings-sarcophagus` | kings-complex | (4.6, 43.5, 40.5) | — | (0.978, 1.049, 2.276) | Petrie |
-| `relieving-davison` | relieving | (7.22, 49.47, 40.5) | — | (5.21, 1.07, 11.68) | Vyse |
-| `relieving-wellington` | relieving | (7.22, 52.44, 40.5) | — | (5.18, 1.12, 11.73) | Vyse |
-| `relieving-nelson` | relieving | (7.22, 55.62, 40.5) | — | (5.08, 1.47, 11.81) | Vyse |
-| `relieving-arbuthnot` | relieving | (7.22, 58.91, 40.5) | — | (4.98, 1.35, 11.38) | Vyse |
-| `relieving-campbell` | relieving | (7.22, 62.77, 40.5) | — | (6.25, 2.62, 11.53) | Vyse |
-| `queens-chamber` | queens-complex | (7.22, 24.05, 5) | — | (5.23, 6.23, 5.75) | Petrie |
-| `queens-niche` | queens-complex | (9.84, 23.85, 5) | — | (1.04, 4.69, 1.57) | Petrie |
-| `queens-passage` | passages | (7.22, 24.3, −17) | — | (1.05, 1.45, 43.96) | Petrie |
-| `kc-north-shaft` | shafts | (7.22, 70.2, 35.5) | (−32.6, 0, 0) | (0.205, 0.215, 78.43) | Gantenbrink |
-| `kc-south-shaft` | shafts | (7.22, 70.0, 45.5) | (45, 0, 0) | (0.205, 0.215, 77.55) | Gantenbrink |
-| `qc-north-shaft` | shafts | (7.22, 44.6, 2.0) | (−39, 0, 0) | (0.21, 0.21, 65.1) | Gantenbrink |
-| `qc-south-shaft` | shafts | (7.22, 43.0, 8.0) | (39.6, 0, 0) | (0.21, 0.21, 59.6) | Gantenbrink |
+| `casing-north` | exterior | (0, 5, −111.25) | (51.84, 0, 0) | (230.36, 10, 1) | Petrie |
+| `original-entrance` | exterior | (7.29, 16.97, −101.84) | — | (1.05, 1.19, 1) | Petrie |
+| `modern-entrance` | exterior | (0, 17, −101.84) | — | (2, 2, 3) | Historical |
+| `descending-passage` | passages | (7.29, −4.49, −58.82) | (26.52, 0, 0) | (1.05, 1.19, 96.16) | Petrie |
+| `descending-passage-horizontal` | passages | (7.29, −25.97, −11.29) | — | (1.05, 1.19, 9) | Petrie |
+| `subterranean-chamber` | subterranean | (7.29, −24.19, −4.19) | — | (8.3, 3.56, 5.2) | Petrie |
+| `subterranean-pit` | subterranean | (7.29, −28.46, −4.19) | — | (2.54, 5.03, 2.54) | Petrie |
+| `ascending-passage` | passages | (7.29, 15.02, −62.18) | (−26.04, 0, 0) | (1.0, 1.2, 39.29) | Petrie |
+| `grand-gallery` | gallery | (7.22, 36.25, −24.75) | (−26.28, 0, 0) | (2.09, 8.74, 47.85) | Petrie |
+| `antechamber` | kings-complex | (7.22, 44.8, 1.62) | — | (1.651, 3.794, 2.954) | Petrie |
+| `kings-chamber` | kings-complex | (7.22, 45.94, 13.64) | — | (5.24, 5.97, 10.47) | Petrie |
+| `kings-sarcophagus` | kings-complex | (4.6, 43.5, 13.64) | — | (0.978, 1.049, 2.276) | Petrie |
+| `relieving-davison` | relieving | (7.22, 49.47, 13.64) | — | (5.21, 1.07, 11.68) | Vyse |
+| `relieving-wellington` | relieving | (7.22, 52.44, 13.64) | — | (5.18, 1.12, 11.73) | Vyse |
+| `relieving-nelson` | relieving | (7.22, 55.62, 13.64) | — | (5.08, 1.47, 11.81) | Vyse |
+| `relieving-arbuthnot` | relieving | (7.22, 58.91, 13.64) | — | (4.98, 1.35, 11.38) | Vyse |
+| `relieving-campbell` | relieving | (7.22, 62.77, 13.64) | — | (6.25, 2.62, 11.53) | Vyse |
+| `queens-chamber` | queens-complex | (0, 24.05, 6.32) | — | (5.23, 6.23, 5.75) | Petrie |
+| `queens-niche` | queens-complex | (2.62, 23.85, 6.32) | — | (1.04, 4.69, 1.57) | Petrie |
+| `queens-passage` | passages | (3.61, 24.3, −18.24) | — | (1.05, 1.45, 43.96) | Petrie |
+| `kc-north-shaft` | shafts | (7.22, 64.09, −24.64) | (32.6, 0, 0) | (0.205, 0.215, 78.43) | Gantenbrink |
+| `kc-south-shaft` | shafts | (7.22, 70.38, 46.29) | (−45, 0, 0) | (0.205, 0.215, 77.55) | Gantenbrink |
+| `qc-north-shaft` | shafts | (0, 41.67, −21.85) | (39, 0, 0) | (0.21, 0.21, 65.1) | Gantenbrink |
+| `qc-south-shaft` | shafts | (0, 40.19, 32.16) | (−39.6, 0, 0) | (0.21, 0.21, 59.6) | Gantenbrink |
 | `well-shaft` | passages | (5.0, 3.2, −10.0) | (45, 0, 0) | (0.78, 0.78, 55) | Petrie |
 | `grotto` | passages | (5.0, 5.7, −10.0) | — | (2, 2, 2) | Various |
 

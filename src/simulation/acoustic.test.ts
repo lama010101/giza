@@ -22,11 +22,11 @@ import type { SimulationMetadata } from '@/simulation/types';
 const KINGS_CHAMBER: AcousticInputs = {
   chamberLength: 10.47,
   chamberWidth: 5.24,
-  chamberHeight: 5.97,
+  chamberHeight: 5.84,
   absorptionCoeff: 0.05,
   airTemperature: 22,
   humidity: 50,
-  sourceLocation: { x: 5.235, y: 2.985, z: 2.62 },
+  sourceLocation: { x: 5.235, y: 2.92, z: 2.62 },
   frequencyStart: 10,
   frequencyEnd: 2000,
   frequencySteps: 100,
@@ -40,7 +40,7 @@ function makeMetadata(): SimulationMetadata {
     parameters: {
       simulationType: 'Acoustic',
       version: 1,
-      parameters: defaultAcousticParameters(10.47, 5.24, 5.97),
+      parameters: defaultAcousticParameters(10.47, 5.24, 5.84),
     },
     author: 'GIZA Research Team',
     geometryVersion: 'gp-v1',
@@ -91,8 +91,8 @@ describe('Acoustic Solver', () => {
   });
 
   it('computes RT60 using Sabine equation', () => {
-    const V = 10.47 * 5.24 * 5.97;
-    const S = 2 * (10.47 * 5.24 + 10.47 * 5.97 + 5.24 * 5.97);
+    const V = 10.47 * 5.24 * 5.84;
+    const S = 2 * (10.47 * 5.24 + 10.47 * 5.84 + 5.24 * 5.84);
     const expected = (0.161 * V) / (S * 0.05);
     expect(outputs.reverberationTimeRT60).toBeCloseTo(expected, 2);
     expect(outputs.reverberationTimeRT60).toBeGreaterThan(0);
@@ -276,7 +276,7 @@ describe('Parameter Store', () => {
   });
 
   it('creates versioned parameter sets', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     const set1 = store.create('Acoustic', params);
     expect(set1.version).toBe(1);
     const set2 = store.create('Acoustic', params);
@@ -284,7 +284,7 @@ describe('Parameter Store', () => {
   });
 
   it('retrieves by key', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     const set = store.create('Acoustic', params);
     const retrieved = store.get(`Acoustic-v${set.version}`);
     expect(retrieved).toBeDefined();
@@ -292,7 +292,7 @@ describe('Parameter Store', () => {
   });
 
   it('gets latest version', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     store.create('Acoustic', params);
     store.create('Acoustic', params);
     const latest = store.getLatest('Acoustic');
@@ -308,7 +308,7 @@ describe('Parameter Store', () => {
   });
 
   it('serializes to and from JSON', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     const set = store.create('Acoustic', params);
     const json = store.toJSON(`Acoustic-v${set.version}`);
     expect(json).not.toBeNull();
@@ -320,7 +320,7 @@ describe('Parameter Store', () => {
   });
 
   it('default acoustic parameters include all 12 required fields', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     expect(params).toHaveLength(12);
     const names = params.map((p) => p.name);
     expect(names).toContain('chamberLength');
@@ -331,7 +331,7 @@ describe('Parameter Store', () => {
   });
 
   it('parameters have provenance classification', () => {
-    const params = defaultAcousticParameters(10.47, 5.24, 5.97);
+    const params = defaultAcousticParameters(10.47, 5.24, 5.84);
     for (const p of params) {
       expect(p.provenance).toBeDefined();
     }

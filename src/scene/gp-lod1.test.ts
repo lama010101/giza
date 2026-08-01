@@ -89,7 +89,7 @@ describe('gp-geometry-utils', () => {
   });
 
   it('chamberCenterY computes floor + height/2', () => {
-    expect(chamberCenterY(42.96, 5.97)).toBeCloseTo(45.945, 2);
+    expect(chamberCenterY(42.96, 5.84)).toBeCloseTo(45.88, 2);
   });
 });
 
@@ -122,12 +122,12 @@ describe('Measurement Constants', () => {
 
   it('GP_KINGS_CHAMBER has expected values', () => {
     expect(GP_KINGS_CHAMBER.width).toBeCloseTo(5.24, 1);
-    expect(GP_KINGS_CHAMBER.height).toBeCloseTo(5.97, 1);
+    expect(GP_KINGS_CHAMBER.height).toBeCloseTo(5.84, 1);
     expect(GP_KINGS_CHAMBER.depth).toBeCloseTo(10.47, 1);
   });
 
   it('GP_QUEENS_CHAMBER has expected values', () => {
-    expect(GP_QUEENS_CHAMBER.width).toBeCloseTo(5.23, 1);
+    expect(GP_QUEENS_CHAMBER.width).toBeCloseTo(5.75, 1);
     expect(GP_QUEENS_CHAMBER.height).toBeCloseTo(6.23, 1);
   });
 
@@ -185,8 +185,8 @@ describe('generateGreatPyramidLOD1', () => {
     const dp = lod1Nodes.find((n) => n.id === 'descending-passage');
     expect(dp).toBeDefined();
     expect(dp!.derivation).toBe('calculated');
-    const slopedLen = GP_DESCENDING_PASSAGE.totalLength - 9.0; // minus horizontal section
-    expect(dp!.size.z).toBeCloseTo(slopedLen, 1);
+    // totalLength is the sloped length only; horizontal passage is separate
+    expect(dp!.size.z).toBeCloseTo(GP_DESCENDING_PASSAGE.totalLength, 1);
   });
 
   it('descending-passage-horizontal exists', () => {
@@ -227,9 +227,10 @@ describe('generateGreatPyramidLOD1', () => {
   it('kings-chamber uses measurement constants', () => {
     const kc = lod1Nodes.find((n) => n.id === 'kings-chamber');
     expect(kc).toBeDefined();
-    expect(kc!.size.x).toBeCloseTo(GP_KINGS_CHAMBER.width, 1);
+    // KC long axis is E-W: size.x = depth (10.47), size.z = width (5.24)
+    expect(kc!.size.x).toBeCloseTo(GP_KINGS_CHAMBER.depth, 1);
     expect(kc!.size.y).toBeCloseTo(GP_KINGS_CHAMBER.height, 1);
-    expect(kc!.size.z).toBeCloseTo(GP_KINGS_CHAMBER.depth, 1);
+    expect(kc!.size.z).toBeCloseTo(GP_KINGS_CHAMBER.width, 1);
   });
 
   it('queens-chamber uses measurement constants', () => {
@@ -273,9 +274,9 @@ describe('generateGreatPyramidLOD1', () => {
   it('subterranean chamber z is near DP endpoint', () => {
     const sub = lod1Nodes.find((n) => n.id === 'subterranean-chamber');
     expect(sub).toBeDefined();
-    // Subterranean chamber is slightly north of centre per Petrie
+    // Subterranean chamber is south of centre per Petrie (N wall 40" S, S wall 366" S)
     // Just verify it's in a reasonable range (within pyramid base)
-    expect(sub!.position.z).toBeGreaterThan(-GP_EXTERNAL.baseMean / 2);
+    expect(sub!.position.z).toBeGreaterThan(0);
     expect(sub!.position.z).toBeLessThan(GP_EXTERNAL.baseMean / 2);
   });
 

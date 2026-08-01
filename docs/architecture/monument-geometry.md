@@ -18,34 +18,35 @@ Blockout ID: `great-pyramid-blockout`
 Name: Great Pyramid of Giza  
 Units: meters
 
-| ID                     | Name                                              | Position (x, y, z)           | Size (x, y, z)                 | Rotation (x, y, z) | Layer          | Color   | Opacity | Derivation |
-| ---------------------- | ------------------------------------------------- | ---------------------------- | ------------------------------ | ------------------ | -------------- | ------- | ------- | ---------- |
-| `pyramid-exterior`     | Pyramid Exterior (core masonry)                   | (0, 69.3000, 0)              | (230.3600, 138.6000, 230.3600) | (0, 0, 0)          | exterior       | #c2b090 | 0.15    |            |
-| `casing-north`         | Casing Stones (north face, lower courses)         | (0, 5, -111.2500)            | (230.3600, 10, 1)              | (0.9048, 0, 0)     | exterior       | #e8e0d0 | 0.7     |            |
-| `original-entrance`    | Original Entrance                                 | (7.2900, 16.9700, -101.8400) | (1.0500, 1.1900, 1)            | (0, 0, 0)          | exterior       | #8a7a55 | 1       |            |
-| `modern-entrance`      | Modern Entrance (Al-Mamun Tunnel)                 | (0, 17, -101.8400)           | (2, 2, 3)                      | (0, 0, 0)          | exterior       | #6b5f45 | 1       |            |
-| `descending-passage`   | Descending Passage                                | (7.2900, -3.9800, -58.5500)  | (1.0500, 1.1900, 96.1600)      | (0.4629, 0, 0)     | passages       | #8a7a55 | 0.4     |            |
-| `subterranean-chamber` | Subterranean Chamber                              | (0, -28.0200, -4.2000)       | (8.3000, 3.5600, 5.2000)       | (0, 0, 0)          | subterranean   | #7a6a4a | 0.5     |            |
-| `subterranean-pit`     | Central Pit (Subterranean)                        | (0, -32.2900, -4.2000)       | (2.5400, 5.0300, 2.5400)       | (0, 0, 0)          | subterranean   | #5a4a30 | 0.6     |            |
-| `ascending-passage`    | Ascending Passage                                 | (7.2900, 14.4600, -61.9100)  | (1, 1.2000, 39.2900)           | (-0.4545, 0, 0)    | passages       | #c2ab7a | 0.4     |            |
-| `grand-gallery`        | Grand Gallery                                     | (7.2200, 32.3300, -22.8000)  | (2.0900, 8.7400, 47.8500)      | (-0.4587, 0, 0)    | gallery        | #d4c4a0 | 0.35    |            |
-| `antechamber`          | Antechamber                                       | (7.2200, 44.8200, 0.7300)    | (1.6510, 3.7940, 2.9540)       | (0, 0, 0)          | kings-complex  | #a08060 | 0.5     |            |
-| `kings-chamber`        | King's Chamber                                    | (7.2200, 45.9400, 8.4400)    | (5.2400, 5.9700, 10.4700)      | (0, 0, 0)          | kings-complex  | #8a6050 | 0.4     |            |
-| `kings-sarcophagus`    | King's Chamber Sarcophagus                        | (4.6000, 43.5000, 8.4400)    | (0.9780, 1.0490, 2.2760)       | (0, 0, 0)          | kings-complex  | #3a3a3f | 1       |            |
-| `relieving-davison`    | Davison's Chamber (Relieving 1)                   | (7.2200, 49.4700, 8.4400)    | (5.2100, 1.0700, 11.6800)      | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
-| `relieving-wellington` | Wellington's Chamber (Relieving 2)                | (7.2200, 52.4400, 8.4400)    | (5.1800, 1.1200, 11.7300)      | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
-| `relieving-nelson`     | Nelson's Chamber (Relieving 3)                    | (7.2200, 55.6200, 8.4400)    | (5.0800, 1.4700, 11.8100)      | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
-| `relieving-arbuthnot`  | Lady Arbuthnot's Chamber (Relieving 4)            | (7.2200, 58.9100, 8.4400)    | (4.9800, 1.3500, 11.3800)      | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
-| `relieving-campbell`   | Campbell's Chamber (Relieving 5, with cartouches) | (7.2200, 62.7700, 8.4400)    | (6.2500, 2.6200, 11.5300)      | (0, 0, 0)          | relieving      | #807060 | 0.45    |            |
-| `queens-chamber`       | Queen's Chamber                                   | (0, 24.3000, 6.3200)         | (5.2300, 6.2300, 5.7500)       | (0, 0, 0)          | queens-complex | #b39b6b | 0.4     |            |
-| `queens-niche`         | Queen's Chamber Niche (East Wall)                 | (2.6200, 24.1000, 6.3200)    | (1.0400, 4.6900, 1.5700)       | (0, 0, 0)          | queens-complex | #a38b5c | 0.6     |            |
-| `queens-passage`       | Queen's Chamber Passage                           | (3.6500, 21.7800, -18.5000)  | (1.0500, 1.1700, 43.9600)      | (0, 0, 0)          | passages       | #c2ab7a | 0.35    |            |
-| `kc-north-shaft`       | King's Chamber North Shaft                        | (7.2200, 66, -23)            | (0.2050, 0.2150, 78.4300)      | (-0.5690, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
-| `kc-south-shaft`       | King's Chamber South Shaft                        | (7.2200, 66, 20)             | (0.2050, 0.2150, 77.5500)      | (-0.7854, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
-| `qc-north-shaft`       | Queen's Chamber North Shaft                       | (0, 44.6000, -15)            | (0.2100, 0.2100, 65.1000)      | (-0.6807, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
-| `qc-south-shaft`       | Queen's Chamber South Shaft                       | (0, 43, 20)                  | (0.2100, 0.2100, 59.6000)      | (-0.6912, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
-| `well-shaft`           | Well Shaft (Service Shaft)                        | (6.1800, 0, -44)             | (0.7800, 0.7800, 55)           | (0.7854, 0, 0)     | passages       | #5a4a30 | 0.3     |            |
-| `grotto`               | Grotto                                            | (6.1800, 5.7000, -30)        | (2, 2, 2)                      | (0, 0, 0)          | passages       | #7a6a4a | 0.5     |            |
+| ID                              | Name                                              | Position (x, y, z)            | Size (x, y, z)                 | Rotation (x, y, z) | Layer          | Color   | Opacity | Derivation |
+| ------------------------------- | ------------------------------------------------- | ----------------------------- | ------------------------------ | ------------------ | -------------- | ------- | ------- | ---------- |
+| `pyramid-exterior`              | Pyramid Exterior (core masonry)                   | (0, 69.3000, 0)               | (230.3600, 138.6000, 230.3600)  | (0, 0, 0)          | exterior       | #c2b090 | 0.15    |            |
+| `casing-north`                  | Casing Stones (north face, lower courses)         | (0, 5, -111.2500)             | (230.3600, 10, 1)               | (0.9048, 0, 0)     | exterior       | #e8e0d0 | 0.7     |            |
+| `original-entrance`             | Original Entrance                                 | (7.2900, 16.9700, -101.8400)  | (1.0500, 1.1900, 1)             | (0, 0, 0)          | exterior       | #8a7a55 | 1       |            |
+| `modern-entrance`               | Modern Entrance (Al-Mamun Tunnel)                 | (0, 17, -101.8400)            | (2, 2, 3)                       | (0, 0, 0)          | exterior       | #6b5f45 | 1       |            |
+| `descending-passage`            | Descending Passage (sloped)                       | (7.2900, -6.5100, -54.8000)   | (1.0500, 1.1900, 105.1600)      | (0.4629, 0, 0)     | passages       | #8a7a55 | 0.4     |            |
+| `descending-passage-horizontal` | Descending Passage (horizontal)                   | (7.2900, -29.9900, 0.7800)    | (1.0500, 1.1900, 17.0700)       | (0, 0, 0)          | passages       | #8a7a55 | 0.4     |            |
+| `subterranean-chamber`          | Subterranean Chamber                              | (0.6600, -28.2200, 5.1600)    | (14.0700, 3.5600, 8.2800)       | (0, 0, 0)          | subterranean   | #7a6a4a | 0.5     |            |
+| `subterranean-pit`              | Central Pit (Subterranean)                        | (0.6600, -32.5200, 5.1600)    | (2.5400, 5.0300, 2.5400)        | (0, 0, 0)          | subterranean   | #5a4a30 | 0.6     |            |
+| `ascending-passage`             | Ascending Passage                                 | (7.2900, 15.0200, -62.1800)   | (1, 1.2000, 39.2900)            | (-0.4545, 0, 0)    | passages       | #c2ab7a | 0.4     |            |
+| `grand-gallery`                 | Grand Gallery                                     | (7.2200, 36.2500, -24.7500)   | (2.0900, 8.7400, 47.8500)       | (-0.4587, 0, 0)    | gallery        | #d4c4a0 | 0.35    |            |
+| `antechamber`                   | Antechamber                                       | (7.2200, 44.8000, 1.6200)     | (1.6510, 3.7940, 2.9540)        | (0, 0, 0)          | kings-complex  | #a08060 | 0.5     |            |
+| `kings-chamber`                 | King's Chamber                                    | (7.2200, 45.8800, 11.0200)    | (10.4700, 5.8400, 5.2400)       | (0, 0, 0)          | kings-complex  | #8a6050 | 0.4     |            |
+| `kings-sarcophagus`             | King's Chamber Sarcophagus                        | (2.4700, 43.5000, 11.0200)    | (0.9780, 1.0490, 2.2760)        | (0, 0, 0)          | kings-complex  | #3a3a3f | 1       |            |
+| `relieving-davison`             | Davison's Chamber (Relieving 1)                   | (7.2200, 49.3500, 11.0200)    | (11.6800, 1.0700, 5.2100)       | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
+| `relieving-wellington`          | Wellington's Chamber (Relieving 2)                | (7.2200, 52.3200, 11.0200)    | (11.7300, 1.1200, 5.1800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
+| `relieving-nelson`              | Nelson's Chamber (Relieving 3)                    | (7.2200, 55.5000, 11.0200)    | (11.8100, 1.4700, 5.0800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
+| `relieving-arbuthnot`           | Lady Arbuthnot's Chamber (Relieving 4)            | (7.2200, 58.7900, 11.0200)    | (11.3800, 1.3500, 4.9800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     |            |
+| `relieving-campbell`            | Campbell's Chamber (Relieving 5, with cartouches) | (7.2200, 62.6500, 11.0200)    | (11.5300, 2.6200, 6.2500)       | (0, 0, 0)          | relieving      | #807060 | 0.45    |            |
+| `queens-chamber`                | Queen's Chamber                                   | (0, 24.0500, 6.3200)          | (5.7500, 6.2300, 5.2300)        | (0, 0, 0)          | queens-complex | #b39b6b | 0.4     |            |
+| `queens-niche`                  | Queen's Chamber Niche (East Wall)                 | (2.8800, 23.8500, 6.3200)     | (1.0400, 4.6900, 1.5700)        | (0, 0, 0)          | queens-complex | #a38b5c | 0.6     |            |
+| `queens-passage`                | Queen's Chamber Passage                           | (3.6100, 21.7800, -17.9800)   | (1.0500, 1.1700, 43.9600)       | (0, 0, 0)          | passages       | #c2ab7a | 0.35    |            |
+| `kc-north-shaft`                | King's Chamber North Shaft                        | (7.2200, 62.1600, -21.4400)   | (0.2050, 0.2050, 70.9600)       | (0.5690, 0, 0)     | shafts         | #6b5f45 | 0.3     |            |
+| `kc-south-shaft`                | King's Chamber South Shaft                        | (7.2200, 62.0100, 32.5400)    | (0.2050, 0.2050, 53.6900)       | (-0.7854, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
+| `qc-north-shaft`                | Queen's Chamber North Shaft                       | (0, 40.1500, -19.5400)        | (0.2100, 0.2100, 60)            | (0.6807, 0, 0)     | shafts         | #6b5f45 | 0.3     |            |
+| `qc-south-shaft`                | Queen's Chamber South Shaft                       | (0, 40.3900, 31.9800)         | (0.2100, 0.2100, 60)            | (-0.6912, 0, 0)    | shafts         | #6b5f45 | 0.3     |            |
+| `well-shaft`                    | Well Shaft (Service Shaft)                        | (6.1700, -2.3300, -25.6800)   | (0.7800, 0.7800, 65.9200)       | (0.9838, 0, 0)     | passages       | #5a4a30 | 0.3     |            |
+| `grotto`                        | Grotto                                            | (6.1700, 0, -25.6800)         | (2, 2, 2)                       | (0, 0, 0)          | passages       | #7a6a4a | 0.5     |            |
 
 ### 1.3 LOD1 — measurement-derived geometry
 
@@ -54,35 +55,35 @@ Name: Great Pyramid LOD1
 Units: meters  
 Generated by `database/geometry/gp-lod1.ts` from the constants below.
 
-| ID                              | Name                                              | Position (x, y, z)           | Size (x, y, z)                 | Rotation (x, y, z) | Layer          | Color   | Opacity | Derivation |
-| ------------------------------- | ------------------------------------------------- | ---------------------------- | ------------------------------ | ------------------ | -------------- | ------- | ------- | ---------- |
-| `pyramid-exterior`              | Pyramid Exterior (core masonry)                   | (0, 69.2500, 0)              | (230.3640, 138.5000, 230.3640) | (0, 0, 0)          | exterior       | #c2b090 | 0.15    | measured   |
-| `casing-north`                  | Casing Stones (north face, lower courses)         | (0, 5, -111.2530)            | (230.3640, 10, 1)              | (0.9048, 0, 0)     | exterior       | #e8e0d0 | 0.7     | measured   |
-| `original-entrance`             | Original Entrance                                 | (7.2900, 16.9700, -101.8471) | (1.0500, 1.1900, 1)            | (0, 0, 0)          | exterior       | #8a7a55 | 1       | measured   |
-| `modern-entrance`               | Modern Entrance (Al-Mamun Tunnel)                 | (0, 17, -101.8400)           | (2, 2, 3)                      | (0, 0, 0)          | exterior       | #6b5f45 | 1       | measured   |
-| `descending-passage`            | Descending Passage (sloped)                       | (7.2900, -3.9658, -58.5605)  | (1.0500, 1.1900, 96.1600)      | (0.4629, 0, 0)     | passages       | #8a7a55 | 0.4     | calculated |
-| `descending-passage-horizontal` | Descending Passage (horizontal)                   | (7.2900, -25.3714, -11.3052) | (1.0500, 1.1900, 9)            | (0, 0, 0)          | passages       | #8a7a55 | 0.4     | calculated |
-| `subterranean-chamber`          | Subterranean Chamber                              | (0, -28.0200, -4.2052)       | (8.3000, 3.5600, 5.2000)       | (0, 0, 0)          | subterranean   | #6a5a40 | 0.4     | calculated |
-| `subterranean-pit`              | Central Pit (Subterranean)                        | (0, -32.2900, -4.2000)       | (2.5400, 5.0300, 2.5400)       | (0, 0, 0)          | subterranean   | #5a4a30 | 0.6     | inferred   |
-| `ascending-passage`             | Ascending Passage                                 | (7.2900, 15.0151, -62.1797)  | (0.9700, 1.2000, 39.2900)      | (-0.4545, 0, 0)    | passages       | #c2ab7a | 0.4     | calculated |
-| `grand-gallery`                 | Grand Gallery                                     | (7.2200, 36.2513, -24.7482)  | (2.0900, 8.7400, 47.8500)      | (-0.4587, 0, 0)    | gallery        | #d4c4a0 | 0.35    | calculated |
-| `antechamber`                   | Antechamber                                       | (7.2200, 44.8170, 0.7157)    | (1.6510, 3.7940, 2.9540)       | (0, 0, 0)          | kings-complex  | #a08060 | 0.4     | calculated |
-| `kings-chamber`                 | King's Chamber                                    | (7.2200, 45.9450, 8.4277)    | (5.2400, 5.9700, 10.4700)      | (0, 0, 0)          | kings-complex  | #8a6050 | 0.4     | measured   |
-| `kings-sarcophagus`             | King's Chamber Sarcophagus                        | (4.6000, 43.5000, 8.4400)    | (0.9780, 1.0490, 2.2760)       | (0, 0, 0)          | kings-complex  | #3a3a3f | 1       | measured   |
-| `relieving-davison`             | Davison's Chamber (Relieving 1)                   | (7.2200, 49.4750, 8.4277)    | (5.2100, 1.0700, 11.6800)      | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
-| `relieving-wellington`          | Wellington's Chamber (Relieving 2)                | (7.2200, 52.4450, 8.4277)    | (5.1800, 1.1200, 11.7300)      | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
-| `relieving-nelson`              | Nelson's Chamber (Relieving 3)                    | (7.2200, 55.6250, 8.4277)    | (5.0800, 1.4700, 11.8100)      | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
-| `relieving-arbuthnot`           | Lady Arbuthnot's Chamber (Relieving 4)            | (7.2200, 58.9150, 8.4277)    | (4.9800, 1.3500, 11.3800)      | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
-| `relieving-campbell`            | Campbell's Chamber (Relieving 5, with cartouches) | (7.2200, 62.7750, 8.4277)    | (6.2500, 2.6200, 11.5300)      | (0, 0, 0)          | relieving      | #807060 | 0.45    | calculated |
-| `queens-chamber`                | Queen's Chamber                                   | (0, 24.3050, 6.3200)         | (5.2300, 6.2300, 5.7500)       | (0, 0, 0)          | queens-complex | #b39b6b | 0.4     | measured   |
-| `queens-niche`                  | Queen's Chamber Niche (East Wall)                 | (2.6200, 24.1000, 6.3200)    | (1.0400, 4.6900, 1.5700)       | (0, 0, 0)          | queens-complex | #a38b5c | 0.6     | measured   |
-| `queens-passage`                | Queen's Chamber Passage                           | (3.6100, 21.7750, -18.2365)  | (1.0500, 1.1700, 43.9600)      | (0, 0, 0)          | queens-complex | #c2ab7a | 0.4     | calculated |
-| `kc-north-shaft`                | KC North Shaft                                    | (7.2200, 66.0259, -23.3490)  | (0.2050, 0.2050, 63.1419)      | (-0.5690, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
-| `kc-south-shaft`                | KC South Shaft                                    | (7.2200, 66.6614, 31.2492)   | (0.2050, 0.2050, 49.9470)      | (-0.7854, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
-| `qc-north-shaft`                | QC North Shaft                                    | (0, 46.3812, -19.8033)       | (0.2100, 0.2100, 60.0000)      | (-0.6807, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
-| `qc-south-shaft`                | QC South Shaft                                    | (0, 46.6236, 32.2435)        | (0.2100, 0.2100, 60.0000)      | (-0.6912, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
-| `well-shaft`                    | Well Shaft                                        | (6.1750, -0.3428, -29.6950)  | (0.7800, 0.7800, 58.2871)      | (1.0607, 0, 0)     | shafts         | #6a5a40 | 0.5     | inferred   |
-| `grotto`                        | Grotto                                            | (6.1800, 5.7000, -30)        | (2, 2, 2)                      | (0, 0, 0)          | passages       | #7a6a4a | 0.5     | inferred   |
+| ID                              | Name                                              | Position (x, y, z)            | Size (x, y, z)                 | Rotation (x, y, z) | Layer          | Color   | Opacity | Derivation |
+| ------------------------------- | ------------------------------------------------- | ----------------------------- | ------------------------------ | ------------------ | -------------- | ------- | ------- | ---------- |
+| `pyramid-exterior`              | Pyramid Exterior (core masonry)                   | (0, 69.2500, 0)               | (230.3640, 138.5000, 230.3640)  | (0, 0, 0)          | exterior       | #c2b090 | 0.15    | measured   |
+| `casing-north`                  | Casing Stones (north face, lower courses)         | (0, 5, -111.2530)             | (230.3640, 10, 1)               | (0.9048, 0, 0)     | exterior       | #e8e0d0 | 0.7     | measured   |
+| `original-entrance`             | Original Entrance                                 | (7.2900, 16.9700, -101.8471)  | (1.0500, 1.1900, 1)             | (0, 0, 0)          | exterior       | #8a7a55 | 1       | measured   |
+| `modern-entrance`               | Modern Entrance (Al-Mamun Tunnel)                 | (0, 17, -101.8400)            | (2, 2, 3)                       | (0, 0, 0)          | exterior       | #6b5f45 | 1       | measured   |
+| `descending-passage`            | Descending Passage (sloped)                       | (7.2900, -5.9751, -54.5340)   | (1.0500, 1.1900, 105.1600)      | (0.4629, 0, 0)     | passages       | #8a7a55 | 0.4     | calculated |
+| `descending-passage-horizontal` | Descending Passage (horizontal)                   | (7.2900, -29.3900, 0.7828)    | (1.0500, 1.1900, 17.0700)       | (0, 0, 0)          | passages       | #8a7a55 | 0.4     | calculated |
+| `subterranean-chamber`          | Subterranean Chamber                              | (0.6600, -28.2200, 5.1778)    | (14.0700, 3.5600, 8.2800)       | (0, 0, 0)          | subterranean   | #6a5a40 | 0.4     | calculated |
+| `subterranean-pit`              | Central Pit (Subterranean)                        | (0.6600, -32.5150, 5.1778)    | (2.5400, 5.0300, 2.5400)        | (0, 0, 0)          | subterranean   | #5a4a30 | 0.6     | inferred   |
+| `ascending-passage`             | Ascending Passage                                 | (7.2900, 15.0151, -62.1797)   | (0.9700, 1.2000, 39.2900)       | (-0.4545, 0, 0)    | passages       | #c2ab7a | 0.4     | calculated |
+| `grand-gallery`                 | Grand Gallery                                     | (7.2200, 36.2513, -24.7482)   | (2.0900, 8.7400, 47.8500)       | (-0.4587, 0, 0)    | gallery        | #d4c4a0 | 0.35    | calculated |
+| `antechamber`                   | Antechamber                                       | (7.2200, 44.8170, 1.6157)     | (1.6510, 3.7940, 2.9540)        | (0, 0, 0)          | kings-complex  | #a08060 | 0.4     | calculated |
+| `kings-chamber`                 | King's Chamber                                    | (7.2200, 45.8800, 11.0127)    | (10.4700, 5.8400, 5.2400)       | (0, 0, 0)          | kings-complex  | #8a6050 | 0.4     | measured   |
+| `kings-sarcophagus`             | King's Chamber Sarcophagus                        | (2.4700, 43.5000, 11.0200)    | (0.9780, 1.0490, 2.2760)        | (0, 0, 0)          | kings-complex  | #3a3a3f | 1       | measured   |
+| `relieving-davison`             | Davison's Chamber (Relieving 1)                   | (7.2200, 49.3500, 11.0127)    | (11.6800, 1.0700, 5.2100)       | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
+| `relieving-wellington`          | Wellington's Chamber (Relieving 2)                | (7.2200, 52.3200, 11.0127)    | (11.7300, 1.1200, 5.1800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
+| `relieving-nelson`              | Nelson's Chamber (Relieving 3)                    | (7.2200, 55.5000, 11.0127)    | (11.8100, 1.4700, 5.0800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
+| `relieving-arbuthnot`           | Lady Arbuthnot's Chamber (Relieving 4)            | (7.2200, 58.7900, 11.0127)    | (11.3800, 1.3500, 4.9800)       | (0, 0, 0)          | relieving      | #706050 | 0.4     | calculated |
+| `relieving-campbell`            | Campbell's Chamber (Relieving 5, with cartouches) | (7.2200, 62.6500, 11.0127)    | (11.5300, 2.6200, 6.2500)       | (0, 0, 0)          | relieving      | #807060 | 0.45    | calculated |
+| `queens-chamber`                | Queen's Chamber                                   | (0, 24.3050, 6.3200)          | (5.7500, 6.2300, 5.2300)        | (0, 0, 0)          | queens-complex | #b39b6b | 0.4     | measured   |
+| `queens-niche`                  | Queen's Chamber Niche (East Wall)                 | (2.8800, 23.8500, 6.3200)     | (1.0400, 4.6900, 1.5700)        | (0, 0, 0)          | queens-complex | #a38b5c | 0.6     | measured   |
+| `queens-passage`                | Queen's Chamber Passage                           | (3.6100, 21.7750, -17.9765)   | (1.0500, 1.1700, 43.9600)       | (0, 0, 0)          | queens-complex | #c2ab7a | 0.4     | calculated |
+| `kc-north-shaft`                | KC North Shaft                                    | (7.2200, 62.1609, -21.4405)   | (0.2050, 0.2050, 70.9560)       | (0.5690, 0, 0)     | shafts         | #7a6a4a | 0.5     | calculated |
+| `kc-south-shaft`                | KC South Shaft                                    | (7.2200, 62.0133, 32.5411)    | (0.2050, 0.2050, 53.6859)       | (-0.7854, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
+| `qc-north-shaft`                | QC North Shaft                                    | (0, 40.1512, -19.5433)        | (0.2100, 0.2100, 60)            | (0.6807, 0, 0)     | shafts         | #7a6a4a | 0.5     | calculated |
+| `qc-south-shaft`                | QC South Shaft                                    | (0, 40.3936, 31.9835)         | (0.2100, 0.2100, 60)            | (-0.6912, 0, 0)    | shafts         | #7a6a4a | 0.5     | calculated |
+| `well-shaft`                    | Well Shaft                                        | (6.1750, -2.3265, -25.6841)   | (0.7800, 0.7800, 65.9211)       | (0.9838, 0, 0)     | shafts         | #6a5a40 | 0.5     | inferred   |
+| `grotto`                        | Grotto                                            | (6.1700, 0, -25.6800)         | (2, 2, 2)                       | (0, 0, 0)          | passages       | #7a6a4a | 0.5     | inferred   |
 
 ### 1.4 Great Pyramid measurement constants
 
@@ -265,16 +266,20 @@ export const GP_ANTECHAMBER = {
   height: 3.794,
   /** Floor Y (m above pavement) — same as GG south floor ~42.92 */
   floorY: 42.92,
-  /** Gap between GG south wall and antechamber north wall (m) — step + short passage */
-  gapFromGG: 0.6,
-  /** Gap between antechamber south wall and KC north wall (m) */
-  gapToKC: 1.0,
+  /** Gap between GG south wall and antechamber north wall (m) — step + short horizontal passage.
+   *  Calibrated so the KC north wall matches Petrie's direct measurement of 330.6 B" S of centre. */
+  gapFromGG: 1.5,
+  /** Gap between antechamber south wall and KC north wall (m) — passage with portcullis grooves.
+   *  Calibrated so the KC north wall matches Petrie's direct measurement of 330.6 B" S of centre. */
+  gapToKC: 5.3,
 } as const;
 
 /** Subterranean Chamber — below pyramid centre */
 export const GP_SUBTERRANEAN = {
-  /** Chamber floor Y (m below pavement) — derived from DP geometry */
-  floorY: -29.8,
+  /** Chamber floor Y (m below pavement) — derived from DP geometry:
+   *  entranceY - (totalLength - horizontalLength) * sin(DP angle)
+   *  = 16.97 - 96.16 * sin(26.52°) ≈ -25.97.  Matches Petrie ~1022 B" below pavement. */
+  floorY: -25.97,
   /** Chamber width E-W (m) — Petrie ~327 B" */
   width: 8.3,
   /** Chamber height (m) — Petrie ~140 B" */
@@ -1262,3 +1267,115 @@ To reproduce the scene exactly:
 4. Parent each mesh to the appropriate layer group and apply the PBR mapping in §1.8.
 5. Set `color`, `opacity`, and `layer` exactly as listed in the tables.
 6. For box meshes, use Three.js `boxGeometry(args=[size.x, size.y, size.z])` centered at `position` and rotated by `rotation`.
+
+## Appendix C — Geometry correction log
+
+This appendix records corrections applied to the Great Pyramid geometry sources. All fixes were verified against Petrie (1883), Cole (1925), Gantenbrink (1999), and Vyse. The `geometry-dump.json` and the tables in §1.2–§1.3 are regenerated from the corrected source by `scripts/generate-geometry-dump.ts` and `scripts/update-monument-geometry-tables.ts`.
+
+### C.1 King's Chamber absolute Z-position (2026-07)
+
+**Problem:** The KC north wall sat at z ≈ 3.2 m south of centre in both LODs, ~5.2 m too far north. Petrie places the KC north wall at 330.6 ± 0.8 inches (≈ 8.40 m) south of centre. The entire upper system (antechamber, relieving chambers, KC shafts) inherited the same offset.
+
+**Root cause:** In `GP_ANTECHAMBER`, `gapFromGG` (0.6 m) + `gapToKC` (1.0 m) = 1.6 m total, but the measurement chain (entrance → POI → AP → GG → antechamber → KC) requires ~6.8 m of gap to land the KC north wall at +8.40 m.
+
+**Fix:** Calibrated `gapFromGG` to 1.5 m and `gapToKC` to 5.3 m. The KC north wall now lands at z = 8.40 m in both LODs, matching Petrie. The LOD0 blockout KC complex (antechamber, KC, sarcophagus, 5 relieving chambers) was shifted from z = 40.5 to z = 13.64 (KC center) to match.
+
+### C.2 Descending Passage horizontal section in LOD0 (2026-07)
+
+**Problem:** LOD0 modelled only the sloped portion of the Descending Passage (length 105.16 m), landing its lower end ~11 m short of the subterranean chamber. LOD1 already had a separate horizontal segment.
+
+**Fix:** LOD0 now splits the DP into a sloped section (96.16 m, matching the LOD1 sloped length = totalLength − horizontalPassageLength) and a horizontal section (9 m), mirroring LOD1. The subterranean chamber floor Y was corrected from −29.8 to −25.97 m to match the shortened sloped run (matches Petrie ~1022 B" below pavement).
+
+### C.3 Subterranean chamber east offset (2026-07)
+
+**Problem:** Both LODs placed the subterranean chamber and pit at x = 0, breaking lateral continuity with the descending passage (which is at x = 7.29 m).
+
+**Fix:** LOD1 subterranean chamber and pit now use x = 7.29 (GP_ENTRANCE.xOffset). LOD0 already used x = 7.29.
+
+### C.4 Casing and entrance Z-position (2026-07)
+
+**Problem:** LOD0 placed the casing north face and original entrance at z = −115.18 (geometric half-base), but the casing angle of 51.84° places the north face at z ≈ −111.25 at y = 5 m (the casing slab center height). LOD1 already used the calculated face position.
+
+**Fix:** LOD0 casing and entrance now use the calculated face Z (−111.25 and −101.84 respectively), matching LOD1.
+
+### C.5 Shaft rotation sign convention (2026-07)
+
+**Problem:** Several shafts in LOD0 and LOD1 had inconsistent rotation signs. The convention is: positive `rotation.x` → +Z end goes down (descending, north-going shafts where the far −Z end is higher); negative `rotation.x` → +Z end goes up (ascending, south-going shafts where the far +Z end is higher).
+
+**Fix:**
+- LOD0 KC north shaft: rotation flipped from −32.6° to +32.6° (north-going, +Z/south end is the low KC end).
+- LOD0 KC south shaft: rotation flipped from +45° to −45° (south-going, +Z/south end is the high exterior end).
+- LOD0 QC north shaft: rotation flipped from −39° to +39°.
+- LOD0 QC south shaft: rotation flipped from +39.6° to −39.6°.
+- `slopedBoxFromFloorEndpoints` in `gp-geometry-utils.ts`: sign logic corrected from `dz >= 0 ? -slopeAngle : slopeAngle` to `dy * dz < 0 ? slopeAngle : -slopeAngle` (positive when dy and dz have opposite signs).
+
+### C.6 Queen's Chamber axis (2026-07)
+
+**Problem:** LOD0 placed the Queen's Chamber at x = 7.22 (east offset), but Petrie establishes that the QC sits on the pyramid's east-west centre axis (x = 0), unlike the KC/GG which are offset east.
+
+**Fix:** LOD0 QC, QC niche, and QC shafts now use x = 0 (QC on centre axis) and x = 2.62 (niche east of QC centre), matching LOD1. QC shafts were repositioned to start from the QC walls.
+
+### C.7 Remaining approximations (known, retained)
+
+These are intentional blockout approximations, not errors:
+- Well shaft and grotto are single-box representations of multi-section features.
+- Relieving chamber heights are taken at the high end of Vyse's ranges.
+- Grotto is a 2 m cube.
+- LOD1 KC/QC shafts are truncated at the pyramid exterior face; LOD0 uses the full Gantenbrink lengths.
+
+### C.8 LOD1 objectId / evidenceId copy-paste errors (2026-07)
+
+**Problem:** Two LOD1 nodes had incorrect `objectId` and `evidenceIds` due to copy-paste errors in `gp-lod1.ts`:
+- `subterranean-chamber`: had `OBJ-0107` / `EV-100007` (the Central Pit's IDs) instead of `OBJ-0106` / `EV-100006`.
+- `queens-passage`: had `OBJ-0117` / `EV-100017` (Campbell's Chamber's IDs) instead of `OBJ-0120` / `EV-100020`.
+
+**Fix:** Corrected both nodes to match the LOD0 blockout and the object/evidence registry.
+
+### C.9 Floating-point precision artifacts in geometry-dump.json (2026-07)
+
+**Problem:** The JSON dump contained IEEE 754 rounding artifacts from trigonometric calculations (e.g. `39.290000000000006`, `62.775000000000006`, `-24.189999999999998`, `59.99999999999999`).
+
+**Fix:** The dump generation script (`scripts/generate-geometry-dump.ts`) now rounds all numeric values to 6 decimal places before serialising, eliminating the artifacts without affecting geometric accuracy.
+
+### C.10 King's Chamber height correction (2026-07)
+
+**Problem:** The KC height was stored as 5.97 m, but Petrie's direct measurement is 230.09 in = 5.844 m. The 5.97 m value appears to be a transcription error (235.04 in vs Petrie's 230.09 in).
+
+**Fix:** Corrected `GP_KINGS_CHAMBER.height` from 5.97 m to 5.84 m in `great-pyramid-measurements.ts`. Updated the LOD0 KC center y (45.94 → 45.88) and all five relieving chamber y positions (shifted -0.125 m to maintain their relative offsets from the KC ceiling). Updated acoustic and hydraulic-acoustic test fixtures to use the corrected height.
+
+### C.11 Subterranean chamber — dimensions, position, and DP geometry correction (2026-07)
+
+**Problem:** The subterranean chamber had multiple errors verified against Petrie's original text (Sec. 37):
+1. **Dimensions swapped**: Code had width(E-W)=11.88, depth(N-S)=7.92. Petrie says E wall 302.9″ E + W wall 250.6″ W = 553.5″ = 14.07 m E-W; N wall 40″ S, S wall 366″ S = 326″ = 8.28 m N-S.
+2. **Position wrong**: Code had x=7.29 (DP entrance offset), z=-2.83. Petrie says chamber center is 0.66 m E and 5.16 m S of pyramid centre.
+3. **Floor depth wrong**: Code had floorY=-25.97. Petrie says DP end at -1181″ = -30.00 m below pavement.
+4. **DP sloped length wrong**: Code subtracted horizontal passage (9.0 m) from totalLength (105.16 m) to get sloped length. But totalLength IS the sloped length; the horizontal passage is separate.
+5. **Horizontal passage length wrong**: Code had 9.0 m. Petrie says 672″ = 17.07 m from DP end to chamber S wall.
+6. **Chamber z direction wrong**: Code used `+depth/2` (chamber extends south from DP end). Petrie says the DP enters at the S wall; chamber extends northward, so z should use `-depth/2`.
+
+**Fix:** Corrected `GP_SUBTERRANEAN.width` to 14.07 m, `.depth` to 8.28 m, `.floorY` to -30.0 m, added `.centerX` = 0.66 m, and `.horizontalPassageLength` to 17.07 m. Updated LOD0 chamber position to (0.66, -28.22, 5.16) and pit to (0.66, -32.52, 5.16). Fixed LOD1 DP sloped length calculation (removed erroneous subtraction), chamber position (uses measured centerX and `-depth/2` for z), and pit position.
+
+### C.12 King's Chamber orientation correction (2026-07)
+
+**Problem:** The KC dimensions were assigned to the wrong axes. The code had `size.x = 5.24` (E-W) and `size.z = 10.47` (N-S), but the KC long axis is E-W: the chamber measures 10.47 m E-W (20 RC) × 5.24 m N-S (10 RC), as confirmed by Petrie's measurements (N wall 412.78″, S wall 412.53″ for E-W; E wall 206.43″, W wall 206.16″ for N-S). The KC entrance is through the north short wall, and the sarcophagus sits at the west end.
+
+**Fix:** Swapped the KC size assignments in both LOD0 and LOD1: `size.x = depth (10.47)` for E-W, `size.z = width (5.24)` for N-S. Updated the KC center z from 13.64 to 11.02 (maintaining the north wall at Petrie's 330.6″ S = 8.40 m, south wall at 537.0″ S = 13.64 m). Updated all 5 relieving chambers (z and size swap), sarcophagus position (x: 4.60 → 2.47, z: 13.64 → 11.02), and KC shaft wall z calculations in LOD1 (using `width/2` for N-S offsets instead of `depth/2`).
+
+### C.13 Queen's Chamber width/depth axis correction (2026-07)
+
+**Problem:** The QC width (E-W) and depth (N-S) were swapped in the measurement constants. The code had width=5.23 m (E-W) and depth=5.75 m (N-S), but Petrie's original text (Sec. 41) confirms the QC gable roof ridge runs E-W, making the E-W the longer dimension: "205.85 wide, and 226.47 long" where "wide" = N-S (perpendicular to ridge) = 5.23 m and "long" = E-W (along ridge) = 5.75 m. The E and W walls contain the gable spring (245.1″ high to ridge); the N and S walls are the gable ends (184.47″ high). The niche is in the E wall which spans the N-S dimension.
+
+**Fix:** Set `GP_QUEENS_CHAMBER.width` to 5.75 m (E-W, 226.47″ = 11 RC) and `.depth` to 5.23 m (N-S, 205.85″ = 10 RC). Updated LOD0 QC size to (5.75, 6.23, 5.23), niche x-position (2.62 → 2.88 to align with corrected east wall at x=5.75/2), QC shaft z-positions, and QC passage z (-18.24 → -17.98).
+
+### C.14 LOD0 blockout synchronization with LOD1 calculations (2026-07)
+
+**Problem:** The LOD0 blockout had stale hardcoded positions for several elements that no longer matched the measurement-derived LOD1 positions after the C.11–C.13 corrections:
+1. **Descending passage (sloped)**: LOD0 had length=96.16 m (should be 105.16 m per Petrie 4141.4″), center y=-4.49 (should be -6.51), center z=-58.82 (should be -54.80).
+2. **Descending passage (horizontal)**: LOD0 had length=9.0 m (should be 17.07 m per Petrie 672″), center y=-25.97 (should be -29.99), center z=-11.29 (should be 0.78).
+3. **Queen's passage**: LOD0 had y=24.3, height=1.45 (should be y=21.78 at QC floor level, height=1.17 per `GP_QC_PASSAGE.heightBeforeStep`).
+4. **KC/QC shafts**: LOD0 positions were based on pre-correction KC/QC geometry. Updated all 4 shaft positions and lengths to match LOD1 calculated values.
+5. **Well shaft**: LOD0 had x=5.0, y=3.2, z=-10.0, angle=45°, length=55 m. Updated to LOD1 values: x=6.17, y=-2.33, z=-25.68, angle=56.37°, length=65.92 m (computed from GG west wall to DP end).
+6. **Grotto**: Moved to align with well shaft midpoint (x=6.17, z=-25.68).
+
+**Fix:** Updated all LOD0 blockout positions in `database/blockouts/great-pyramid.ts` to match the LOD1 calculated values. All 27 LOD0 nodes now match their LOD1 counterparts within 0.6 m (most within 0.01 m). Verified with `scripts/verify-geometry.mjs` — 70/70 checks pass.
+

@@ -75,11 +75,11 @@ export function slopedBoxFromFloorEndpoints(
   // Compute the acute slope angle magnitude
   const slopeAngle = Math.atan2(Math.abs(dy), absDz > 1e-9 ? absDz : 1e-9);
   // Three.js X-rotation convention:
-  //   positive rotation → +Z end goes down (descending passage)
-  //   negative rotation → +Z end goes up (ascending, grand gallery, south shafts)
-  // For south-going elements (dz >= 0): negative angle = +Z end up
-  // For north-going elements (dz < 0): positive angle = -Z end up
-  const angle = dz >= 0 ? -slopeAngle : slopeAngle;
+  //   positive rotation → +Z end goes down (descending passage, north-going shafts)
+  //   negative rotation → +Z end goes up (ascending, grand gallery, south-going shafts)
+  // Sign is positive when dy and dz have opposite signs (one end goes down while
+  // moving in +Z, or up while moving in -Z), negative when they have the same sign.
+  const angle = dy * dz < 0 ? slopeAngle : -slopeAngle;
   const floorMid = midpoint(start, end);
   // Offset from floor midpoint to box center (half height in perpendicular direction)
   const offsetY = (height / 2) * Math.cos(angle);

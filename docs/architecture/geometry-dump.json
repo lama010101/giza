@@ -18,8 +18,13 @@
           "z": 230.36
         },
         "objectId": "OBJ-0101",
-        "evidenceIds": ["EV-100001"],
-        "sourceIds": ["SRC-0101", "SRC-0102"],
+        "evidenceIds": [
+          "EV-100001"
+        ],
+        "sourceIds": [
+          "SRC-0101",
+          "SRC-0102"
+        ],
         "layer": "exterior",
         "color": "#c2b090",
         "opacity": 0.15
@@ -33,7 +38,7 @@
           "z": -111.25
         },
         "rotation": {
-          "x": 0.9047786842338605,
+          "x": 0.904779,
           "y": 0,
           "z": 0
         },
@@ -43,8 +48,12 @@
           "z": 1
         },
         "objectId": "OBJ-0102",
-        "evidenceIds": ["EV-100002"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100002"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "exterior",
         "color": "#e8e0d0",
         "opacity": 0.7
@@ -63,8 +72,12 @@
           "z": 1
         },
         "objectId": "OBJ-0103",
-        "evidenceIds": ["EV-100003"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100003"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "exterior",
         "color": "#8a7a55"
       },
@@ -82,32 +95,69 @@
           "z": 3
         },
         "objectId": "OBJ-0104",
-        "evidenceIds": ["EV-100004"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100004"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "exterior",
         "color": "#6b5f45"
       },
       {
         "id": "descending-passage",
-        "name": "Descending Passage",
+        "name": "Descending Passage (sloped)",
         "position": {
           "x": 7.29,
-          "y": -3.98,
-          "z": -58.55
+          "y": -6.51,
+          "z": -54.8
         },
         "rotation": {
-          "x": 0.4628613176288962,
+          "x": 0.462861,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 1.05,
           "y": 1.19,
-          "z": 96.16
+          "z": 105.16
         },
         "objectId": "OBJ-0105",
-        "evidenceIds": ["EV-100005"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100005"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#8a7a55",
+        "opacity": 0.4
+      },
+      {
+        "id": "descending-passage-horizontal",
+        "name": "Descending Passage (horizontal)",
+        "position": {
+          "x": 7.29,
+          "y": -29.99,
+          "z": 0.78
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 1.05,
+          "y": 1.19,
+          "z": 17.07
+        },
+        "objectId": "OBJ-0105",
+        "evidenceIds": [
+          "EV-100005"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#8a7a55",
         "opacity": 0.4
@@ -116,18 +166,22 @@
         "id": "subterranean-chamber",
         "name": "Subterranean Chamber",
         "position": {
-          "x": 0,
-          "y": -28.02,
-          "z": -4.2
+          "x": 0.66,
+          "y": -28.22,
+          "z": 5.16
         },
         "size": {
-          "x": 8.3,
+          "x": 14.07,
           "y": 3.56,
-          "z": 5.2
+          "z": 8.28
         },
         "objectId": "OBJ-0106",
-        "evidenceIds": ["EV-100006"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100006"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "subterranean",
         "color": "#7a6a4a",
         "opacity": 0.5
@@ -136,9 +190,9 @@
         "id": "subterranean-pit",
         "name": "Central Pit (Subterranean)",
         "position": {
-          "x": 0,
-          "y": -32.29,
-          "z": -4.2
+          "x": 0.66,
+          "y": -32.52,
+          "z": 5.16
         },
         "size": {
           "x": 2.54,
@@ -146,8 +200,12 @@
           "z": 2.54
         },
         "objectId": "OBJ-0107",
-        "evidenceIds": ["EV-100007"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100007"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "subterranean",
         "color": "#5a4a30",
         "opacity": 0.6
@@ -157,11 +215,11 @@
         "name": "Ascending Passage",
         "position": {
           "x": 7.29,
-          "y": 14.46,
-          "z": -61.91
+          "y": 15.02,
+          "z": -62.18
         },
         "rotation": {
-          "x": -0.4544837372193234,
+          "x": -0.454484,
           "y": 0,
           "z": 0
         },
@@ -171,8 +229,12 @@
           "z": 39.29
         },
         "objectId": "OBJ-0108",
-        "evidenceIds": ["EV-100008"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#c2ab7a",
         "opacity": 0.4
@@ -182,11 +244,11 @@
         "name": "Grand Gallery",
         "position": {
           "x": 7.22,
-          "y": 32.33,
-          "z": -22.8
+          "y": 36.25,
+          "z": -24.75
         },
         "rotation": {
-          "x": -0.4586725274241098,
+          "x": -0.458673,
           "y": 0,
           "z": 0
         },
@@ -196,8 +258,12 @@
           "z": 47.85
         },
         "objectId": "OBJ-0109",
-        "evidenceIds": ["EV-100009"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100009"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "gallery",
         "color": "#d4c4a0",
         "opacity": 0.35
@@ -207,8 +273,8 @@
         "name": "Antechamber",
         "position": {
           "x": 7.22,
-          "y": 44.82,
-          "z": 0.73
+          "y": 44.8,
+          "z": 1.62
         },
         "size": {
           "x": 1.651,
@@ -216,8 +282,12 @@
           "z": 2.954
         },
         "objectId": "OBJ-0110",
-        "evidenceIds": ["EV-100010"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100010"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#a08060",
         "opacity": 0.5
@@ -227,17 +297,21 @@
         "name": "King's Chamber",
         "position": {
           "x": 7.22,
-          "y": 45.94,
-          "z": 8.44
+          "y": 45.88,
+          "z": 11.02
         },
         "size": {
-          "x": 5.24,
-          "y": 5.97,
-          "z": 10.47
+          "x": 10.47,
+          "y": 5.84,
+          "z": 5.24
         },
         "objectId": "OBJ-0111",
-        "evidenceIds": ["EV-100011"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100011"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#8a6050",
         "opacity": 0.4
@@ -246,9 +320,9 @@
         "id": "kings-sarcophagus",
         "name": "King's Chamber Sarcophagus",
         "position": {
-          "x": 4.6,
+          "x": 2.47,
           "y": 43.5,
-          "z": 8.44
+          "z": 11.02
         },
         "size": {
           "x": 0.978,
@@ -256,8 +330,12 @@
           "z": 2.276
         },
         "objectId": "OBJ-0112",
-        "evidenceIds": ["EV-100012"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100012"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#3a3a3f"
       },
@@ -266,17 +344,21 @@
         "name": "Davison's Chamber (Relieving 1)",
         "position": {
           "x": 7.22,
-          "y": 49.47,
-          "z": 8.44
+          "y": 49.35,
+          "z": 11.02
         },
         "size": {
-          "x": 5.21,
+          "x": 11.68,
           "y": 1.07,
-          "z": 11.68
+          "z": 5.21
         },
         "objectId": "OBJ-0113",
-        "evidenceIds": ["EV-100013"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100013"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4
@@ -286,17 +368,21 @@
         "name": "Wellington's Chamber (Relieving 2)",
         "position": {
           "x": 7.22,
-          "y": 52.44,
-          "z": 8.44
+          "y": 52.32,
+          "z": 11.02
         },
         "size": {
-          "x": 5.18,
+          "x": 11.73,
           "y": 1.12,
-          "z": 11.73
+          "z": 5.18
         },
         "objectId": "OBJ-0114",
-        "evidenceIds": ["EV-100014"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100014"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4
@@ -306,17 +392,21 @@
         "name": "Nelson's Chamber (Relieving 3)",
         "position": {
           "x": 7.22,
-          "y": 55.62,
-          "z": 8.44
+          "y": 55.5,
+          "z": 11.02
         },
         "size": {
-          "x": 5.08,
+          "x": 11.81,
           "y": 1.47,
-          "z": 11.81
+          "z": 5.08
         },
         "objectId": "OBJ-0115",
-        "evidenceIds": ["EV-100015"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100015"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4
@@ -326,17 +416,21 @@
         "name": "Lady Arbuthnot's Chamber (Relieving 4)",
         "position": {
           "x": 7.22,
-          "y": 58.91,
-          "z": 8.44
+          "y": 58.79,
+          "z": 11.02
         },
         "size": {
-          "x": 4.98,
+          "x": 11.38,
           "y": 1.35,
-          "z": 11.38
+          "z": 4.98
         },
         "objectId": "OBJ-0116",
-        "evidenceIds": ["EV-100016"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100016"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4
@@ -346,17 +440,21 @@
         "name": "Campbell's Chamber (Relieving 5, with cartouches)",
         "position": {
           "x": 7.22,
-          "y": 62.77,
-          "z": 8.44
+          "y": 62.65,
+          "z": 11.02
         },
         "size": {
-          "x": 6.25,
+          "x": 11.53,
           "y": 2.62,
-          "z": 11.53
+          "z": 6.25
         },
         "objectId": "OBJ-0117",
-        "evidenceIds": ["EV-100017"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100017"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#807060",
         "opacity": 0.45
@@ -366,17 +464,21 @@
         "name": "Queen's Chamber",
         "position": {
           "x": 0,
-          "y": 24.3,
+          "y": 24.05,
           "z": 6.32
         },
         "size": {
-          "x": 5.23,
+          "x": 5.75,
           "y": 6.23,
-          "z": 5.75
+          "z": 5.23
         },
         "objectId": "OBJ-0118",
-        "evidenceIds": ["EV-100018"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100018"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "queens-complex",
         "color": "#b39b6b",
         "opacity": 0.4
@@ -385,8 +487,8 @@
         "id": "queens-niche",
         "name": "Queen's Chamber Niche (East Wall)",
         "position": {
-          "x": 2.62,
-          "y": 24.1,
+          "x": 2.88,
+          "y": 23.85,
           "z": 6.32
         },
         "size": {
@@ -395,8 +497,12 @@
           "z": 1.57
         },
         "objectId": "OBJ-0119",
-        "evidenceIds": ["EV-100019"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100019"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "queens-complex",
         "color": "#a38b5c",
         "opacity": 0.6
@@ -405,9 +511,9 @@
         "id": "queens-passage",
         "name": "Queen's Chamber Passage",
         "position": {
-          "x": 3.65,
+          "x": 3.61,
           "y": 21.78,
-          "z": -18.5
+          "z": -17.98
         },
         "size": {
           "x": 1.05,
@@ -415,8 +521,12 @@
           "z": 43.96
         },
         "objectId": "OBJ-0120",
-        "evidenceIds": ["EV-100020"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100020"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#c2ab7a",
         "opacity": 0.35
@@ -426,22 +536,26 @@
         "name": "King's Chamber North Shaft",
         "position": {
           "x": 7.22,
-          "y": 66,
-          "z": -23
+          "y": 62.16,
+          "z": -21.44
         },
         "rotation": {
-          "x": -0.5689773361501514,
+          "x": 0.568977,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
-          "y": 0.215,
-          "z": 78.43
+          "y": 0.205,
+          "z": 70.96
         },
         "objectId": "OBJ-0121",
-        "evidenceIds": ["EV-100021"],
-        "sourceIds": ["SRC-0105"],
+        "evidenceIds": [
+          "EV-100021"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
         "layer": "shafts",
         "color": "#6b5f45",
         "opacity": 0.3
@@ -451,22 +565,26 @@
         "name": "King's Chamber South Shaft",
         "position": {
           "x": 7.22,
-          "y": 66,
-          "z": 20
+          "y": 62.01,
+          "z": 32.54
         },
         "rotation": {
-          "x": -0.7853981633974483,
+          "x": -0.785398,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
-          "y": 0.215,
-          "z": 77.55
+          "y": 0.205,
+          "z": 53.69
         },
         "objectId": "OBJ-0122",
-        "evidenceIds": ["EV-100022"],
-        "sourceIds": ["SRC-0105"],
+        "evidenceIds": [
+          "EV-100022"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
         "layer": "shafts",
         "color": "#6b5f45",
         "opacity": 0.3
@@ -476,22 +594,26 @@
         "name": "Queen's Chamber North Shaft",
         "position": {
           "x": 0,
-          "y": 44.6,
-          "z": -15
+          "y": 40.15,
+          "z": -19.54
         },
         "rotation": {
-          "x": -0.6806784082777885,
+          "x": 0.680678,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.21,
           "y": 0.21,
-          "z": 65.1
+          "z": 60
         },
         "objectId": "OBJ-0123",
-        "evidenceIds": ["EV-100023"],
-        "sourceIds": ["SRC-0105"],
+        "evidenceIds": [
+          "EV-100023"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
         "layer": "shafts",
         "color": "#6b5f45",
         "opacity": 0.3
@@ -501,22 +623,26 @@
         "name": "Queen's Chamber South Shaft",
         "position": {
           "x": 0,
-          "y": 43,
-          "z": 20
+          "y": 40.39,
+          "z": 31.98
         },
         "rotation": {
-          "x": -0.6911503837897546,
+          "x": -0.69115,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.21,
           "y": 0.21,
-          "z": 59.6
+          "z": 60
         },
         "objectId": "OBJ-0124",
-        "evidenceIds": ["EV-100024"],
-        "sourceIds": ["SRC-0105"],
+        "evidenceIds": [
+          "EV-100024"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
         "layer": "shafts",
         "color": "#6b5f45",
         "opacity": 0.3
@@ -525,23 +651,27 @@
         "id": "well-shaft",
         "name": "Well Shaft (Service Shaft)",
         "position": {
-          "x": 6.18,
-          "y": 0,
-          "z": -44
+          "x": 6.17,
+          "y": -2.33,
+          "z": -25.68
         },
         "rotation": {
-          "x": 0.7853981633974483,
+          "x": 0.983842,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.78,
           "y": 0.78,
-          "z": 55
+          "z": 65.92
         },
         "objectId": "OBJ-0125",
-        "evidenceIds": ["EV-100025"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100025"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#5a4a30",
         "opacity": 0.3
@@ -550,9 +680,9 @@
         "id": "grotto",
         "name": "Grotto",
         "position": {
-          "x": 6.18,
-          "y": 5.7,
-          "z": -30
+          "x": 6.17,
+          "y": 0,
+          "z": -25.68
         },
         "size": {
           "x": 2,
@@ -560,8 +690,12 @@
           "z": 2
         },
         "objectId": "OBJ-0126",
-        "evidenceIds": ["EV-100026"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100026"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#7a6a4a",
         "opacity": 0.5
@@ -587,8 +721,13 @@
           "z": 230.364
         },
         "objectId": "OBJ-0101",
-        "evidenceIds": ["EV-100001"],
-        "sourceIds": ["SRC-0101", "SRC-0102"],
+        "evidenceIds": [
+          "EV-100001"
+        ],
+        "sourceIds": [
+          "SRC-0101",
+          "SRC-0102"
+        ],
         "layer": "exterior",
         "color": "#c2b090",
         "opacity": 0.15,
@@ -601,10 +740,10 @@
         "position": {
           "x": 0,
           "y": 5,
-          "z": -111.25303711667617
+          "z": -111.253037
         },
         "rotation": {
-          "x": 0.9047786842338605,
+          "x": 0.904779,
           "y": 0,
           "z": 0
         },
@@ -614,8 +753,12 @@
           "z": 1
         },
         "objectId": "OBJ-0102",
-        "evidenceIds": ["EV-100002"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100002"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "exterior",
         "color": "#e8e0d0",
         "opacity": 0.7,
@@ -628,7 +771,7 @@
         "position": {
           "x": 7.29,
           "y": 16.97,
-          "z": -101.8470999739989
+          "z": -101.8471
         },
         "size": {
           "x": 1.05,
@@ -636,8 +779,12 @@
           "z": 1
         },
         "objectId": "OBJ-0103",
-        "evidenceIds": ["EV-100003"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100003"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "exterior",
         "color": "#8a7a55",
         "derivation": "measured",
@@ -657,8 +804,12 @@
           "z": 3
         },
         "objectId": "OBJ-0104",
-        "evidenceIds": ["EV-100004"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100004"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "exterior",
         "color": "#6b5f45",
         "lod": "LOD1",
@@ -669,22 +820,26 @@
         "name": "Descending Passage (sloped)",
         "position": {
           "x": 7.29,
-          "y": -3.9658160674197784,
-          "z": -58.56047351049209
+          "y": -5.975112,
+          "z": -54.53397
         },
         "rotation": {
-          "x": 0.4628613176288962,
+          "x": 0.462861,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 1.05,
           "y": 1.19,
-          "z": 96.16
+          "z": 105.16
         },
         "objectId": "OBJ-0105",
-        "evidenceIds": ["EV-100005"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100005"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#8a7a55",
         "opacity": 0.4,
@@ -696,8 +851,8 @@
         "name": "Descending Passage (horizontal)",
         "position": {
           "x": 7.29,
-          "y": -25.37141861488923,
-          "z": -11.305194157548073
+          "y": -29.39001,
+          "z": 0.782813
         },
         "rotation": {
           "x": 0,
@@ -707,11 +862,15 @@
         "size": {
           "x": 1.05,
           "y": 1.19,
-          "z": 9
+          "z": 17.07
         },
         "objectId": "OBJ-0105",
-        "evidenceIds": ["EV-100005"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100005"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#8a7a55",
         "opacity": 0.4,
@@ -722,18 +881,22 @@
         "id": "subterranean-chamber",
         "name": "Subterranean Chamber",
         "position": {
-          "x": 0,
-          "y": -28.02,
-          "z": -4.205194157548073
+          "x": 0.66,
+          "y": -28.22,
+          "z": 5.177813
         },
         "size": {
-          "x": 8.3,
+          "x": 14.07,
           "y": 3.56,
-          "z": 5.2
+          "z": 8.28
         },
-        "objectId": "OBJ-0107",
-        "evidenceIds": ["EV-100007"],
-        "sourceIds": ["SRC-0101"],
+        "objectId": "OBJ-0106",
+        "evidenceIds": [
+          "EV-100006"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "subterranean",
         "color": "#6a5a40",
         "opacity": 0.4,
@@ -744,9 +907,9 @@
         "id": "subterranean-pit",
         "name": "Central Pit (Subterranean)",
         "position": {
-          "x": 0,
-          "y": -32.29,
-          "z": -4.2
+          "x": 0.66,
+          "y": -32.515,
+          "z": 5.177813
         },
         "size": {
           "x": 2.54,
@@ -754,8 +917,12 @@
           "z": 2.54
         },
         "objectId": "OBJ-0107",
-        "evidenceIds": ["EV-100007"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100007"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "subterranean",
         "color": "#5a4a30",
         "opacity": 0.6,
@@ -767,22 +934,26 @@
         "name": "Ascending Passage",
         "position": {
           "x": 7.29,
-          "y": 15.015115123157624,
-          "z": -62.179720507016455
+          "y": 15.015115,
+          "z": -62.179721
         },
         "rotation": {
-          "x": -0.45448373721932334,
+          "x": -0.454484,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.97,
           "y": 1.2,
-          "z": 39.290000000000006
+          "z": 39.29
         },
         "objectId": "OBJ-0108",
-        "evidenceIds": ["EV-100008"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#c2ab7a",
         "opacity": 0.4,
@@ -794,11 +965,11 @@
         "name": "Grand Gallery",
         "position": {
           "x": 7.22,
-          "y": 36.251312008357196,
-          "z": -24.748245495879523
+          "y": 36.251312,
+          "z": -24.748245
         },
         "rotation": {
-          "x": -0.4586725274241097,
+          "x": -0.458673,
           "y": 0,
           "z": 0
         },
@@ -808,8 +979,12 @@
           "z": 47.85
         },
         "objectId": "OBJ-0109",
-        "evidenceIds": ["EV-100009"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100009"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "gallery",
         "color": "#d4c4a0",
         "opacity": 0.35,
@@ -822,7 +997,7 @@
         "position": {
           "x": 7.22,
           "y": 44.817,
-          "z": 0.7157447788472472
+          "z": 1.615745
         },
         "size": {
           "x": 1.651,
@@ -830,8 +1005,12 @@
           "z": 2.954
         },
         "objectId": "OBJ-0110",
-        "evidenceIds": ["EV-100010"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100010"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#a08060",
         "opacity": 0.4,
@@ -843,17 +1022,21 @@
         "name": "King's Chamber",
         "position": {
           "x": 7.22,
-          "y": 45.945,
-          "z": 8.427744778847249
+          "y": 45.88,
+          "z": 11.012745
         },
         "size": {
-          "x": 5.24,
-          "y": 5.97,
-          "z": 10.47
+          "x": 10.47,
+          "y": 5.84,
+          "z": 5.24
         },
         "objectId": "OBJ-0111",
-        "evidenceIds": ["EV-100011"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100011"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#8a6050",
         "opacity": 0.4,
@@ -864,9 +1047,9 @@
         "id": "kings-sarcophagus",
         "name": "King's Chamber Sarcophagus",
         "position": {
-          "x": 4.6,
+          "x": 2.47,
           "y": 43.5,
-          "z": 8.44
+          "z": 11.02
         },
         "size": {
           "x": 0.978,
@@ -874,8 +1057,12 @@
           "z": 2.276
         },
         "objectId": "OBJ-0112",
-        "evidenceIds": ["EV-100012"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100012"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "kings-complex",
         "color": "#3a3a3f",
         "lod": "LOD1",
@@ -886,17 +1073,21 @@
         "name": "Davison's Chamber (Relieving 1)",
         "position": {
           "x": 7.22,
-          "y": 49.475,
-          "z": 8.427744778847249
+          "y": 49.35,
+          "z": 11.012745
         },
         "size": {
-          "x": 5.21,
+          "x": 11.68,
           "y": 1.07,
-          "z": 11.68
+          "z": 5.21
         },
         "objectId": "OBJ-0113",
-        "evidenceIds": ["EV-100013"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100013"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4,
@@ -908,17 +1099,21 @@
         "name": "Wellington's Chamber (Relieving 2)",
         "position": {
           "x": 7.22,
-          "y": 52.445,
-          "z": 8.427744778847249
+          "y": 52.32,
+          "z": 11.012745
         },
         "size": {
-          "x": 5.18,
+          "x": 11.73,
           "y": 1.12,
-          "z": 11.73
+          "z": 5.18
         },
         "objectId": "OBJ-0114",
-        "evidenceIds": ["EV-100014"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100014"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4,
@@ -930,17 +1125,21 @@
         "name": "Nelson's Chamber (Relieving 3)",
         "position": {
           "x": 7.22,
-          "y": 55.625,
-          "z": 8.427744778847249
+          "y": 55.5,
+          "z": 11.012745
         },
         "size": {
-          "x": 5.08,
+          "x": 11.81,
           "y": 1.47,
-          "z": 11.81
+          "z": 5.08
         },
         "objectId": "OBJ-0115",
-        "evidenceIds": ["EV-100015"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100015"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4,
@@ -952,17 +1151,21 @@
         "name": "Lady Arbuthnot's Chamber (Relieving 4)",
         "position": {
           "x": 7.22,
-          "y": 58.915,
-          "z": 8.427744778847249
+          "y": 58.79,
+          "z": 11.012745
         },
         "size": {
-          "x": 4.98,
+          "x": 11.38,
           "y": 1.35,
-          "z": 11.38
+          "z": 4.98
         },
         "objectId": "OBJ-0116",
-        "evidenceIds": ["EV-100016"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100016"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#706050",
         "opacity": 0.4,
@@ -974,17 +1177,21 @@
         "name": "Campbell's Chamber (Relieving 5, with cartouches)",
         "position": {
           "x": 7.22,
-          "y": 62.775000000000006,
-          "z": 8.427744778847249
+          "y": 62.65,
+          "z": 11.012745
         },
         "size": {
-          "x": 6.25,
+          "x": 11.53,
           "y": 2.62,
-          "z": 11.53
+          "z": 6.25
         },
         "objectId": "OBJ-0117",
-        "evidenceIds": ["EV-100017"],
-        "sourceIds": ["SRC-0104"],
+        "evidenceIds": [
+          "EV-100017"
+        ],
+        "sourceIds": [
+          "SRC-0104"
+        ],
         "layer": "relieving",
         "color": "#807060",
         "opacity": 0.45,
@@ -1000,13 +1207,17 @@
           "z": 6.32
         },
         "size": {
-          "x": 5.23,
+          "x": 5.75,
           "y": 6.23,
-          "z": 5.75
+          "z": 5.23
         },
         "objectId": "OBJ-0118",
-        "evidenceIds": ["EV-100018"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100018"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "queens-complex",
         "color": "#b39b6b",
         "opacity": 0.4,
@@ -1017,8 +1228,8 @@
         "id": "queens-niche",
         "name": "Queen's Chamber Niche (East Wall)",
         "position": {
-          "x": 2.62,
-          "y": 24.1,
+          "x": 2.88,
+          "y": 23.85,
           "z": 6.32
         },
         "size": {
@@ -1027,8 +1238,12 @@
           "z": 1.57
         },
         "objectId": "OBJ-0119",
-        "evidenceIds": ["EV-100019"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100019"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "queens-complex",
         "color": "#a38b5c",
         "opacity": 0.6,
@@ -1040,8 +1255,8 @@
         "name": "Queen's Chamber Passage",
         "position": {
           "x": 3.61,
-          "y": 21.775000000000002,
-          "z": -18.236519780679583
+          "y": 21.775,
+          "z": -17.97652
         },
         "rotation": {
           "x": 0,
@@ -1053,9 +1268,13 @@
           "y": 1.17,
           "z": 43.96
         },
-        "objectId": "OBJ-0117",
-        "evidenceIds": ["EV-100017"],
-        "sourceIds": ["SRC-0101"],
+        "objectId": "OBJ-0120",
+        "evidenceIds": [
+          "EV-100020"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "queens-complex",
         "color": "#c2ab7a",
         "opacity": 0.4,
@@ -1067,22 +1286,26 @@
         "name": "KC North Shaft",
         "position": {
           "x": 7.22,
-          "y": 66.0258531960898,
-          "z": -23.349047949847186
+          "y": 62.160853,
+          "z": -21.440545
         },
         "rotation": {
-          "x": -0.5689773361501513,
+          "x": 0.568977,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 63.14188630394978
+          "z": 70.955971
         },
         "objectId": "OBJ-0121",
-        "evidenceIds": ["EV-100021"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100021"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "shafts",
         "color": "#7a6a4a",
         "opacity": 0.5,
@@ -1094,22 +1317,26 @@
         "name": "KC South Shaft",
         "position": {
           "x": 7.22,
-          "y": 66.66142306974326,
-          "z": 31.249210958447275
+          "y": 62.013296,
+          "z": 32.541084
         },
         "rotation": {
-          "x": -0.7853981633974482,
+          "x": -0.785398,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 49.94703797081221
+          "z": 53.685859
         },
         "objectId": "OBJ-0122",
-        "evidenceIds": ["EV-100022"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100022"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "shafts",
         "color": "#7a6a4a",
         "opacity": 0.5,
@@ -1121,22 +1348,26 @@
         "name": "QC North Shaft",
         "position": {
           "x": 0,
-          "y": 46.38121205744811,
-          "z": -19.803300202648895
+          "y": 40.151212,
+          "z": -19.5433
         },
         "rotation": {
-          "x": -0.6806784082777886,
+          "x": 0.680678,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.21,
           "y": 0.21,
-          "z": 60.00000000000001
+          "z": 60
         },
         "objectId": "OBJ-0123",
-        "evidenceIds": ["EV-100023"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100023"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "shafts",
         "color": "#7a6a4a",
         "opacity": 0.5,
@@ -1148,22 +1379,26 @@
         "name": "QC South Shaft",
         "position": {
           "x": 0,
-          "y": 46.62362358295215,
-          "z": 32.24346776435006
+          "y": 40.393624,
+          "z": 31.983468
         },
         "rotation": {
-          "x": -0.6911503837897546,
+          "x": -0.69115,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.21,
           "y": 0.21,
-          "z": 59.99999999999999
+          "z": 60
         },
         "objectId": "OBJ-0124",
-        "evidenceIds": ["EV-100024"],
-        "sourceIds": ["SRC-0103"],
+        "evidenceIds": [
+          "EV-100024"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
         "layer": "shafts",
         "color": "#7a6a4a",
         "opacity": 0.5,
@@ -1175,22 +1410,26 @@
         "name": "Well Shaft",
         "position": {
           "x": 6.175,
-          "y": -0.34278063365289946,
-          "z": -29.695013260714827
+          "y": -2.326486,
+          "z": -25.684149
         },
         "rotation": {
-          "x": 1.0606801333845242,
+          "x": 0.983761,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.78,
           "y": 0.78,
-          "z": 58.28707568962962
+          "z": 65.921078
         },
         "objectId": "OBJ-0125",
-        "evidenceIds": ["EV-100025"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100025"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "shafts",
         "color": "#6a5a40",
         "opacity": 0.5,
@@ -1201,9 +1440,9 @@
         "id": "grotto",
         "name": "Grotto",
         "position": {
-          "x": 6.18,
-          "y": 5.7,
-          "z": -30
+          "x": 6.17,
+          "y": 0,
+          "z": -25.68
         },
         "size": {
           "x": 2,
@@ -1211,8 +1450,12 @@
           "z": 2
         },
         "objectId": "OBJ-0126",
-        "evidenceIds": ["EV-100026"],
-        "sourceIds": ["SRC-0101"],
+        "evidenceIds": [
+          "EV-100026"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
         "layer": "passages",
         "color": "#7a6a4a",
         "opacity": 0.5,
@@ -1240,8 +1483,13 @@
           "z": 3
         },
         "objectId": "OBJ-0001",
-        "evidenceIds": ["EV-000001", "EV-000010"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000001",
+          "EV-000010"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "shafts",
         "color": "#8a7a55",
         "opacity": 0.5
@@ -1252,7 +1500,7 @@
         "position": {
           "x": 0,
           "y": -8.27,
-          "z": 2.8
+          "z": -2.8
         },
         "size": {
           "x": 3.85,
@@ -1260,8 +1508,12 @@
           "z": 8.6
         },
         "objectId": "OBJ-0002",
-        "evidenceIds": ["EV-000002"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000002"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "level-1",
         "color": "#c2ab7a",
         "opacity": 0.3
@@ -1272,7 +1524,7 @@
         "position": {
           "x": -1.125,
           "y": -16.245,
-          "z": -0.4
+          "z": -6
         },
         "size": {
           "x": 1.9,
@@ -1280,8 +1532,13 @@
           "z": 1.9
         },
         "objectId": "OBJ-0003",
-        "evidenceIds": ["EV-000003", "EV-000010"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000003",
+          "EV-000010"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "shafts",
         "color": "#8a7a55",
         "opacity": 0.5
@@ -1290,9 +1547,9 @@
         "id": "chamber-b",
         "name": "Chamber B",
         "position": {
-          "x": 0,
+          "x": -1.125,
           "y": -21.85,
-          "z": 2.45
+          "z": -10.35
         },
         "size": {
           "x": 3.65,
@@ -1300,8 +1557,12 @@
           "z": 6.8
         },
         "objectId": "OBJ-0004",
-        "evidenceIds": ["EV-000004"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000004"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "level-2",
         "color": "#b39b6b",
         "opacity": 0.3
@@ -1312,7 +1573,7 @@
         "position": {
           "x": 0.9,
           "y": -26.9,
-          "z": 4.5
+          "z": -7
         },
         "size": {
           "x": 1.9,
@@ -1320,8 +1581,13 @@
           "z": 1.65
         },
         "objectId": "OBJ-0005",
-        "evidenceIds": ["EV-000005", "EV-000010"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000005",
+          "EV-000010"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "shafts",
         "color": "#8a7a55",
         "opacity": 0.5
@@ -1330,9 +1596,9 @@
         "id": "chamber-i",
         "name": "Chamber I",
         "position": {
-          "x": -1,
+          "x": -1.4,
           "y": -29.15,
-          "z": 4
+          "z": -7
         },
         "size": {
           "x": 6.5,
@@ -1340,8 +1606,13 @@
           "z": 9
         },
         "objectId": "OBJ-0006",
-        "evidenceIds": ["EV-000006", "EV-000011"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000006",
+          "EV-000011"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "level-3",
         "color": "#a38b5c",
         "opacity": 0.3
@@ -1350,9 +1621,9 @@
         "id": "central-island",
         "name": "Central Island",
         "position": {
-          "x": -1,
+          "x": -1.4,
           "y": -29.775,
-          "z": 4
+          "z": -7
         },
         "size": {
           "x": 3.2,
@@ -1360,8 +1631,12 @@
           "z": 5.2
         },
         "objectId": "OBJ-0007",
-        "evidenceIds": ["EV-000007"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000007"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "level-3",
         "color": "#7a6a4a"
       },
@@ -1369,9 +1644,9 @@
         "id": "sarcophagus-i",
         "name": "Basalt Sarcophagus",
         "position": {
-          "x": -1,
+          "x": -1.4,
           "y": -28.425,
-          "z": 4.5
+          "z": -6.5
         },
         "size": {
           "x": 1.08,
@@ -1379,8 +1654,13 @@
           "z": 2.28
         },
         "objectId": "OBJ-0008",
-        "evidenceIds": ["EV-000008"],
-        "sourceIds": ["SRC-0001", "SRC-0002"],
+        "evidenceIds": [
+          "EV-000008"
+        ],
+        "sourceIds": [
+          "SRC-0001",
+          "SRC-0002"
+        ],
         "layer": "level-3",
         "color": "#3a3a3f"
       },
@@ -1388,13 +1668,13 @@
         "id": "northern-conduit",
         "name": "Northern Conduit",
         "position": {
-          "x": -6.4,
+          "x": -7.054,
           "y": -30.3,
-          "z": -2.7
+          "z": -13.904
         },
         "rotation": {
           "x": 0,
-          "y": -2.356194490192345,
+          "y": -2.356194,
           "z": 0
         },
         "size": {
@@ -1403,8 +1683,12 @@
           "z": 6.8
         },
         "objectId": "OBJ-0009",
-        "evidenceIds": ["EV-000009"],
-        "sourceIds": ["SRC-0001"],
+        "evidenceIds": [
+          "EV-000009"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
         "layer": "level-3",
         "color": "#6b5f45"
       },
@@ -1412,9 +1696,9 @@
         "id": "chamber-i-water",
         "name": "Chamber I Water",
         "position": {
-          "x": -1,
+          "x": -1.4,
           "y": -30.4,
-          "z": 4
+          "z": -7
         },
         "size": {
           "x": 6.5,
@@ -1425,6 +1709,322 @@
         "color": "#0a4a6b",
         "opacity": 0.6,
         "overlay": "water"
+      },
+      {
+        "id": "niche-2-sarcophagus",
+        "name": "Niche 2 Sarcophagus",
+        "position": {
+          "x": 0.075,
+          "y": -21.85,
+          "z": -11.8
+        },
+        "size": {
+          "x": 0.9,
+          "y": 0.8,
+          "z": 1.9
+        },
+        "objectId": "OBJ-0010",
+        "evidenceIds": [
+          "EV-000012"
+        ],
+        "sourceIds": [
+          "SRC-0001",
+          "SRC-0002"
+        ],
+        "layer": "level-2",
+        "color": "#4a4a4f",
+        "opacity": 0.85
+      },
+      {
+        "id": "niche-7-sarcophagus",
+        "name": "Niche 7 Sarcophagus",
+        "position": {
+          "x": -2.325,
+          "y": -21.85,
+          "z": -8.8
+        },
+        "size": {
+          "x": 0.9,
+          "y": 0.8,
+          "z": 1.9
+        },
+        "objectId": "OBJ-0011",
+        "evidenceIds": [
+          "EV-000013"
+        ],
+        "sourceIds": [
+          "SRC-0001",
+          "SRC-0002"
+        ],
+        "layer": "level-2",
+        "color": "#4a4a4f",
+        "opacity": 0.85
+      },
+      {
+        "id": "chamber-b-east-passage",
+        "name": "Chamber B Eastern Passage",
+        "position": {
+          "x": 2.075,
+          "y": -21.85,
+          "z": -11.8
+        },
+        "size": {
+          "x": 2.8,
+          "y": 1,
+          "z": 0.8
+        },
+        "objectId": "OBJ-0012",
+        "evidenceIds": [
+          "EV-000014"
+        ],
+        "sourceIds": [
+          "SRC-0002"
+        ],
+        "layer": "level-2",
+        "color": "#6b5f45",
+        "opacity": 0.4
+      },
+      {
+        "id": "east-corridor",
+        "name": "East Corridor",
+        "position": {
+          "x": 11.6,
+          "y": -29.6,
+          "z": -7
+        },
+        "rotation": {
+          "x": 0,
+          "y": 1.570796,
+          "z": 0
+        },
+        "size": {
+          "x": 0.8,
+          "y": 1.2,
+          "z": 19.5
+        },
+        "objectId": "OBJ-0013",
+        "evidenceIds": [
+          "EV-000015"
+        ],
+        "sourceIds": [
+          "SRC-0002"
+        ],
+        "layer": "level-3",
+        "color": "#6b5f45",
+        "opacity": 0.4
+      },
+      {
+        "id": "vault",
+        "name": "Vault",
+        "position": {
+          "x": 22.6,
+          "y": -29.8,
+          "z": -7
+        },
+        "size": {
+          "x": 2,
+          "y": 1.8,
+          "z": 2
+        },
+        "objectId": "OBJ-0014",
+        "evidenceIds": [
+          "EV-000016"
+        ],
+        "sourceIds": [
+          "SRC-0002"
+        ],
+        "layer": "level-3",
+        "color": "#8a7a55",
+        "opacity": 0.35
+      },
+      {
+        "id": "eastern-tunnel",
+        "name": "Eastern Tunnel",
+        "position": {
+          "x": 25.6,
+          "y": -29.8,
+          "z": -7
+        },
+        "rotation": {
+          "x": 0,
+          "y": 1.570796,
+          "z": 0
+        },
+        "size": {
+          "x": 0.4,
+          "y": 0.4,
+          "z": 4
+        },
+        "objectId": "OBJ-0015",
+        "evidenceIds": [
+          "EV-000017"
+        ],
+        "sourceIds": [
+          "SRC-0002"
+        ],
+        "layer": "level-3",
+        "color": "#5a4f35",
+        "opacity": 0.5
+      },
+      {
+        "id": "surface-bedrock",
+        "name": "Limestone Bedrock",
+        "position": {
+          "x": 0,
+          "y": -0.5,
+          "z": 0
+        },
+        "size": {
+          "x": 40,
+          "y": 1,
+          "z": 40
+        },
+        "layer": "level-0",
+        "color": "#c2b280"
+      },
+      {
+        "id": "surface-desert",
+        "name": "Desert Surface",
+        "position": {
+          "x": 0,
+          "y": 0.05,
+          "z": 0
+        },
+        "size": {
+          "x": 60,
+          "y": 0.1,
+          "z": 60
+        },
+        "layer": "level-0",
+        "color": "#e8d8a8"
+      },
+      {
+        "id": "surface-excavation-perimeter",
+        "name": "Excavation Perimeter",
+        "position": {
+          "x": 0,
+          "y": 0.1,
+          "z": 0
+        },
+        "size": {
+          "x": 6,
+          "y": 0.2,
+          "z": 6
+        },
+        "layer": "level-0",
+        "color": "#a89868",
+        "opacity": 0.6
+      },
+      {
+        "id": "surface-entrance",
+        "name": "Entrance Opening",
+        "position": {
+          "x": 0,
+          "y": 0.15,
+          "z": 0
+        },
+        "size": {
+          "x": 2.6,
+          "y": 0.3,
+          "z": 3
+        },
+        "layer": "level-0",
+        "color": "#3a3020"
+      },
+      {
+        "id": "surface-fencing",
+        "name": "Modern Protective Fencing",
+        "position": {
+          "x": 0,
+          "y": 0.6,
+          "z": 0
+        },
+        "size": {
+          "x": 8,
+          "y": 1.2,
+          "z": 8
+        },
+        "layer": "level-0",
+        "color": "#888888",
+        "opacity": 0.3
+      },
+      {
+        "id": "surface-visitor-path-n",
+        "name": "Visitor Path (North)",
+        "position": {
+          "x": 0,
+          "y": 0.08,
+          "z": 10
+        },
+        "size": {
+          "x": 1.5,
+          "y": 0.16,
+          "z": 12
+        },
+        "layer": "level-0",
+        "color": "#d4c498"
+      },
+      {
+        "id": "surface-visitor-path-e",
+        "name": "Visitor Path (East)",
+        "position": {
+          "x": 10,
+          "y": 0.08,
+          "z": 0
+        },
+        "size": {
+          "x": 12,
+          "y": 0.16,
+          "z": 1.5
+        },
+        "layer": "level-0",
+        "color": "#d4c498"
+      },
+      {
+        "id": "surface-reference-marker-1",
+        "name": "Reference Marker 1",
+        "position": {
+          "x": 5,
+          "y": 0.2,
+          "z": 5
+        },
+        "size": {
+          "x": 0.3,
+          "y": 0.4,
+          "z": 0.3
+        },
+        "objectId": "OBJ-0016",
+        "evidenceIds": [
+          "EV-000018"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
+        "layer": "level-0",
+        "color": "#ff6600"
+      },
+      {
+        "id": "surface-reference-marker-2",
+        "name": "Reference Marker 2",
+        "position": {
+          "x": -5,
+          "y": 0.2,
+          "z": -5
+        },
+        "size": {
+          "x": 0.3,
+          "y": 0.4,
+          "z": 0.3
+        },
+        "objectId": "OBJ-0017",
+        "evidenceIds": [
+          "EV-000019"
+        ],
+        "sourceIds": [
+          "SRC-0001"
+        ],
+        "layer": "level-0",
+        "color": "#ff6600"
       }
     ]
   }

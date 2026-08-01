@@ -19,7 +19,7 @@ const DEFAULT_INPUTS: CoupledPhysicsInputs = {
   waterDensity: 1000.0,
   chamberLength: 10.47,
   chamberWidth: 5.24,
-  chamberHeight: 5.97,
+  chamberHeight: 5.84,
   galleryLength: 46.11,
   galleryHeight: 8.74,
   graniteDensity: 2750,

@@ -156,8 +156,8 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   const poiZ =
     entranceZ + GP_POI.distanceAlongDP * Math.cos(degToRad(GP_DESCENDING_PASSAGE.angleDeg));
   // DP sloped section ends where horizontal section begins
-  const dpSlopedLength =
-    GP_DESCENDING_PASSAGE.totalLength - GP_SUBTERRANEAN.horizontalPassageLength;
+  // totalLength is the sloped length only; horizontal passage is separate
+  const dpSlopedLength = GP_DESCENDING_PASSAGE.totalLength;
   const dpSlopedEnd = slopedEndpoint(dpStart, GP_DESCENDING_PASSAGE.angleDeg, dpSlopedLength);
   // DP horizontal section: from sloped end south to subterranean chamber
   const dpHorizontalEnd: Vector3 = {
@@ -214,22 +214,24 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   }
 
   // --- Subterranean Chamber ---
+  // Chamber center per Petrie: x = 0.66 m E, z = (40+366)/2 = 203 B" S = 5.16 m S.
+  // The horizontal passage enters at the S wall (366 B" S); chamber extends northward.
   nodes.push(
     calculated({
       id: 'subterranean-chamber',
       name: 'Subterranean Chamber',
       position: {
-        x: 0,
+        x: GP_SUBTERRANEAN.centerX,
         y: GP_SUBTERRANEAN.floorY + GP_SUBTERRANEAN.height / 2,
-        z: dpHorizontalEnd.z + GP_SUBTERRANEAN.depth / 2,
+        z: dpHorizontalEnd.z - GP_SUBTERRANEAN.depth / 2,
       },
       size: {
         x: GP_SUBTERRANEAN.width,
         y: GP_SUBTERRANEAN.height,
         z: GP_SUBTERRANEAN.depth,
       },
-      objectId: 'OBJ-0107',
-      evidenceIds: ['EV-100007'],
+      objectId: 'OBJ-0106',
+      evidenceIds: ['EV-100006'],
       sourceIds: ['SRC-0101'],
       layer: 'subterranean',
       color: '#6a5a40',
@@ -237,7 +239,22 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
       derivation: 'calculated',
     }),
   );
-  nodes.push(fromBlockout('subterranean-pit', 'inferred'));
+  // Subterranean pit: aligned with the LOD1 chamber position (not the LOD0 blockout)
+  {
+    const pitBlockout = getBlockoutNode('subterranean-pit');
+    nodes.push(
+      calculated({
+        ...pitBlockout,
+        position: {
+          x: GP_SUBTERRANEAN.centerX,
+          y: GP_SUBTERRANEAN.floorY - pitBlockout.size.y / 2,
+          z: dpHorizontalEnd.z - GP_SUBTERRANEAN.depth / 2,
+        },
+        lod: 'LOD1',
+        derivation: 'inferred',
+      } as BlockoutNodeLOD1),
+    );
+  }
 
   // --- Ascending Passage ---
   {
@@ -345,7 +362,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   // --- King's Chamber ---
   // KC z computed from measurement chain: GG end → antechamber → gap → KC
   const kcNorthZ = antechamberNorthZ + GP_ANTECHAMBER.depth + GP_ANTECHAMBER.gapToKC;
-  const kcCenterZ = kcNorthZ + GP_KINGS_CHAMBER.depth / 2;
+  const kcCenterZ = kcNorthZ + GP_KINGS_CHAMBER.width / 2;
   nodes.push(
     calculated({
       id: 'kings-chamber',
@@ -356,9 +373,9 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         z: kcCenterZ,
       },
       size: {
-        x: GP_KINGS_CHAMBER.width,
+        x: GP_KINGS_CHAMBER.depth,
         y: GP_KINGS_CHAMBER.height,
-        z: GP_KINGS_CHAMBER.depth,
+        z: GP_KINGS_CHAMBER.width,
       },
       objectId: 'OBJ-0111',
       evidenceIds: ['EV-100011'],
@@ -466,8 +483,8 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         position: qcPassageBox.position,
         rotation: qcPassageBox.rotation,
         size: qcPassageBox.size,
-        objectId: 'OBJ-0117',
-        evidenceIds: ['EV-100017'],
+        objectId: 'OBJ-0120',
+        evidenceIds: ['EV-100020'],
         sourceIds: ['SRC-0101'],
         layer: 'queens-complex',
         color: '#c2ab7a',
@@ -482,7 +499,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   // Shafts originate from the chamber walls at floor level
   {
     const kcFloorY = GP_KINGS_CHAMBER.floorY;
-    const kcSouthZ = kcCenterZ + GP_KINGS_CHAMBER.depth / 2;
+    const kcSouthZ = kcCenterZ + GP_KINGS_CHAMBER.width / 2;
 
     // KC north shaft: starts at KC north wall floor, goes up toward north face
     const kcNorthStart: Vector3 = {

@@ -91,16 +91,16 @@ export const GP_GRAND_GALLERY = {
 } as const;
 
 export const GP_KINGS_CHAMBER = {
-  /** Width (m) — Petrie 206.29 in */
+  /** Width N-S (m) — Petrie 206.29 in = 5.24 m (10 RC). Used as size.z (N-S). */
   width: 5.24,
-  /** Height (m) — Petrie 230.09 in */
-  height: 5.97,
-  /** Depth (m) — Petrie 412.53 in */
+  /** Height (m) — Petrie 230.09 in = 5.844 m */
+  height: 5.84,
+  /** Depth E-W (m) — Petrie 412.53 in = 10.47 m (20 RC). Used as size.x (E-W). */
   depth: 10.47,
   /** Floor Y (m above pavement) — Petrie 1692.0 B" */
   floorY: 42.96,
   /** Ceiling height above pavement (m) — floorY + height */
-  ceilingHeightAbovePavement: 48.93,
+  ceilingHeightAbovePavement: 48.8,
 } as const;
 
 export const GP_RELIEVING = {
@@ -111,12 +111,12 @@ export const GP_RELIEVING = {
 export const GP_QUEENS_CHAMBER = {
   /** Floor Y (m above pavement) — Petrie 834.4 B" */
   floorY: 21.19,
-  /** Width (m) */
-  width: 5.23,
-  /** Height (m) */
+  /** Width E-W (m) — Petrie 226.47 B" = 5.75 m (11 RC). Ridge runs E-W; E-W is the longer axis. */
+  width: 5.75,
+  /** Height (m) — to apex of gable roof, Petrie 245.1 B" = 6.23 m */
   height: 6.23,
-  /** Depth (m) */
-  depth: 5.75,
+  /** Depth N-S (m) — Petrie 205.85 B" = 5.23 m (10 RC). N and S walls are gable ends. */
+  depth: 5.23,
   /** Center X (m) — QC is on the pyramid centre axis, not offset east like KC/GG */
   centerX: 0,
   /** Center Z (m south of centre) — Petrie places QC ~249 B" south of centre */
@@ -174,24 +174,29 @@ export const GP_ANTECHAMBER = {
   height: 3.794,
   /** Floor Y (m above pavement) — same as GG south floor ~42.92 */
   floorY: 42.92,
-  /** Gap between GG south wall and antechamber north wall (m) — step + short passage */
-  gapFromGG: 0.6,
-  /** Gap between antechamber south wall and KC north wall (m) */
-  gapToKC: 1.0,
+  /** Gap between GG south wall and antechamber north wall (m) — step + short horizontal passage.
+   *  Calibrated so the KC north wall matches Petrie's direct measurement of 330.6 B" S of centre. */
+  gapFromGG: 1.5,
+  /** Gap between antechamber south wall and KC north wall (m) — passage with portcullis grooves.
+   *  Calibrated so the KC north wall matches Petrie's direct measurement of 330.6 B" S of centre. */
+  gapToKC: 5.3,
 } as const;
 
 /** Subterranean Chamber — below pyramid centre */
 export const GP_SUBTERRANEAN = {
-  /** Chamber floor Y (m below pavement) — derived from DP geometry */
-  floorY: -29.8,
-  /** Chamber width E-W (m) — Petrie ~327 B" */
-  width: 8.3,
-  /** Chamber height (m) — Petrie ~140 B" */
+  /** Chamber floor Y (m below pavement) — Petrie: DP end at -1181 B" = -30.00 m.
+   *  Derived: entranceY - totalLength * sin(DP angle) = 16.97 - 105.16 * sin(26.52°) ≈ -30.00 */
+  floorY: -30.0,
+  /** Chamber width E-W (m) — Petrie: E wall 302.9 E + W wall 250.6 W = 553.5 B" = 14.06 m */
+  width: 14.07,
+  /** Chamber height (m) — Petrie ~140 B" = 3.56 m (variable, rough-cut) */
   height: 3.56,
-  /** Chamber depth N-S (m) — Petrie ~205 B" */
-  depth: 5.2,
-  /** Horizontal passage length at bottom of DP (m) */
-  horizontalPassageLength: 9.0,
+  /** Chamber depth N-S (m) — Petrie: N wall 40 S, S wall 366 S = 326 B" = 8.28 m */
+  depth: 8.28,
+  /** Chamber center X (m E of pyramid centre) — Petrie: (302.9 - 250.6) / 2 = 26.15 B" = 0.66 m */
+  centerX: 0.66,
+  /** Horizontal passage length at bottom of DP (m) — Petrie: 672 B" from DP end to chamber S wall */
+  horizontalPassageLength: 17.07,
 } as const;
 
 /** Queen's Chamber Passage — horizontal, connects AP/GG junction to QC */
