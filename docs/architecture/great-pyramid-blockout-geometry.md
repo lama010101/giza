@@ -74,6 +74,9 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | `subterranean-chamber` | subterranean | (0, -28.02, -4.205) | — | (8.3, 3.56, 5.2) | Petrie |
 | `subterranean-pit` | subterranean | (0, -32.29, -4.2) | — | (2.54, 5.03, 2.54) | Petrie |
 | `ascending-passage` | passages | (7.29, 15.015, -62.18) | (-26.04, 0, 0) | (0.97, 1.2, 39.29) | Petrie |
+| `ascending-plug-1` | passages | (7.29, 6.624, -79.354) | (-26.04, 0, 0) | (0.97, 1.2, 1.06) | Petrie |
+| `ascending-plug-2` | passages | (7.29, 7.089, -78.402) | (-26.04, 0, 0) | (0.97, 1.2, 1.06) | Petrie |
+| `ascending-plug-3` | passages | (7.29, 7.554, -77.45) | (-26.04, 0, 0) | (0.97, 1.2, 1.06) | Petrie |
 | `grand-gallery` | gallery | (7.22, 36.251, -24.748) | (-26.28, 0, 0) | (2.09, 8.74, 47.85) | Petrie |
 | `antechamber` | kings-complex | (7.22, 44.817, 0.716) | — | (1.651, 3.794, 2.954) | Petrie |
 | `kings-chamber` | kings-complex | (7.22, 45.945, 8.428) | — | (5.24, 5.97, 10.47) | Petrie |
@@ -92,9 +95,6 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | `qc-south-shaft` | shafts | (0, 46.624, 32.243) | (-39.6, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
 | `well-shaft` | shafts | (6.175, -0.343, -29.695) | (60.77, 0, 0) | (0.78, 0.78, 58.287) | Petrie |
 | `grotto` | passages | (6.18, 5.7, -30) | — | (2, 2, 2) | Various |
-
----
-
 ## 5. Per-Element Calculations
 
 ### 5.1 Pyramid Exterior
@@ -225,6 +225,21 @@ Center position:
 - Upper end z: −14.2 + 19.645 × 0.8987 = −14.2 + 17.66 = 3.46
 
 **Discrepancy note:** The lower end y (9.4) is ~1.7 m below the reference POI (11.1). The upper end y (26.6) is ~1.7 m above the reference GG floor start (24.9). This is because the passage center was placed at y=18.0 (the midpoint of 9.4 and 26.6), whereas the reference midpoint of 11.1 and 24.9 is 18.0 — they match. The end-point discrepancies arise because the passage length (39.29 m) is the floor length, while the box center represents the passage axis, and the POI is where the passage roofs intersect, not the floor endpoints. This is an acceptable blockout approximation.
+
+### 5.8a Ascending Passage Plug Blocks
+
+Three granite blocks inferred to seal the lower end of the Ascending Passage. Each block is modeled as an axis-aligned box with the same slope as the Ascending Passage.
+
+| Field | Value | Derivation |
+|---|---|---|
+| count | 3 | Petrie and later surveys report three blocking stones |
+| length (each) | 1.06 m | Inferred from passage survey total plug region ~3.18 m |
+| width | 0.97 m | Same as Ascending Passage |
+| height | 1.20 m | Same as Ascending Passage |
+| position.x | 7.29 | Same as Ascending Passage east offset |
+| rotation.x | -26.04 | Same as Ascending Passage |
+| objectId | OBJ-0108 | Reuses the Ascending Passage object and evidence |
+| evidenceIds | EV-100008 | Petrie: Ascending Passage — slope and plug blocks |
 
 ### 5.9 Grand Gallery
 

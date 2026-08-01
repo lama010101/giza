@@ -271,6 +271,36 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         derivation: 'calculated',
       }),
     );
+
+    // Plug blocks: three granite blocks at the lower (north) end of the AP
+    const plugCount = GP_ASCENDING_PASSAGE.plugBlockCount;
+    const plugLength = GP_ASCENDING_PASSAGE.plugBlockLength;
+    for (let i = 0; i < plugCount; i += 1) {
+      const plugStart = slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, i * plugLength);
+      const plugEnd = slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, (i + 1) * plugLength);
+      const plugBox = slopedBoxFromFloorEndpoints(
+        plugStart,
+        plugEnd,
+        GP_ASCENDING_PASSAGE.width,
+        GP_ASCENDING_PASSAGE.height,
+      );
+      nodes.push(
+        calculated({
+          id: `ascending-plug-${i + 1}`,
+          name: `Ascending Passage Plug Block ${i + 1}`,
+          position: plugBox.position,
+          rotation: plugBox.rotation,
+          size: plugBox.size,
+          objectId: 'OBJ-0108',
+          evidenceIds: ['EV-100008'],
+          sourceIds: ['SRC-0101'],
+          layer: 'passages',
+          color: '#5a5a5a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
   }
 
   // --- Grand Gallery ---
