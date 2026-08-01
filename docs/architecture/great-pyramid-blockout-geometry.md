@@ -93,6 +93,8 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | `kc-south-shaft` | shafts | (7.22, 66.661, 31.249) | (-45, 0, 0) | (0.205, 0.205, 49.947) | Gantenbrink |
 | `qc-north-shaft` | shafts | (0, 46.381, -19.803) | (-39, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
 | `qc-south-shaft` | shafts | (0, 46.624, 32.243) | (-39.6, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
+| `qc-north-shaft-door` | shafts | (0, 65.135, -42.962) | (-39, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
+| `qc-south-shaft-door` | shafts | (0, 65.619, 55.205) | (-39.6, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
 | `well-shaft` | shafts | (6.175, -0.343, -29.695) | (60.77, 0, 0) | (0.78, 0.78, 58.287) | Petrie |
 | `grotto` | passages | (6.18, 5.7, -30) | — | (2, 2, 2) | Various |
 ## 5. Per-Element Calculations
@@ -444,6 +446,34 @@ KC ceiling = 42.955 + 5.97 = 48.925 (ref 48.93)
 | size.x | 5.23 | Gantenbrink: 21 cm |
 | size.y | 6.23 | Gantenbrink: 21 cm |
 | size.z | 5.75 | Gantenbrink: ~59.6 m design length to "door" |
+
+### 5.20a Queen's Chamber North Shaft Door
+
+| Field | Value | Derivation |
+|---|---|---|
+| position.x | 0 | QC center x |
+| position.y | 65.135 | Inferred: 0.2 m limestone slab at inner end of north shaft |
+| position.z | -42.962 | 0.1–0.3 m inside the 60 m shaft end (north) |
+| rotation.x | -39° | Same slope as QC north shaft |
+| size.x | 0.21 | Shaft cross-section width |
+| size.y | 0.21 | Shaft cross-section height |
+| size.z | 0.2 | Approximate slab thickness |
+
+**Note:** The door is modeled as an inferred 0.2 m thick blocking stone just inside the surveyed shaft end.
+
+### 5.20b Queen's Chamber South Shaft Door
+
+| Field | Value | Derivation |
+|---|---|---|
+| position.x | 0 | QC center x |
+| position.y | 65.619 | Inferred: 0.2 m limestone slab at inner end of south shaft |
+| position.z | 55.205 | 0.1–0.3 m inside the 60 m shaft end (south) |
+| rotation.x | -39.6° | Same slope as QC south shaft |
+| size.x | 0.21 | Shaft cross-section width |
+| size.y | 0.21 | Shaft cross-section height |
+| size.z | 0.2 | Approximate slab thickness |
+
+**Note:** The door is modeled as an inferred 0.2 m thick blocking stone just inside the surveyed shaft end.
 
 ### 5.21 Well Shaft
 

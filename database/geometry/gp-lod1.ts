@@ -666,6 +666,59 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         derivation: 'calculated',
       }),
     );
+
+    // QC shaft blocking stones ('doors') — limestone slabs just inside the shaft ends
+    {
+      const qcNorthDoorOuter = slopedEndpoint(qcNorthEnd, GP_QC_SHAFTS.north.angleDeg, 0.1, 1);
+      const qcNorthDoorInner = slopedEndpoint(qcNorthEnd, GP_QC_SHAFTS.north.angleDeg, 0.3, 1);
+      const qcNorthDoorBox = slopedBoxFromFloorEndpoints(
+        qcNorthDoorInner,
+        qcNorthDoorOuter,
+        GP_QC_SHAFTS.north.diameter,
+        GP_QC_SHAFTS.north.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'qc-north-shaft-door',
+          name: "QC North Shaft Blocking Stone ('Door')",
+          position: qcNorthDoorBox.position,
+          rotation: qcNorthDoorBox.rotation,
+          size: qcNorthDoorBox.size,
+          objectId: 'OBJ-0123',
+          evidenceIds: ['EV-100023'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+
+      const qcSouthDoorOuter = slopedEndpoint(qcSouthEnd, -GP_QC_SHAFTS.south.angleDeg, 0.1, -1);
+      const qcSouthDoorInner = slopedEndpoint(qcSouthEnd, -GP_QC_SHAFTS.south.angleDeg, 0.3, -1);
+      const qcSouthDoorBox = slopedBoxFromFloorEndpoints(
+        qcSouthDoorInner,
+        qcSouthDoorOuter,
+        GP_QC_SHAFTS.south.diameter,
+        GP_QC_SHAFTS.south.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'qc-south-shaft-door',
+          name: "QC South Shaft Blocking Stone ('Door')",
+          position: qcSouthDoorBox.position,
+          rotation: qcSouthDoorBox.rotation,
+          size: qcSouthDoorBox.size,
+          objectId: 'OBJ-0124',
+          evidenceIds: ['EV-100024'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
   }
 
   // --- Well Shaft ---

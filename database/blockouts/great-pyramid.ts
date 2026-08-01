@@ -30,8 +30,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'pyramid-exterior',
       name: 'Pyramid Exterior (core masonry)',
-      position: { x: 0, y: 69.25, z: 0 },
-      size: { x: 230.364, y: 138.5, z: 230.364 },
+      position: {
+        x: 0,
+        y: 69.25,
+        z: 0,
+      },
+      size: {
+        x: 230.364,
+        y: 138.5,
+        z: 230.364,
+      },
       objectId: 'OBJ-0101',
       evidenceIds: ['EV-100001'],
       sourceIds: ['SRC-0101', 'SRC-0102'],
@@ -42,9 +50,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'casing-north',
       name: 'Casing Stones (north face, lower courses)',
-      position: { x: 0, y: 5, z: -111.253037116676 },
-      rotation: { x: 0.904778684234, y: 0, z: 0 },
-      size: { x: 230.364, y: 10, z: 1 },
+      position: {
+        x: 0,
+        y: 5,
+        z: -111.25303711667617,
+      },
+      rotation: {
+        x: 0.9047786842338605,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 230.364,
+        y: 10,
+        z: 1,
+      },
       objectId: 'OBJ-0102',
       evidenceIds: ['EV-100002'],
       sourceIds: ['SRC-0101'],
@@ -55,8 +75,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'original-entrance',
       name: 'Original Entrance',
-      position: { x: 7.29, y: 16.97, z: -101.847099973999 },
-      size: { x: 1.05, y: 1.19, z: 1 },
+      position: {
+        x: 7.29,
+        y: 16.97,
+        z: -101.8470999739989,
+      },
+      size: {
+        x: 1.05,
+        y: 1.19,
+        z: 1,
+      },
       objectId: 'OBJ-0103',
       evidenceIds: ['EV-100003'],
       sourceIds: ['SRC-0101'],
@@ -66,8 +94,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'modern-entrance',
       name: 'Modern Entrance (Al-Mamun Tunnel)',
-      position: { x: 0, y: 17, z: -101.84 },
-      size: { x: 2, y: 2, z: 3 },
+      position: {
+        x: 0,
+        y: 17,
+        z: -101.84,
+      },
+      size: {
+        x: 2,
+        y: 2,
+        z: 3,
+      },
       objectId: 'OBJ-0104',
       evidenceIds: ['EV-100004'],
       sourceIds: ['SRC-0103'],
@@ -77,9 +113,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'descending-passage',
       name: 'Descending Passage (sloped)',
-      position: { x: 7.29, y: -3.96581606742, z: -58.560473510492 },
-      rotation: { x: 0.462861317629, y: 0, z: 0 },
-      size: { x: 1.05, y: 1.19, z: 96.16 },
+      position: {
+        x: 7.29,
+        y: -3.9658160674197784,
+        z: -58.56047351049209,
+      },
+      rotation: {
+        x: 0.4628613176288962,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 1.05,
+        y: 1.19,
+        z: 96.16,
+      },
       objectId: 'OBJ-0105',
       evidenceIds: ['EV-100005'],
       sourceIds: ['SRC-0101'],
@@ -90,9 +138,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'descending-passage-horizontal',
       name: 'Descending Passage (horizontal)',
-      position: { x: 7.29, y: -25.371418614889, z: -11.305194157548 },
-      rotation: { x: 0, y: 0, z: 0 },
-      size: { x: 1.05, y: 1.19, z: 9 },
+      position: {
+        x: 7.29,
+        y: -25.37141861488923,
+        z: -11.305194157548073,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 1.05,
+        y: 1.19,
+        z: 9,
+      },
       objectId: 'OBJ-0105',
       evidenceIds: ['EV-100005'],
       sourceIds: ['SRC-0101'],
@@ -103,8 +163,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'subterranean-chamber',
       name: 'Subterranean Chamber',
-      position: { x: 0, y: -28.02, z: -4.205194157548 },
-      size: { x: 8.3, y: 3.56, z: 5.2 },
+      position: {
+        x: 0,
+        y: -28.02,
+        z: -4.205194157548073,
+      },
+      size: {
+        x: 8.3,
+        y: 3.56,
+        z: 5.2,
+      },
       objectId: 'OBJ-0106',
       evidenceIds: ['EV-100006'],
       sourceIds: ['SRC-0101'],
@@ -115,8 +183,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'subterranean-pit',
       name: 'Central Pit (Subterranean)',
-      position: { x: 0, y: -32.29, z: -4.2 },
-      size: { x: 2.54, y: 5.03, z: 2.54 },
+      position: {
+        x: 0,
+        y: -32.29,
+        z: -4.2,
+      },
+      size: {
+        x: 2.54,
+        y: 5.03,
+        z: 2.54,
+      },
       objectId: 'OBJ-0107',
       evidenceIds: ['EV-100007'],
       sourceIds: ['SRC-0101'],
@@ -127,9 +203,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'ascending-passage',
       name: 'Ascending Passage',
-      position: { x: 7.29, y: 15.015115123158, z: -62.179720507016 },
-      rotation: { x: -0.454483737219, y: 0, z: 0 },
-      size: { x: 0.97, y: 1.2, z: 39.29 },
+      position: {
+        x: 7.29,
+        y: 15.015115123157624,
+        z: -62.179720507016455,
+      },
+      rotation: {
+        x: -0.45448373721932334,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.97,
+        y: 1.2,
+        z: 39.290000000000006,
+      },
       objectId: 'OBJ-0108',
       evidenceIds: ['EV-100008'],
       sourceIds: ['SRC-0101'],
@@ -140,9 +228,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'ascending-plug-1',
       name: 'Ascending Passage Plug Block 1',
-      position: { x: 7.29, y: 6.623658479764, z: -79.354314545947 },
-      rotation: { x: -0.454483737219, y: 0, z: 0 },
-      size: { x: 0.97, y: 1.2, z: 1.06 },
+      position: {
+        x: 7.29,
+        y: 6.62365847976446,
+        z: -79.35431454594652,
+      },
+      rotation: {
+        x: -0.4544837372193208,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.97,
+        y: 1.2,
+        z: 1.0600000000000054,
+      },
       objectId: 'OBJ-0108',
       evidenceIds: ['EV-100008'],
       sourceIds: ['SRC-0101'],
@@ -153,9 +253,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'ascending-plug-2',
       name: 'Ascending Passage Plug Block 2',
-      position: { x: 7.29, y: 7.088996907282, z: -78.401917492257 },
-      rotation: { x: -0.454483737219, y: 0, z: 0 },
-      size: { x: 0.97, y: 1.2, z: 1.06 },
+      position: {
+        x: 7.29,
+        y: 7.0889969072819445,
+        z: -78.4019174922575,
+      },
+      rotation: {
+        x: -0.45448373721932667,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.97,
+        y: 1.2,
+        z: 1.0599999999999927,
+      },
       objectId: 'OBJ-0108',
       evidenceIds: ['EV-100008'],
       sourceIds: ['SRC-0101'],
@@ -166,9 +278,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'ascending-plug-3',
       name: 'Ascending Passage Plug Block 3',
-      position: { x: 7.29, y: 7.554335334799, z: -77.449520438568 },
-      rotation: { x: -0.454483737219, y: 0, z: 0 },
-      size: { x: 0.97, y: 1.2, z: 1.06 },
+      position: {
+        x: 7.29,
+        y: 7.554335334799433,
+        z: -77.44952043856847,
+      },
+      rotation: {
+        x: -0.4544837372193208,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.97,
+        y: 1.2,
+        z: 1.0600000000000054,
+      },
       objectId: 'OBJ-0108',
       evidenceIds: ['EV-100008'],
       sourceIds: ['SRC-0101'],
@@ -179,9 +303,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'grand-gallery',
       name: 'Grand Gallery',
-      position: { x: 7.22, y: 36.251312008357, z: -24.74824549588 },
-      rotation: { x: -0.458672527424, y: 0, z: 0 },
-      size: { x: 2.09, y: 8.74, z: 47.85 },
+      position: {
+        x: 7.22,
+        y: 36.251312008357196,
+        z: -24.748245495879523,
+      },
+      rotation: {
+        x: -0.4586725274241097,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 2.09,
+        y: 8.74,
+        z: 47.85,
+      },
       objectId: 'OBJ-0109',
       evidenceIds: ['EV-100009'],
       sourceIds: ['SRC-0101'],
@@ -192,8 +328,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'antechamber',
       name: 'Antechamber',
-      position: { x: 7.22, y: 44.817, z: 0.715744778847 },
-      size: { x: 1.651, y: 3.794, z: 2.954 },
+      position: {
+        x: 7.22,
+        y: 44.817,
+        z: 0.7157447788472472,
+      },
+      size: {
+        x: 1.651,
+        y: 3.794,
+        z: 2.954,
+      },
       objectId: 'OBJ-0110',
       evidenceIds: ['EV-100010'],
       sourceIds: ['SRC-0101'],
@@ -204,8 +348,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'kings-chamber',
       name: "King's Chamber",
-      position: { x: 7.22, y: 45.945, z: 8.427744778847 },
-      size: { x: 5.24, y: 5.97, z: 10.47 },
+      position: {
+        x: 7.22,
+        y: 45.945,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 5.24,
+        y: 5.97,
+        z: 10.47,
+      },
       objectId: 'OBJ-0111',
       evidenceIds: ['EV-100011'],
       sourceIds: ['SRC-0101'],
@@ -216,8 +368,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'kings-sarcophagus',
       name: "King's Chamber Sarcophagus",
-      position: { x: 4.6, y: 43.5, z: 8.44 },
-      size: { x: 0.978, y: 1.049, z: 2.276 },
+      position: {
+        x: 4.6,
+        y: 43.5,
+        z: 8.44,
+      },
+      size: {
+        x: 0.978,
+        y: 1.049,
+        z: 2.276,
+      },
       objectId: 'OBJ-0112',
       evidenceIds: ['EV-100012'],
       sourceIds: ['SRC-0101'],
@@ -227,8 +387,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'relieving-davison',
       name: "Davison's Chamber (Relieving 1)",
-      position: { x: 7.22, y: 49.465, z: 8.427744778847 },
-      size: { x: 5.21, y: 1.07, z: 11.68 },
+      position: {
+        x: 7.22,
+        y: 49.464999999999996,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 5.21,
+        y: 1.07,
+        z: 11.68,
+      },
       objectId: 'OBJ-0113',
       evidenceIds: ['EV-100013'],
       sourceIds: ['SRC-0104'],
@@ -239,8 +407,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'relieving-wellington',
       name: "Wellington's Chamber (Relieving 2)",
-      position: { x: 7.22, y: 50.56, z: 8.427744778847 },
-      size: { x: 5.18, y: 1.12, z: 11.73 },
+      position: {
+        x: 7.22,
+        y: 50.56,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 5.18,
+        y: 1.12,
+        z: 11.73,
+      },
       objectId: 'OBJ-0114',
       evidenceIds: ['EV-100014'],
       sourceIds: ['SRC-0104'],
@@ -251,8 +427,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'relieving-nelson',
       name: "Nelson's Chamber (Relieving 3)",
-      position: { x: 7.22, y: 51.855, z: 8.427744778847 },
-      size: { x: 5.08, y: 1.47, z: 11.81 },
+      position: {
+        x: 7.22,
+        y: 51.855,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 5.08,
+        y: 1.47,
+        z: 11.81,
+      },
       objectId: 'OBJ-0115',
       evidenceIds: ['EV-100015'],
       sourceIds: ['SRC-0104'],
@@ -263,8 +447,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'relieving-arbuthnot',
       name: "Lady Arbuthnot's Chamber (Relieving 4)",
-      position: { x: 7.22, y: 53.265, z: 8.427744778847 },
-      size: { x: 4.98, y: 1.35, z: 11.38 },
+      position: {
+        x: 7.22,
+        y: 53.26499999999999,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 4.98,
+        y: 1.35,
+        z: 11.38,
+      },
       objectId: 'OBJ-0116',
       evidenceIds: ['EV-100016'],
       sourceIds: ['SRC-0104'],
@@ -275,8 +467,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'relieving-campbell',
       name: "Campbell's Chamber (Relieving 5, with cartouches)",
-      position: { x: 7.22, y: 55.25, z: 8.427744778847 },
-      size: { x: 6.25, y: 2.62, z: 11.53 },
+      position: {
+        x: 7.22,
+        y: 55.25,
+        z: 8.427744778847249,
+      },
+      size: {
+        x: 6.25,
+        y: 2.62,
+        z: 11.53,
+      },
       objectId: 'OBJ-0117',
       evidenceIds: ['EV-100017'],
       sourceIds: ['SRC-0104'],
@@ -287,8 +487,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'queens-chamber',
       name: "Queen's Chamber",
-      position: { x: 0, y: 24.305, z: 6.32 },
-      size: { x: 5.23, y: 6.23, z: 5.75 },
+      position: {
+        x: 0,
+        y: 24.305,
+        z: 6.32,
+      },
+      size: {
+        x: 5.23,
+        y: 6.23,
+        z: 5.75,
+      },
       objectId: 'OBJ-0118',
       evidenceIds: ['EV-100018'],
       sourceIds: ['SRC-0101'],
@@ -299,8 +507,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'queens-niche',
       name: "Queen's Chamber Niche (East Wall)",
-      position: { x: 2.62, y: 24.1, z: 6.32 },
-      size: { x: 1.04, y: 4.69, z: 1.57 },
+      position: {
+        x: 2.62,
+        y: 24.1,
+        z: 6.32,
+      },
+      size: {
+        x: 1.04,
+        y: 4.69,
+        z: 1.57,
+      },
       objectId: 'OBJ-0119',
       evidenceIds: ['EV-100019'],
       sourceIds: ['SRC-0101'],
@@ -311,9 +527,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'queens-passage',
       name: "Queen's Chamber Passage",
-      position: { x: 3.645, y: 21.775, z: -22.364991892979 },
-      rotation: { x: 0, y: 0, z: 0 },
-      size: { x: 1.05, y: 1.17, z: 52.132205267594 },
+      position: {
+        x: 3.645,
+        y: 21.775000000000002,
+        z: -22.364991892979088,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 1.05,
+        y: 1.17,
+        z: 52.13220526759428,
+      },
       objectId: 'OBJ-0120',
       evidenceIds: ['EV-100020'],
       sourceIds: ['SRC-0101'],
@@ -324,9 +552,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'kc-north-shaft',
       name: 'KC North Shaft',
-      position: { x: 7.22, y: 66.02585319609, z: -23.349047949847 },
-      rotation: { x: -0.56897733615, y: 0, z: 0 },
-      size: { x: 0.205, y: 0.205, z: 63.14188630395 },
+      position: {
+        x: 7.22,
+        y: 66.0258531960898,
+        z: -23.349047949847186,
+      },
+      rotation: {
+        x: -0.5689773361501513,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.205,
+        y: 0.205,
+        z: 63.14188630394978,
+      },
       objectId: 'OBJ-0121',
       evidenceIds: ['EV-100021'],
       sourceIds: ['SRC-0105'],
@@ -337,9 +577,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'kc-south-shaft',
       name: 'KC South Shaft',
-      position: { x: 7.22, y: 66.661423069743, z: 31.249210958447 },
-      rotation: { x: -0.785398163397, y: 0, z: 0 },
-      size: { x: 0.205, y: 0.205, z: 49.947037970812 },
+      position: {
+        x: 7.22,
+        y: 66.66142306974326,
+        z: 31.249210958447275,
+      },
+      rotation: {
+        x: -0.7853981633974482,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.205,
+        y: 0.205,
+        z: 49.94703797081221,
+      },
       objectId: 'OBJ-0122',
       evidenceIds: ['EV-100022'],
       sourceIds: ['SRC-0105'],
@@ -350,9 +602,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'qc-north-shaft',
       name: 'QC North Shaft',
-      position: { x: 0, y: 46.381212057448, z: -19.803300202649 },
-      rotation: { x: -0.680678408278, y: 0, z: 0 },
-      size: { x: 0.21, y: 0.21, z: 60.0 },
+      position: {
+        x: 0,
+        y: 46.38121205744811,
+        z: -19.803300202648895,
+      },
+      rotation: {
+        x: -0.6806784082777886,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.21,
+        y: 0.21,
+        z: 60.00000000000001,
+      },
       objectId: 'OBJ-0123',
       evidenceIds: ['EV-100023'],
       sourceIds: ['SRC-0105'],
@@ -363,9 +627,21 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'qc-south-shaft',
       name: 'QC South Shaft',
-      position: { x: 0, y: 46.623623582952, z: 32.24346776435 },
-      rotation: { x: -0.69115038379, y: 0, z: 0 },
-      size: { x: 0.21, y: 0.21, z: 60.0 },
+      position: {
+        x: 0,
+        y: 46.62362358295215,
+        z: 32.24346776435006,
+      },
+      rotation: {
+        x: -0.6911503837897546,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.21,
+        y: 0.21,
+        z: 59.99999999999999,
+      },
       objectId: 'OBJ-0124',
       evidenceIds: ['EV-100024'],
       sourceIds: ['SRC-0105'],
@@ -374,11 +650,73 @@ export const greatPyramidBlockout: Blockout = {
       opacity: 0.5,
     },
     {
+      id: 'qc-north-shaft-door',
+      name: "QC North Shaft Blocking Stone ('Door')",
+      position: {
+        x: 0,
+        y: 65.13495971073327,
+        z: -42.96224985406663,
+      },
+      rotation: {
+        x: -0.6806784082778081,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.21,
+        y: 0.21,
+        z: 0.20000000000000204,
+      },
+      objectId: 'OBJ-0123',
+      evidenceIds: ['EV-100023'],
+      sourceIds: ['SRC-0105'],
+      layer: 'shafts',
+      color: '#9a8a6a',
+      opacity: 0.9,
+    },
+    {
+      id: 'qc-south-shaft-door',
+      name: "QC South Shaft Blocking Stone ('Door')",
+      position: {
+        x: 0,
+        y: 65.6188584774631,
+        z: 55.20476239906858,
+      },
+      rotation: {
+        x: -0.6911503837897324,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.21,
+        y: 0.21,
+        z: 0.19999999999999882,
+      },
+      objectId: 'OBJ-0124',
+      evidenceIds: ['EV-100024'],
+      sourceIds: ['SRC-0105'],
+      layer: 'shafts',
+      color: '#9a8a6a',
+      opacity: 0.9,
+    },
+    {
       id: 'well-shaft',
       name: 'Well Shaft',
-      position: { x: 6.175, y: -0.342780633653, z: -29.695013260715 },
-      rotation: { x: 1.060680133385, y: 0, z: 0 },
-      size: { x: 0.78, y: 0.78, z: 58.28707568963 },
+      position: {
+        x: 6.175,
+        y: -0.34278063365289946,
+        z: -29.695013260714827,
+      },
+      rotation: {
+        x: 1.0606801333845242,
+        y: 0,
+        z: 0,
+      },
+      size: {
+        x: 0.78,
+        y: 0.78,
+        z: 58.28707568962962,
+      },
       objectId: 'OBJ-0125',
       evidenceIds: ['EV-100025'],
       sourceIds: ['SRC-0101'],
@@ -389,8 +727,16 @@ export const greatPyramidBlockout: Blockout = {
     {
       id: 'grotto',
       name: 'Grotto',
-      position: { x: 6.18, y: 5.7, z: -30 },
-      size: { x: 2, y: 2, z: 2 },
+      position: {
+        x: 6.18,
+        y: 5.7,
+        z: -30,
+      },
+      size: {
+        x: 2,
+        y: 2,
+        z: 2,
+      },
       objectId: 'OBJ-0126',
       evidenceIds: ['EV-100026'],
       sourceIds: ['SRC-0101'],
