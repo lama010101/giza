@@ -41,6 +41,8 @@ Valid values: `'LOD0'`, `'LOD1'`. After reload the scene graph is rebuilt with t
 - Use `OrbitControls` (left-click drag) to rotate around the target.
 - Scroll to zoom in/out.
 - To hover interior nodes, the large `pyramid-exterior` box can occlude pointer events. Hide the **Exterior** layer in the side panel, then rotate/zoom and hover.
+- The camera mode buttons (orbit / walk / fly / teleport) are only shown in the side panel when the top **Research** tab is active or when the current mode is not orbit.
+- Objects embedded inside a passage box (e.g. the `ascending-plug-*` blocks inside the `ascending-passage` box) are occluded for pointer events from most exterior angles. To hover them, zoom very close to the passage lower end or use a temporary debug camera placement in `CameraRig.tsx`.
 - If layer toggle clicks are hard to target, set `hiddenLayers` via localStorage and reload:
 
 ```js
