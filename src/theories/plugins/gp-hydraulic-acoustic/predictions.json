@@ -1,0 +1,61 @@
+{
+  "hypothesisId": "THEORY-GP-003",
+  "predictions": [
+    {
+      "id": "PRED-GP-003-01",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "Stable hydraulic oscillations can develop within the measured geometry of the subterranean chamber and passages.",
+      "predictedObservation": "Oscillatory flow with stable frequency and amplitude in the subterranean chamber under realistic boundary conditions.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-02",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "Resonance frequencies emerge naturally without requiring unrealistic parameter values.",
+      "predictedObservation": "Natural frequencies within 1–1000 Hz range emerge from the Grand Gallery and King's Chamber geometry without extreme parameter tuning.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-03",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "Acoustic amplification occurs in chambers consistent with the proposed mechanism.",
+      "predictedObservation": "Standing wave amplification in the Grand Gallery and King's Chamber at frequencies coupled to the hydraulic oscillation frequency.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-04",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "Coupled hydraulic-acoustic interactions produce coherent energy transfer.",
+      "predictedObservation": "Energy transfer from hydraulic oscillations to acoustic modes with measurable efficiency, not random dissipation.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-05",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "Predicted behavior is robust across realistic environmental conditions.",
+      "predictedObservation": "Stable oscillations and resonance persist across variations in water level, temperature, and conduit roughness within realistic ranges.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-06",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "The Osiris Shaft water column generates sufficient hydrostatic pressure to drive the system.",
+      "predictedObservation": "Calculated hydraulic head from the Osiris Shaft exceeds the minimum pressure required to sustain flow through the conduit to the subterranean chamber.",
+      "evidenceRefs": [],
+      "status": "untested"
+    },
+    {
+      "id": "PRED-GP-003-07",
+      "hypothesisId": "THEORY-GP-003",
+      "description": "The system exhibits frequency coupling between hydraulic and acoustic modes.",
+      "predictedObservation": "Hydraulic oscillation frequencies align with acoustic resonance modes of the Grand Gallery and King's Chamber.",
+      "evidenceRefs": [],
+      "status": "untested"
+    }
+  ]
+}

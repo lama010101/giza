@@ -1,0 +1,93 @@
+{
+  "hypothesisId": "THEORY-GP-003",
+  "visualizationRules": [
+    {
+      "id": "VIS-GP-003-01",
+      "target": "subterranean-chamber",
+      "overlay": "hydraulic-flow",
+      "colorMap": "blue-cyan",
+      "opacity": 0.6,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-02",
+      "target": "grand-gallery",
+      "overlay": "acoustic-standing-wave",
+      "colorMap": "red-yellow",
+      "opacity": 0.5,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-03",
+      "target": "kings-chamber",
+      "overlay": "acoustic-resonance",
+      "colorMap": "green-magenta",
+      "opacity": 0.5,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-04",
+      "target": "osiris-shaft",
+      "overlay": "water-column-pressure",
+      "colorMap": "blue-gradient",
+      "opacity": 0.7,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-05",
+      "target": "conduit",
+      "overlay": "flow-direction-arrows",
+      "colorMap": "white",
+      "opacity": 0.4,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-06",
+      "target": "passages",
+      "overlay": "pressure-isobars",
+      "colorMap": "rainbow",
+      "opacity": 0.3,
+      "visible": false
+    },
+    {
+      "id": "VIS-GP-003-07",
+      "target": "pyramid-exterior",
+      "overlay": "energy-flow-vectors",
+      "colorMap": "orange-red",
+      "opacity": 0.2,
+      "visible": false
+    },
+    {
+      "id": "VIS-GP-003-08",
+      "target": "subterranean-chamber",
+      "overlay": "vortex-visualization",
+      "colorMap": "blue-white",
+      "opacity": 0.4,
+      "visible": false
+    },
+    {
+      "id": "VIS-GP-003-09",
+      "target": "well-shaft",
+      "overlay": "water-level-animation",
+      "colorMap": "blue",
+      "opacity": 0.6,
+      "visible": true
+    },
+    {
+      "id": "VIS-GP-003-10",
+      "target": "ascending-passage",
+      "overlay": "acoustic-wave-propagation",
+      "colorMap": "purple-pink",
+      "opacity": 0.3,
+      "visible": false
+    },
+    {
+      "id": "VIS-GP-003-11",
+      "target": "queens-chamber",
+      "overlay": "secondary-resonance",
+      "colorMap": "teal",
+      "opacity": 0.3,
+      "visible": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@giza/hypothesis-gp-hydraulic-acoustic",
+  "version": "1.0.0",
+  "description": "Hydraulic-Acoustic System Hypothesis plugin for the Great Pyramid",
+  "main": "index.ts",
+  "type": "module",
+  "giza": {
+    "type": "hypothesis",
+    "hypothesisId": "THEORY-GP-003",
+    "category": "alternative",
+    "minEngineVersion": "1.0.0"
+  },
+  "files": [
+    "index.ts",
+    "hypothesis.json",
+    "predictions.json",
+    "visualization.json"
+  ],
+  "keywords": [
+    "giza",
+    "pyramid",
+    "hydraulic",
+    "acoustic",
+    "hypothesis"
+  ],
+  "license": "MIT"
+}
