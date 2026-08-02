@@ -67,6 +67,39 @@ location.reload();
 - The `GrandGalleryMesh` uses a custom corbelled segment group; pointer events on the group may behave differently from `BlockoutMesh`.
 - The `AntechamberMesh` is a group of meshes (shell, wainscots, portcullis slots). Pointer events attached to the group fire on any child mesh and highlight the whole `antechamber` node; hover shows `Antechamber` and click opens `EV-100010`.
 - To inspect the Antechamber interior, hide the **Exterior** layer, set `cameraTarget` to the antechamber center (`{x:7.22, y:44.8, z:0.72}`), and orbit/zoom in from the side until the wainscots and slots are visible.
+- The `SubterraneanChamberMesh` is a group of meshes (translucent shell + four darker inferred recesses). Pointer events on the group highlight the whole `subterranean-chamber` node; hover shows `Subterranean Chamber` and click opens `EV-100006`.
+- The subterranean chamber is underground and dark; lift ambient/local lighting via `giza-lighting` and set the camera to an outside-the-box view (e.g. `{x:0, y:-28, z:6}` looking at `{x:0, y:-28, z:-4}`) so the translucent shell and interior recesses are visible. Inside-the-box close-ups are dominated by the recess because the shell uses `FrontSide` only.
+
+  ```js
+  localStorage.setItem(
+    'giza-lighting',
+    JSON.stringify({
+      state: {
+        ambientIntensity: 8,
+        directionalIntensity: 1.2,
+        directionalAzimuth: 45,
+        directionalElevation: 60,
+        localIntensity: 3,
+        background: '#0f0f0f',
+      },
+      version: 0,
+    }),
+  );
+  localStorage.setItem(
+    'giza-session',
+    JSON.stringify({
+      state: {
+        activeMonument: 'great-pyramid',
+        lod: 'LOD0',
+        cameraMode: 'orbit',
+        cameraTarget: { x: 0, y: -28, z: -4 },
+        hiddenLayers: ['exterior'],
+      },
+      version: 2,
+    }),
+  );
+  location.reload();
+  ```
 
 ## Useful smoke commands
 

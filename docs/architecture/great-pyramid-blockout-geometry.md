@@ -193,6 +193,12 @@ Center position:
 
 **Note:** Chamber is very rough and unfinished. Dimensions are approximate.
 
+**Interior detail:** The `SubterraneanChamberMesh` component renders the chamber shell as a translucent box and adds the inferred features described in `GIZA - 07` §2.13:
+- **Southern niche** — a recessed rectangular recess in the south wall.
+- **Blind passages** — three short, incomplete recesses/tunnels in the western, northern, and eastern walls.
+
+These inferred details reuse `EV-100006` (Subterranean Chamber rough-hewn geometry) and are visualized with a darker, less transparent material so they are clearly distinguishable from the surveyed chamber envelope.
+
 ### 5.7 Central Pit (Subterranean)
 
 | Field | Value | Derivation |
