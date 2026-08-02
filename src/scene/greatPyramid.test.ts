@@ -200,7 +200,7 @@ describe('Great Pyramid Scene Graph', () => {
     }
   });
 
-  it('has 33 mesh nodes (excluding root and layer groups)', () => {
+  it('has 34 mesh nodes (excluding root and layer groups)', () => {
     const all = graph.getAllNodes();
     const layerGroupIds = new Set([
       'gp-root',
@@ -214,7 +214,7 @@ describe('Great Pyramid Scene Graph', () => {
       'gp-shafts',
     ]);
     const meshNodes = all.filter((n) => !layerGroupIds.has(n.id));
-    expect(meshNodes).toHaveLength(33);
+    expect(meshNodes).toHaveLength(34);
   });
 });
 

@@ -249,6 +249,23 @@ Three granite blocks inferred to seal the lower end of the Ascending Passage. Ea
 | objectId | OBJ-0108 | Reuses the Ascending Passage object and evidence |
 | evidenceIds | EV-100008 | Petrie: Ascending Passage — slope and plug blocks |
 
+### 5.8b Al-Mamun Bypass Tunnel
+
+A medieval tunnel cut by Al-Mamun's workers to bypass the three granite plug blocks and rejoin the Ascending Passage above them. It is modeled as an inferred box parallel to the Ascending Passage, offset to the east.
+
+| Field | Value | Derivation |
+|---|---|---|
+| position.x | ~7.29 + 1.2 | Inferred: offset ~1.2 m east of the AP centerline |
+| position.y / z | Along AP slope | Same slope as Ascending Passage from ~0.5 m to ~4.0 m along the passage |
+| rotation.x | -26.04 | Same as Ascending Passage |
+| size.x | 0.97 | Same as Ascending Passage width |
+| size.y | 1.20 | Same as Ascending Passage height |
+| size.z | ~3.5 | Inferred bypass length around the plug region |
+| objectId | OBJ-0104 | Reuses the Modern Entrance (Al-Mamun Tunnel) object |
+| evidenceIds | EV-100004, EV-100008 | Al-Mamun tunnel + Ascending Passage plug blocks |
+
+**Note:** The exact bypass path is not surveyed; this is a visualization placeholder to clearly distinguish the medieval modification from the original passage.
+
 ### 5.9 Grand Gallery
 
 | Field | Value | Derivation |

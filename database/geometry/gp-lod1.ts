@@ -301,6 +301,42 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         }),
       );
     }
+
+    // Al-Mamun bypass tunnel: medieval cut around the plug blocks, rejoining AP above them
+    // Inferred dimensions; the bypass runs roughly parallel to AP, offset to the east.
+    const BYPASS_OFFSET_X = 1.2;
+    const BYPASS_START_DIST = 0.5;
+    const BYPASS_END_DIST = 4.0;
+    const bypassStart: Vector3 = {
+      ...slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, BYPASS_START_DIST),
+      x: apStart.x + BYPASS_OFFSET_X,
+    };
+    const bypassEnd: Vector3 = {
+      ...slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, BYPASS_END_DIST),
+      x: apStart.x + BYPASS_OFFSET_X,
+    };
+    const bypassBox = slopedBoxFromFloorEndpoints(
+      bypassStart,
+      bypassEnd,
+      GP_ASCENDING_PASSAGE.width,
+      GP_ASCENDING_PASSAGE.height,
+    );
+    nodes.push(
+      calculated({
+        id: 'al-mamun-bypass',
+        name: 'Al-Mamun Bypass Tunnel',
+        position: bypassBox.position,
+        rotation: bypassBox.rotation,
+        size: bypassBox.size,
+        objectId: 'OBJ-0104',
+        evidenceIds: ['EV-100004', 'EV-100008'],
+        sourceIds: ['SRC-0103', 'SRC-0101'],
+        layer: 'passages',
+        color: '#b06a4a',
+        opacity: 0.6,
+        derivation: 'inferred',
+      }),
+    );
   }
 
   // --- Grand Gallery ---
