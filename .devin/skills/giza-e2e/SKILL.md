@@ -65,6 +65,8 @@ location.reload();
 - Fly mode (`W`/`S`/`A`/`D`) moves the camera along its current look direction and does **not** require pointer lock for keyboard movement. However, the QC shafts are only ~0.21 m wide, so even small mouse/heading drift will move the camera outside the shaft wall and occlude the far-end blocking stones. For reliable verification of objects at the end of a narrow shaft, place a temporary debug camera on the shaft centerline a short distance from the target.
 - Blocking stones placed at the inner end of a shaft (e.g. `qc-north-shaft-door`, `qc-south-shaft-door`, `ascending-plug-*`) should be hovered from inside the shaft on the centerline; the outer surface of the door is the front face visible from the shaft interior.
 - The `GrandGalleryMesh` uses a custom corbelled segment group; pointer events on the group may behave differently from `BlockoutMesh`.
+- The `AntechamberMesh` is a group of meshes (shell, wainscots, portcullis slots). Pointer events attached to the group fire on any child mesh and highlight the whole `antechamber` node; hover shows `Antechamber` and click opens `EV-100010`.
+- To inspect the Antechamber interior, hide the **Exterior** layer, set `cameraTarget` to the antechamber center (`{x:7.22, y:44.8, z:0.72}`), and orbit/zoom in from the side until the wainscots and slots are visible.
 
 ## Useful smoke commands
 

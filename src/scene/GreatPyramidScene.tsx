@@ -12,6 +12,7 @@ import type { Vector3 } from '@/schemas/location';
 import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
 import { CameraRig } from './CameraRig';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
+import { AntechamberMesh } from './AntechamberMesh';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
@@ -213,6 +214,9 @@ export function GreatPyramidScene(): JSX.Element {
       {visibleNodes.map(({ node, block, rule }) => {
         if (node.id === 'grand-gallery') {
           return <GrandGalleryMesh key={node.id} node={node} block={block} rule={rule} />;
+        }
+        if (node.id === 'antechamber') {
+          return <AntechamberMesh key={node.id} node={node} block={block} rule={rule} />;
         }
         return <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />;
       })}

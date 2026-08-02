@@ -276,6 +276,12 @@ Three granite blocks inferred to seal the lower end of the Ascending Passage. Ea
 | size.y | 3.794 | Petrie: 149.35 in = 3.794 m height |
 | size.z | 2.954 | Petrie: 116.30 in = 2.954 m (N-S length) |
 
+**Interior detail:** The `AntechamberMesh` component renders the chamber shell with translucent walls and adds two inferred features derived from EV-100010:
+- **Half-height wainscots** — limestone panels lining the lower half of all four interior walls.
+- **Portcullis slots** — four vertical grooves (two in each side wall) for the sliding portcullis slabs.
+
+These details are for visualization only and do not create separate scene-graph nodes.
+
 **Connection check:**
 - GG upper end z ≈ 30.33
 - Antechamber south edge z = 31.84 − 2.954/2 = 31.84 − 1.477 = 30.36
