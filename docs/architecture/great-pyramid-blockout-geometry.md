@@ -415,6 +415,22 @@ KC ceiling = 42.955 + 5.97 = 48.925 (ref 48.93)
 
 **Note on x=7.22:** The shafts run along the Z-axis (north-south), so x stays constant at the KC center. Gantenbrink's lateral shift (1.57 m E for north, 5.20 m E for south) refers to the exit point offset, which would require a bend in the shaft. The blockout does not model this bend.
 
+### 5.17a King's Chamber North Shaft Door
+
+A limestone blocking stone ("door") observed by Pyramid Rover at Block ~21 in the north shaft. It is modeled as a thin inferred slab.
+
+| Field | Value | Derivation |
+|---|---|---|
+| position.x | 7.22 | Same as KC north shaft |
+| position.y | ~60.29 | Inferred: ~21.1 m along shaft from KC north wall ceiling |
+| position.z | ~17.49 | Inferred: northward along shaft from z ≈ 35.27 |
+| rotation.x | −32.60° | Same slope as KC north shaft |
+| size.x | 0.205 | Shaft cross-section width |
+| size.y | 0.205 | Shaft cross-section height |
+| size.z | 0.2 | Approximate slab thickness |
+
+**Note:** The exact distance to Block ~21 is not precisely published; the 0.2 m thick slab is placed at ~21.1 m from the start as a visualization placeholder pending a surveyed position. The northern shaft bend/lateral offset near the exit is not modeled.
+
 ### 5.18 King's Chamber South Shaft
 
 | Field | Value | Derivation |

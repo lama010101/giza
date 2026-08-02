@@ -555,6 +555,34 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
       }),
     );
 
+    // KC north shaft "door" / blocking stone (Pyramid Rover 2002, Block ~21)
+    {
+      const kcNorthDoorInner = slopedEndpoint(kcNorthStart, GP_KC_SHAFTS.north.angleDeg, 21.0, -1);
+      const kcNorthDoorOuter = slopedEndpoint(kcNorthStart, GP_KC_SHAFTS.north.angleDeg, 21.2, -1);
+      const kcNorthDoorBox = slopedBoxFromFloorEndpoints(
+        kcNorthDoorInner,
+        kcNorthDoorOuter,
+        GP_KC_SHAFTS.north.diameter,
+        GP_KC_SHAFTS.north.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'kc-north-shaft-door',
+          name: "KC North Shaft Blocking Stone ('Door')",
+          position: kcNorthDoorBox.position,
+          rotation: kcNorthDoorBox.rotation,
+          size: kcNorthDoorBox.size,
+          objectId: 'OBJ-0121',
+          evidenceIds: ['EV-100021'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
+
     // KC south shaft: starts at KC south wall ceiling, goes up toward south face
     const kcSouthStart: Vector3 = {
       x: GP_GRAND_GALLERY.xOffset,
