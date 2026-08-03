@@ -111,6 +111,26 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     }),
   );
 
+  // Remaining exterior architecture: surviving casing on south/east/west faces,
+  // casing debris, corner sockets, pyramid enclosure wall traces, and pyramidion.
+  // Grouped in a single inferred visualization node so the custom mesh can model
+  // the ring wall and multiple corner sockets without inflating the scene graph.
+  nodes.push(
+    calculated({
+      id: 'exterior-detail',
+      name: 'Exterior Detail (casing, sockets, wall, pyramidion)',
+      position: { x: 0, y: 0, z: 0 },
+      size: { x: 0, y: 0, z: 0 },
+      objectId: 'OBJ-0102',
+      evidenceIds: ['EV-100002'],
+      sourceIds: ['SRC-0101'],
+      layer: 'exterior',
+      color: '#c2b090',
+      opacity: 0.4,
+      derivation: 'inferred',
+    }),
+  );
+
   // --- Entrance ---
   nodes.push(
     calculated({

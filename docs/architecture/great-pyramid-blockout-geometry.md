@@ -124,6 +124,18 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | size.y | 10 | Approximate height of surviving lower courses |
 | size.z | 1 | Thin slab representing casing surface |
 
+### 5.2a Remaining Exterior Detail
+
+The `exterior-detail` node (`GreatPyramidExteriorMesh`) groups inferred visualizations for the elements listed in `GIZA - 07` §2.10–2.11 and `GIZA - 15` M11-T02:
+
+- **Surviving casing stones** on the south, east, and west lower faces — mirrored from the north-face casing using the same Petrie casing angle (`51.84°`).
+- **Casing debris field** — a low, translucent box surrounding the base to indicate scattered Tura limestone fragments.
+- **Corner sockets** — four foundation blocks at the base corners.
+- **Pyramid enclosure wall traces** — a low square ring around the pyramid.
+- **Pyramidion** — a small transparent square-pyramid capstone at the original apex (`y ≈ 146.6 m`), rendered as an inferred reconstruction overlay.
+
+All of these reuse `OBJ-0102` / `EV-100002` (casing slope evidence) and are marked `derivation: 'inferred'` in LOD1. They are intended as visualization placeholders, not surveyed geometry.
+
 ### 5.3 Original Entrance
 
 | Field | Value | Derivation |

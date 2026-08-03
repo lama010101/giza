@@ -14,6 +14,7 @@ import { CameraRig } from './CameraRig';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
 import { AntechamberMesh } from './AntechamberMesh';
 import { SubterraneanChamberMesh } from './SubterraneanChamberMesh';
+import { GreatPyramidExteriorMesh } from './GreatPyramidExteriorMesh';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
@@ -221,6 +222,9 @@ export function GreatPyramidScene(): JSX.Element {
         }
         if (node.id === 'subterranean-chamber') {
           return <SubterraneanChamberMesh key={node.id} node={node} block={block} rule={rule} />;
+        }
+        if (node.id === 'exterior-detail') {
+          return <GreatPyramidExteriorMesh key={node.id} node={node} block={block} rule={rule} />;
         }
         return <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />;
       })}
