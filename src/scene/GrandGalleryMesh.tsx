@@ -5,7 +5,7 @@ import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
-import { buildCorbelSegments } from './grandGallerySegments';
+import { buildCorbelSegments, type CorbelSegment } from './grandGallerySegments';
 
 export interface GrandGalleryBlock {
   id: string;
@@ -62,6 +62,11 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
     document.body.style.cursor = 'auto';
   };
 
+  function segmentColor(baseColor: string, kind: CorbelSegment['kind']): string {
+    if (kind === 'notch' || kind === 'floor-slot') return '#5a4a3a';
+    return baseColor;
+  }
+
   const segments = useMemo(() => buildCorbelSegments(GP_GRAND_GALLERY), []);
 
   const rotation = block.rotation ?? { x: 0, y: 0, z: 0 };
@@ -78,9 +83,9 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
         <mesh key={`gg-${idx}`} position={seg.position}>
           <boxGeometry args={seg.size} />
           <meshStandardMaterial
-            color={color}
+            color={segmentColor(color, seg.kind)}
             transparent={opacity < 1}
-            opacity={opacity}
+            opacity={seg.kind === 'floor' || seg.kind === 'ceiling' ? opacity : opacity * 0.85}
             metalness={0.15}
             roughness={0.8}
             emissive={hovered ? '#3b82f6' : '#000000'}

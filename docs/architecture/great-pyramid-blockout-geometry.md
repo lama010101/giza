@@ -288,6 +288,12 @@ A medieval tunnel cut by Al-Mamun's workers to bypass the three granite plug blo
 
 **Discrepancy note:** The upper end y (45.0) is ~2.4 m above the reference (42.6). The lower end y (24.6) is ~0.3 m below the reference (24.9). The GG/AP junction overlaps (GG lower 24.6 < AP upper 26.6), which is expected — the AP roof meets the GG floor area at the junction. The upper end y discrepancy is because the GG length (46.11 m) is measured along the floor to the "great step," and the box center represents the gallery axis, not the floor. The gallery height (8.74 m) is perpendicular, so the actual vertical extent of the box is larger than the floor-to-ceiling height when rotated. This is an inherent limitation of using an axis-aligned box for a corbel-vaulted passage.
 
+**Interior detail:** The `GrandGalleryMesh` component renders the gallery shell and adds the inferred features described in `GIZA - 07` §2.15:
+- **Side bench notches** — regular rectangular recesses in the inner faces of the two side benches.
+- **Floor ramp slots** — short transverse grooves/recesses in the central floor area.
+
+These inferred details reuse `EV-100009` (Grand Gallery — corbelled vault dimensions) and are visualized with a darker material so they are clearly distinguishable from the surveyed gallery envelope.
+
 ### 5.10 Antechamber
 
 | Field | Value | Derivation |
