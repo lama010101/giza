@@ -344,6 +344,18 @@ These details are for visualization only and do not create separate scene-graph 
 
 **Note on z=40.5:** The KC z position is set to 40.5 to align with the relieving chambers (which all share z=40.5). The exact derivation from the antechamber is approximate because the short passage between antechamber and KC is not separately modeled.
 
+### 5.11a King's Chamber Interior Detail
+
+The `KingsChamberMesh` component renders the chamber shell and adds inferred interior detail derived from `EV-100011`:
+
+- **Floor and ceiling slabs** — thin granite panels at the bottom and top of the chamber.
+- **Inner wall slabs** — four thin panels on the inner faces of the chamber, representing the polished Aswan red granite lining.
+- **Course joints** — horizontal and vertical mortar lines suggesting the five-course masonry construction.
+- **Stress fractures** — one diagonal ceiling crack and one diagonal west-wall fracture (common reported features of the granite chamber).
+- **Shaft entrance markers** — small dark squares on the north and south inner walls near ceiling level where the KC shafts begin.
+
+These details are visualization placeholders; the broken sarcophagus remains a separate blockout node (`kings-sarcophagus`).
+
 ### 5.12 Sarcophagus
 
 | Field | Value | Derivation |

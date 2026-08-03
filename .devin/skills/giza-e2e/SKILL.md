@@ -72,6 +72,9 @@ location.reload();
 - The casing-stone slabs generated for `exterior-detail` (and the existing `casing-north` blockout node) are placed inside the `pyramid-exterior` core-masonry box, so from outside the core they are occluded for pointer events and the overlay reads `Pyramid Exterior (core masonry)`. To hover/click `exterior-detail` from outside, aim at the enclosure wall, corner sockets, or pyramidion. To inspect the casing bands themselves, place the camera just inside the core masonry on the face side (e.g. `{0, 6, 109}` looking at `{0, 6, 111}` for the south face) with non-`exterior` layers hidden and `giza-lighting` ambient raised.
 - The `SubterraneanChamberMesh` is a group of meshes (translucent shell + four darker inferred recesses). Pointer events on the group highlight the whole `subterranean-chamber` node; hover shows `Subterranean Chamber` and click opens `EV-100006`.
 - The subterranean chamber is underground and dark; lift ambient/local lighting via `giza-lighting` and set the camera to an outside-the-box view (e.g. `{x:0, y:-28, z:6}` looking at `{x:0, y:-28, z:-4}`) so the translucent shell and interior recesses are visible. Inside-the-box close-ups are dominated by the recess because the shell uses `FrontSide` only.
+- The `KingsChamberMesh` is a group of meshes (translucent shell + floor/ceiling slabs, four inner wall panels, course joints, stress fractures, and north/south shaft entrance markers). Pointer events on the group highlight the whole `kings-chamber` node; hover shows `King's Chamber` and click opens `EV-100011`.
+- To inspect the King's Chamber interior, hide the **Exterior** and **Relieving** layers, set `cameraTarget` to the chamber center (`{x:7.22, y:45.94, z:8.43}`), and orbit/zoom in from the side until the floor/ceiling slabs, wall joints, and shaft markers are visible.
+- A useful temporary debug-camera preset is `{x:7.22, y:45.94, z:6.0}` looking at `{x:7.22, y:45.94, z:8.43}`. Add a `DebugCamera` component to `src/scene/CameraRig.tsx` that sets `camera.position` and `controls.target` once on the first frame when `window.location.search` includes `?debug=kings-chamber`, then revert it after testing.
 
   ```js
   localStorage.setItem(
@@ -95,13 +98,13 @@ location.reload();
         activeMonument: 'great-pyramid',
         lod: 'LOD0',
         cameraMode: 'orbit',
-        cameraTarget: { x: 0, y: -28, z: -4 },
-        hiddenLayers: ['exterior'],
+        cameraTarget: { x: 7.22, y: 45.94, z: 8.43 },
+        hiddenLayers: ['exterior', 'relieving'],
       },
       version: 2,
     }),
   );
-  location.reload();
+  location.assign('http://localhost:5173/?debug=kings-chamber');
   ```
 
 ## Useful smoke commands
