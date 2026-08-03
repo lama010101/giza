@@ -77,7 +77,7 @@ describe('Great Pyramid E2E Acceptance (M11-T26)', () => {
       const engine = new HypothesisEngine();
       engine.register(gpHydraulicPlugin);
       engine.register(gpHydraulicAcousticPlugin);
-      const ctx = { evidence: [], sources: [], activeHypotheses: [] };
+      const ctx = { evidence: [], sources: [], objects: [], locations: [], simulations: [] };
       const h1 = engine.getHypothesis('THEORY-GP-001', ctx);
       const h2 = engine.getHypothesis('THEORY-GP-003', ctx);
       expect(h1.id).not.toBe(h2.id);
@@ -97,7 +97,7 @@ describe('Great Pyramid E2E Acceptance (M11-T26)', () => {
       engine.activate(['THEORY-GP-003']);
 
       // 3. Get hypothesis
-      const ctx = { evidence: [], sources: [], activeHypotheses: ['THEORY-GP-003'] };
+      const ctx = { evidence: [], sources: [], objects: [], locations: [], simulations: [] };
       const h = engine.getHypothesis('THEORY-GP-003', ctx);
       expect(h).toBeDefined();
 

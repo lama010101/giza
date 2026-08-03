@@ -18,8 +18,8 @@ describe('Great Pyramid Seed Data', () => {
     expect(seed.objects).toHaveLength(26);
   });
 
-  it('has 30 evidence records', () => {
-    expect(seed.evidence).toHaveLength(30);
+  it('has 26 evidence records', () => {
+    expect(seed.evidence).toHaveLength(26);
   });
 
   it('every source has a valid ID matching SRC-NNNN', () => {
@@ -200,7 +200,7 @@ describe('Great Pyramid Scene Graph', () => {
     }
   });
 
-  it('has 27 mesh nodes (excluding root and layer groups)', () => {
+  it('has 35 mesh nodes (excluding root and layer groups)', () => {
     const all = graph.getAllNodes();
     const layerGroupIds = new Set([
       'gp-root',
@@ -214,7 +214,7 @@ describe('Great Pyramid Scene Graph', () => {
       'gp-shafts',
     ]);
     const meshNodes = all.filter((n) => !layerGroupIds.has(n.id));
-    expect(meshNodes).toHaveLength(27);
+    expect(meshNodes).toHaveLength(35);
   });
 });
 

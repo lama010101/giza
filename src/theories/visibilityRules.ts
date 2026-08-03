@@ -7,6 +7,8 @@
 
 import type { HypothesisGeometryNode, VisibilityRule } from './types';
 
+export type { VisibilityRule } from './types';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface VisibilityContext {

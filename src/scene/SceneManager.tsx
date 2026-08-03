@@ -106,6 +106,7 @@ export function SceneManager({
       const t = setTimeout(() => setStatus((s) => ({ ...s, state: 'loaded' })), 50);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [status.state]);
 
   // Error boundary handler
@@ -154,6 +155,7 @@ export function SceneManager({
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSceneManager(initialScene: SceneId = 'osiris'): SceneManagerAPI & {
   element: JSX.Element;
 } {

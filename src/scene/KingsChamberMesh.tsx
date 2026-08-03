@@ -4,10 +4,9 @@ import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
-import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
-import { buildCorbelSegments, type CorbelSegment } from './grandGallerySegments';
+import { buildKingsChamberSegments, type KingsChamberSegment } from './kingsChamberSegments';
 
-export interface GrandGalleryBlock {
+export interface KingsChamberBlock {
   id: string;
   name: string;
   position: Vector3;
@@ -22,14 +21,54 @@ export interface GrandGalleryBlock {
   overlay?: string;
 }
 
-export interface GrandGalleryMeshProps {
+export interface KingsChamberMeshProps {
   node: SceneNodeWithWorld;
-  block: GrandGalleryBlock;
+  block: KingsChamberBlock;
   rule?: VisualizationRule;
 }
 
-export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): JSX.Element {
+function segmentColor(baseColor: string, kind: KingsChamberSegment['kind']): string {
+  switch (kind) {
+    case 'shell':
+      return baseColor;
+    case 'slab':
+      return '#6a4a45';
+    case 'wall':
+      return '#8a5a50';
+    case 'joint':
+      return '#4a3a35';
+    case 'fracture':
+      return '#2a1a15';
+    case 'shaft-marker':
+      return '#3a3a3a';
+    default:
+      return baseColor;
+  }
+}
+
+function segmentOpacity(baseOpacity: number, kind: KingsChamberSegment['kind']): number {
+  switch (kind) {
+    case 'shell':
+      return baseOpacity * 0.35;
+    case 'slab':
+      return baseOpacity * 0.75;
+    case 'wall':
+      return baseOpacity * 0.65;
+    case 'joint':
+      return baseOpacity * 0.95;
+    case 'fracture':
+      return baseOpacity * 0.85;
+    case 'shaft-marker':
+      return baseOpacity * 0.95;
+    default:
+      return baseOpacity;
+  }
+}
+
+export function KingsChamberMesh({ node, block, rule }: KingsChamberMeshProps): JSX.Element {
   const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
+  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
+  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
   const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
   const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
   const measurementMode = useAppStore((s) => s.measurementMode);
@@ -48,6 +87,8 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
     const evidenceId = node.metadata.evidenceIds?.[0];
     if (evidenceId) {
       setSelectedEvidenceId(evidenceId);
+      setSidePanelTab('evidence');
+      setEvidencePanelOpen(true);
     }
   };
 
@@ -62,13 +103,10 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
     document.body.style.cursor = 'auto';
   };
 
-  function segmentColor(baseColor: string, kind: CorbelSegment['kind']): string {
-    if (kind === 'notch' || kind === 'floor-slot') return '#5a4a3a';
-    return baseColor;
-  }
-
-  const segments = useMemo(() => buildCorbelSegments(GP_GRAND_GALLERY), []);
-
+  const segments = useMemo(
+    () => buildKingsChamberSegments(block.size.x, block.size.y, block.size.z),
+    [block.size],
+  );
   const rotation = block.rotation ?? { x: 0, y: 0, z: 0 };
 
   return (
@@ -80,14 +118,18 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
       onPointerOut={handlePointerOut}
     >
       {segments.map((seg, idx) => (
-        <mesh key={`gg-${idx}`} position={seg.position}>
+        <mesh
+          key={`${seg.kind}-${idx}`}
+          position={seg.position}
+          rotation={seg.rotation ?? [0, 0, 0]}
+        >
           <boxGeometry args={seg.size} />
           <meshStandardMaterial
             color={segmentColor(color, seg.kind)}
-            transparent={opacity < 1}
-            opacity={seg.kind === 'floor' || seg.kind === 'ceiling' ? opacity : opacity * 0.85}
-            metalness={0.15}
-            roughness={0.8}
+            transparent={segmentOpacity(opacity, seg.kind) < 1}
+            opacity={segmentOpacity(opacity, seg.kind)}
+            metalness={0.1}
+            roughness={0.85}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

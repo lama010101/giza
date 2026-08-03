@@ -42,13 +42,12 @@ function makeSource(id: string): Source {
   return {
     id,
     title: `Source ${id}`,
-    type: 'publication',
-    authors: ['Test'],
+    type: 'Book',
+    authors: [{ name: 'Test' }],
     year: 2024,
     url: `https://example.com/${id}`,
     license: 'CC-BY-4.0',
-    confidence: 80,
-  } as Source;
+  };
 }
 
 describe('Storage Backend (M02-T01)', () => {

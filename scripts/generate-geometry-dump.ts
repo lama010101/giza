@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // Regenerates docs/architecture/geometry-dump.json from the live TypeScript sources.
 // Usage: npx tsx scripts/generate-geometry-dump.ts
 //

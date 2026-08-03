@@ -102,9 +102,7 @@ describe('GP Acoustic Integration (M11-T25)', () => {
   describe('createSimulationResult', () => {
     it('creates a SimulationResult for the store', () => {
       const result = createSimulationResult('kings-chamber');
-      expect(
-        result.metadata.simulationType || result.metadata.parameters.simulationType,
-      ).toBeTruthy();
+      expect(result.metadata.parameters.simulationType).toBeTruthy();
       expect(result.outputs).toBeDefined();
       expect(result.validation).toBeDefined();
     });

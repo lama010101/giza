@@ -442,37 +442,19 @@ export function runBatchPipeline(
 
 // ─── Publishing history ───────────────────────────────────────────────────
 
-export interface HistoryEntry {
-  assetId: string;
-  version: number;
-  publishedAt: string;
-  success: boolean;
-  stages: { stage: PublishingStage; status: StageStatus; duration: number }[];
-}
-
-const HISTORY: HistoryEntry[] = [];
+const HISTORY: PipelineResult[] = [];
 
 /**
  * Records a pipeline result in the publishing history.
  */
 export function recordHistory(result: PipelineResult): void {
-  HISTORY.push({
-    assetId: result.assetId,
-    version: result.stages.length > 0 ? 1 : 1,
-    publishedAt: result.completedAt,
-    success: result.success,
-    stages: result.stages.map((s) => ({
-      stage: s.stage,
-      status: s.status,
-      duration: s.duration,
-    })),
-  });
+  HISTORY.push(result);
 }
 
 /**
  * Returns the publishing history.
  */
-export function getPublishingHistory(): HistoryEntry[] {
+export function getPublishingHistory(): PipelineResult[] {
   return [...HISTORY];
 }
 
@@ -486,7 +468,7 @@ export function clearPublishingHistory(): void {
 /**
  * Returns the publishing history for a specific asset.
  */
-export function getAssetHistory(assetId: string): HistoryEntry[] {
+export function getAssetHistory(assetId: string): PipelineResult[] {
   return HISTORY.filter((h) => h.assetId === assetId);
 }
 

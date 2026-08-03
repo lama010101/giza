@@ -29,6 +29,7 @@ function makeReviewable(
     evidence: makeExtracted(evidence),
     status: 'pending',
     reviewLog: [],
+    createdAt: new Date().toISOString(),
   };
 }
 
@@ -36,7 +37,7 @@ describe('Content Pipeline Review Bridge (M03.5-T04)', () => {
   let store: EvidenceStore;
 
   beforeEach(() => {
-    store = new EvidenceStore([]);
+    store = new EvidenceStore();
   });
 
   describe('submitExtractedEvidence', () => {

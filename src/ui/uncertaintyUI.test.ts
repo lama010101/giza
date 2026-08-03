@@ -5,6 +5,7 @@ import {
   getUncertaintyIcon,
   assessBatchUncertainty,
   filterUncertainObjects,
+  type UncertaintyIndicator,
 } from './uncertaintyUI';
 import type { Evidence } from '@/schemas/evidence';
 
@@ -129,8 +130,11 @@ describe('Uncertainty UI (M07-T16)', () => {
           conflictingEvidenceCount: 0,
           suggestedActions: [],
         },
-      ] as const;
-      const filtered = filterUncertainObjects([...indicators], 'medium');
+      ];
+      const filtered = filterUncertainObjects(
+        [...(indicators as UncertaintyIndicator[])],
+        'medium',
+      );
       expect(filtered).toHaveLength(2);
       expect(filtered[0].objectId).toBe('B');
     });

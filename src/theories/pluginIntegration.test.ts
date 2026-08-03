@@ -43,13 +43,12 @@ function makeSource(id: string): Source {
   return {
     id,
     title: `Source ${id}`,
-    type: 'publication',
+    type: 'Book',
     authors: [{ name: 'Test' }],
     year: 2024,
     url: `https://example.com/${id}`,
     license: 'CC-BY-4.0',
-    confidence: 80,
-  } as Source;
+  };
 }
 
 describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
@@ -80,7 +79,9 @@ describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
       const hypothesis = engine.getHypothesis(ids[0], {
         evidence: [],
         sources: [],
-        activeHypotheses: [ids[0]],
+        objects: [],
+        locations: [],
+        simulations: [],
       });
       expect(hypothesis).toBeDefined();
       expect(hypothesis.id).toBe(ids[0]);
@@ -93,12 +94,16 @@ describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
       const h1 = engine.getHypothesis(ids[0], {
         evidence: [],
         sources: [],
-        activeHypotheses: [ids[0], ids[1]],
+        objects: [],
+        locations: [],
+        simulations: [],
       });
       const h2 = engine.getHypothesis(ids[1], {
         evidence: [],
         sources: [],
-        activeHypotheses: [ids[0], ids[1]],
+        objects: [],
+        locations: [],
+        simulations: [],
       });
       expect(h1.id).not.toBe(h2.id);
     });
@@ -114,7 +119,7 @@ describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
       const sources = [makeSource('SRC-001')];
       const sourceMap = new Map(sources.map((s) => [s.id, s]));
       const confidenceByObj = engine.computeConfidenceByObject(
-        { evidence, sources, activeHypotheses: [ids[0]] },
+        { evidence, sources, objects: [], locations: [], simulations: [] },
         (id) => sourceMap.get(id),
       );
       expect(confidenceByObj[ids[0]]).toBeDefined();
@@ -138,12 +143,16 @@ describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
       const h1 = engine.getHypothesis(ids[0], {
         evidence: [],
         sources: [],
-        activeHypotheses: [ids[0], ids[1]],
+        objects: [],
+        locations: [],
+        simulations: [],
       });
       const h2 = engine.getHypothesis(ids[1], {
         evidence: [],
         sources: [],
-        activeHypotheses: [ids[0], ids[1]],
+        objects: [],
+        locations: [],
+        simulations: [],
       });
       expect(h1).toBeDefined();
       expect(h2).toBeDefined();
@@ -159,7 +168,7 @@ describe('Hypothesis Plugin Full Integration (M05.5-T15)', () => {
       const sources = [makeSource('SRC-001')];
       const sourceMap = new Map(sources.map((s) => [s.id, s]));
       const confidenceByObj = engine.computeConfidenceByObject(
-        { evidence, sources, activeHypotheses: [ids[0], ids[1]] },
+        { evidence, sources, objects: [], locations: [], simulations: [] },
         (id) => sourceMap.get(id),
       );
       expect(confidenceByObj[ids[0]]).toBeDefined();

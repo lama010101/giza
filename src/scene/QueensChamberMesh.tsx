@@ -4,10 +4,9 @@ import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
-import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
-import { buildCorbelSegments, type CorbelSegment } from './grandGallerySegments';
+import { buildQueensChamberSegments, type QueensChamberSegment } from './queensChamberSegments';
 
-export interface GrandGalleryBlock {
+export interface QueensChamberBlock {
   id: string;
   name: string;
   position: Vector3;
@@ -22,14 +21,46 @@ export interface GrandGalleryBlock {
   overlay?: string;
 }
 
-export interface GrandGalleryMeshProps {
+export interface QueensChamberMeshProps {
   node: SceneNodeWithWorld;
-  block: GrandGalleryBlock;
+  block: QueensChamberBlock;
   rule?: VisualizationRule;
 }
 
-export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): JSX.Element {
+function segmentColor(baseColor: string, kind: QueensChamberSegment['kind']): string {
+  switch (kind) {
+    case 'shell':
+      return baseColor;
+    case 'gable':
+      return '#a08070';
+    case 'shaft-marker':
+      return '#3a3a3a';
+    case 'dixon-vent':
+      return '#2a1a15';
+    default:
+      return baseColor;
+  }
+}
+
+function segmentOpacity(baseOpacity: number, kind: QueensChamberSegment['kind']): number {
+  switch (kind) {
+    case 'shell':
+      return baseOpacity * 0.35;
+    case 'gable':
+      return baseOpacity * 0.8;
+    case 'shaft-marker':
+      return baseOpacity * 0.95;
+    case 'dixon-vent':
+      return baseOpacity * 0.95;
+    default:
+      return baseOpacity;
+  }
+}
+
+export function QueensChamberMesh({ node, block, rule }: QueensChamberMeshProps): JSX.Element {
   const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
+  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
+  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
   const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
   const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
   const measurementMode = useAppStore((s) => s.measurementMode);
@@ -48,6 +79,8 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
     const evidenceId = node.metadata.evidenceIds?.[0];
     if (evidenceId) {
       setSelectedEvidenceId(evidenceId);
+      setSidePanelTab('evidence');
+      setEvidencePanelOpen(true);
     }
   };
 
@@ -62,13 +95,10 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
     document.body.style.cursor = 'auto';
   };
 
-  function segmentColor(baseColor: string, kind: CorbelSegment['kind']): string {
-    if (kind === 'notch' || kind === 'floor-slot') return '#5a4a3a';
-    return baseColor;
-  }
-
-  const segments = useMemo(() => buildCorbelSegments(GP_GRAND_GALLERY), []);
-
+  const segments = useMemo(
+    () => buildQueensChamberSegments(block.size.x, block.size.y, block.size.z),
+    [block.size],
+  );
   const rotation = block.rotation ?? { x: 0, y: 0, z: 0 };
 
   return (
@@ -80,14 +110,18 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
       onPointerOut={handlePointerOut}
     >
       {segments.map((seg, idx) => (
-        <mesh key={`gg-${idx}`} position={seg.position}>
+        <mesh
+          key={`${seg.kind}-${idx}`}
+          position={seg.position}
+          rotation={seg.rotation ?? [0, 0, 0]}
+        >
           <boxGeometry args={seg.size} />
           <meshStandardMaterial
             color={segmentColor(color, seg.kind)}
-            transparent={opacity < 1}
-            opacity={seg.kind === 'floor' || seg.kind === 'ceiling' ? opacity : opacity * 0.85}
-            metalness={0.15}
-            roughness={0.8}
+            transparent={segmentOpacity(opacity, seg.kind) < 1}
+            opacity={segmentOpacity(opacity, seg.kind)}
+            metalness={0.1}
+            roughness={0.85}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

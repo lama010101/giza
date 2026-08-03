@@ -72,18 +72,18 @@ export function slopedBoxFromFloorEndpoints(
   const dy = end.y - start.y;
   const dz = end.z - start.z;
   const absDz = Math.abs(dz);
-  // Compute the acute slope angle magnitude
-  const slopeAngle = Math.atan2(Math.abs(dy), absDz > 1e-9 ? absDz : 1e-9);
-  // Three.js X-rotation convention:
-  //   positive rotation → +Z end goes down (descending passage, north-going shafts)
-  //   negative rotation → +Z end goes up (ascending, grand gallery, south-going shafts)
-  // Sign is positive when dy and dz have opposite signs (one end goes down while
-  // moving in +Z, or up while moving in -Z), negative when they have the same sign.
-  const angle = dy * dz < 0 ? slopeAngle : -slopeAngle;
+  // Use abs(dz) so the angle is always the acute slope angle.
+  // Negate to match Three.js X-rotation convention:
+  // positive rotation → +Z end goes down (descending passage)
+  // negative rotation → +Z end goes up (ascending, grand gallery, north shafts)
+  const angle = -Math.atan2(dy, absDz > 1e-9 ? absDz : 1e-9);
   const floorMid = midpoint(start, end);
   // Offset from floor midpoint to box center (half height in perpendicular direction)
+  // For +Z passages: offsetZ = (h/2)*sin(angle)
+  // For -Z passages: offsetZ must be flipped to keep ceiling on the correct side
+  const zSign = dz >= 0 ? 1 : -1;
   const offsetY = (height / 2) * Math.cos(angle);
-  const offsetZ = (height / 2) * Math.sin(angle);
+  const offsetZ = zSign * (height / 2) * Math.sin(angle);
   return {
     position: { x: floorMid.x, y: floorMid.y + offsetY, z: floorMid.z + offsetZ },
     rotation: { x: angle, y: 0, z: 0 },
@@ -155,4 +155,19 @@ export function chamberCenterX(xOffset: number): number {
  */
 export function faceZAtHeight(y: number, baseHalfWidth: number, casingAngleDeg: number): number {
   return -baseHalfWidth + y / Math.tan(degToRad(casingAngleDeg));
+}
+
+/**
+ * Compute the X position of the pyramid's sloped east face at a given height.
+ * The face recedes inward from the base edge as height increases.
+ * At y=0 the face is at x = +baseHalfWidth.
+ * At y=h the face is at x = +baseHalfWidth - h / tan(casingAngle).
+ *
+ * @param y Height above pavement (m)
+ * @param baseHalfWidth Half the base mean width (m) = baseMean / 2
+ * @param casingAngleDeg Casing slope angle in degrees (e.g., 51.84)
+ * @returns X coordinate of the east face at that height
+ */
+export function faceXAtHeight(y: number, baseHalfWidth: number, casingAngleDeg: number): number {
+  return baseHalfWidth - y / Math.tan(degToRad(casingAngleDeg));
 }

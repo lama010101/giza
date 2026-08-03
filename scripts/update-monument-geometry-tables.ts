@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // Updates the LOD0 and LOD1 tables in docs/architecture/monument-geometry.md
 // from the live geometry-dump.json. Run after generate-geometry-dump.ts.
 //
