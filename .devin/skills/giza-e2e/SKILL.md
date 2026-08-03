@@ -78,6 +78,40 @@ location.reload();
 
   ```js
   localStorage.setItem(
+    'giza-session',
+    JSON.stringify({
+      state: {
+        activeMonument: 'great-pyramid',
+        lod: 'LOD0',
+        cameraMode: 'orbit',
+        cameraTarget: { x: 7.22, y: 45.94, z: 8.43 },
+        hiddenLayers: ['exterior', 'relieving'],
+      },
+      version: 2,
+    }),
+  );
+  localStorage.setItem(
+    'giza-lighting',
+    JSON.stringify({
+      state: {
+        ambientIntensity: 8,
+        directionalIntensity: 1.2,
+        directionalAzimuth: 45,
+        directionalElevation: 60,
+        localIntensity: 3,
+        background: '#0f0f0f',
+      },
+      version: 0,
+    }),
+  );
+  location.assign('http://localhost:5173/?debug=kings-chamber');
+  ```
+- The `QueensChamberMesh` is a group of meshes (translucent shell + two gabled roof panels, north/south shaft entrance markers, and the 1872 Dixon vent hole marker). Pointer events on the group highlight the whole `queens-chamber` node; hover shows `Queen's Chamber` and click opens `EV-100018`.
+- To inspect the Queen's Chamber interior, hide the **Exterior** layer, set `cameraTarget` to the chamber center (`{x:0, y:24.3, z:6.32}`), and orbit/zoom in from the side until the gabled roof, shaft markers, and Dixon vent marker are visible.
+- A useful temporary debug-camera preset is `{x:0, y:24.3, z:3.5}` looking at `{x:0, y:24.3, z:6.32}` (`?debug=queens-chamber`).
+
+  ```js
+  localStorage.setItem(
     'giza-lighting',
     JSON.stringify({
       state: {
@@ -98,13 +132,13 @@ location.reload();
         activeMonument: 'great-pyramid',
         lod: 'LOD0',
         cameraMode: 'orbit',
-        cameraTarget: { x: 7.22, y: 45.94, z: 8.43 },
-        hiddenLayers: ['exterior', 'relieving'],
+        cameraTarget: { x: 0, y: 24.3, z: 6.32 },
+        hiddenLayers: ['exterior'],
       },
       version: 2,
     }),
   );
-  location.assign('http://localhost:5173/?debug=kings-chamber');
+  location.assign('http://localhost:5173/?debug=queens-chamber');
   ```
 
 ## Useful smoke commands

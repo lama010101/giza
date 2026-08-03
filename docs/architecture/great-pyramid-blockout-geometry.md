@@ -428,6 +428,16 @@ KC ceiling = 42.955 + 5.97 = 48.925 (ref 48.93)
 
 **Note:** The QC has a gabled roof. The box represents the outer envelope including the apex. The floor level (20.94) is close to the reference rough floor (21.19) — within 0.25 m, acceptable for a blockout.
 
+### 5.14a Queen's Chamber Interior Detail
+
+The `QueensChamberMesh` component renders the chamber shell and adds inferred interior detail derived from `EV-100018`:
+
+- **Gabled roof** — two thin sloped panels meeting at the apex; the ridge runs north-south.
+- **North and south shaft entrance markers** — small dark squares on the north and south inner walls, positioned approximately 1.6 m above the floor and slightly west of the chamber centre.
+- **Dixon vent hole** — a small dark marker on the south inner wall just east of the southern shaft opening, representing the 1872 breach by Waynman Dixon.
+
+The existing `queens-niche` blockout node is kept as a separate element on the east wall and is not affected by this mesh.
+
 ### 5.15 Queen's Chamber Niche
 
 | Field | Value | Derivation |
