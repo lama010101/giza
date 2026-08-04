@@ -15,6 +15,11 @@ export type AppMode =
 
 export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
 export type Monument = 'osiris' | 'great-pyramid';
+
+export const DEFAULT_CAMERA_TARGET: Record<Monument, Vector3> = {
+  osiris: { x: -1.4, y: -15, z: -7 },
+  'great-pyramid': { x: 0, y: 70, z: 0 },
+};
 export type SidePanelTab = 'scene' | 'evidence' | 'simulation';
 
 export const SCENE_LAYERS = [
@@ -122,7 +127,8 @@ export const useAppStore = create<AppState>()(
         lod: 'LOD0',
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
-        setActiveMonument: (activeMonument) => set({ activeMonument }),
+        setActiveMonument: (activeMonument) =>
+          set({ activeMonument, cameraTarget: DEFAULT_CAMERA_TARGET[activeMonument] }),
         setCameraMode: (cameraMode) => set({ cameraMode }),
         setCameraTarget: (cameraTarget) => set({ cameraTarget }),
         toggleLayer: (layer) =>

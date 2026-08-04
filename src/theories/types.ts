@@ -26,6 +26,28 @@ export interface HypothesisGeometryNode {
   hypothesisId: string;
   evidenceIds: string[];
   metadata?: Record<string, unknown>;
+  /** Visibility rules per M11-T20 — when and how this node is visible. */
+  visibilityRules?: VisibilityRule[];
+}
+
+/**
+ * Visibility rule for interpretive objects per M11-T20.
+ * Controls when a hypothesis-specific geometry node is visible
+ * based on mode, layer, chronology, and evidence state.
+ */
+export interface VisibilityRule {
+  /** The layer/mode this rule applies to. */
+  layer?: string;
+  /** Required chronology period for visibility. */
+  chronologyPeriod?: string;
+  /** Minimum evidence count required for visibility. */
+  minEvidenceCount?: number;
+  /** Whether the node is visible by default. */
+  defaultVisible?: boolean;
+  /** Conditions that must be met for visibility. */
+  conditions?: string[];
+  /** LOD level required for visibility. */
+  minLOD?: number;
 }
 
 export interface HypothesisPlugin {

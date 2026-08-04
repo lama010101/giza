@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { buildCorbelSegments } from './grandGallerySegments';
+import {
+  buildCorbelSegments,
+  GRAND_GALLERY_NOTCH_COUNT,
+  GRAND_GALLERY_FLOOR_SLOT_COUNT,
+} from './grandGallerySegments';
 import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
 
 describe('Grand Gallery Corbel Vault Geometry', () => {
@@ -9,6 +13,8 @@ describe('Grand Gallery Corbel Vault Geometry', () => {
     const expected =
       1 + // floor
       2 + // left + right ramp
+      GRAND_GALLERY_NOTCH_COUNT * 2 + // left + right bench notches
+      GRAND_GALLERY_FLOOR_SLOT_COUNT + // floor ramp slots
       GP_GRAND_GALLERY.corbelCourses * 2 + // left + right per course
       1; // ceiling
     expect(segments.length).toBe(expected);
@@ -109,14 +115,27 @@ describe('Grand Gallery Corbel Vault Geometry', () => {
     expect(lastCourseTop).toBeCloseTo(halfHeight, 4);
   });
 
-  it('all segments span the full floor length in Z', () => {
+  it('all structural segments span the full floor length in Z', () => {
     for (const seg of segments) {
       if (seg.kind === 'ceiling') {
         expect(seg.size[2]).toBeCloseTo(GP_GRAND_GALLERY.ceilingLength, 1);
+      } else if (seg.kind === 'notch' || seg.kind === 'floor-slot') {
+        // Inferred detail segments have short Z extents
+        expect(seg.size[2]).toBeLessThan(0.5);
       } else {
         expect(seg.size[2]).toBeCloseTo(GP_GRAND_GALLERY.floorLength, 1);
       }
     }
+  });
+
+  it('renders the expected number of bench notches', () => {
+    const notches = segments.filter((s) => s.kind === 'notch');
+    expect(notches.length).toBe(GRAND_GALLERY_NOTCH_COUNT * 2);
+  });
+
+  it('renders the expected number of floor ramp slots', () => {
+    const slots = segments.filter((s) => s.kind === 'floor-slot');
+    expect(slots.length).toBe(GRAND_GALLERY_FLOOR_SLOT_COUNT);
   });
 
   it('corbel projection produces correct narrowing', () => {

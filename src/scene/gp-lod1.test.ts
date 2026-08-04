@@ -318,7 +318,7 @@ describe('LOD0 Scene Graph (backward compatibility)', () => {
     expect(root?.name).toBe('Great Pyramid');
   });
 
-  it('has 26 mesh nodes', () => {
+  it('has 35 mesh nodes', () => {
     const all = graph.getAllNodes();
     const layerGroupIds = new Set([
       'gp-root',
@@ -332,7 +332,7 @@ describe('LOD0 Scene Graph (backward compatibility)', () => {
       'gp-shafts',
     ]);
     const meshNodes = all.filter((n) => !layerGroupIds.has(n.id));
-    expect(meshNodes).toHaveLength(26);
+    expect(meshNodes).toHaveLength(35);
   });
 });
 

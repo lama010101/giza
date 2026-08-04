@@ -6,3 +6,8 @@ playwright-report/
 docs/api/
 *.log
 .DS_Store
+
+# Environment files (keep .env.example tracked)
+.env
+.env.local
+.env.*.local

@@ -156,3 +156,18 @@ export function chamberCenterX(xOffset: number): number {
 export function faceZAtHeight(y: number, baseHalfWidth: number, casingAngleDeg: number): number {
   return -baseHalfWidth + y / Math.tan(degToRad(casingAngleDeg));
 }
+
+/**
+ * Compute the X position of the pyramid's sloped east face at a given height.
+ * The face recedes inward from the base edge as height increases.
+ * At y=0 the face is at x = +baseHalfWidth.
+ * At y=h the face is at x = +baseHalfWidth - h / tan(casingAngle).
+ *
+ * @param y Height above pavement (m)
+ * @param baseHalfWidth Half the base mean width (m) = baseMean / 2
+ * @param casingAngleDeg Casing slope angle in degrees (e.g., 51.84)
+ * @returns X coordinate of the east face at that height
+ */
+export function faceXAtHeight(y: number, baseHalfWidth: number, casingAngleDeg: number): number {
+  return baseHalfWidth - y / Math.tan(degToRad(casingAngleDeg));
+}

@@ -1,0 +1,19 @@
+{
+  "id": "THEORY-GP-003",
+  "name": "Hydraulic-Acoustic System Hypothesis",
+  "description": "The Great Pyramid functioned as a coupled hydraulic-acoustic resonator driven by hydrostatic pressure from the Osiris Shaft.",
+  "authors": [{ "name": "To be attributed" }],
+  "historicalBackground": "Proposed as an alternative to the mainstream funerary interpretation. Combines hydraulic and acoustic mechanisms into a single coupled energy system.",
+  "scientificAssumptions": [
+    "The Osiris Shaft functioned as a deep vertical pressure reservoir.",
+    "A dedicated underground conduit connected the Osiris Shaft to the subterranean hydraulic network beneath the Great Pyramid.",
+    "Gravitational potential energy stored in the elevated water column is the primary driver — no mechanical pumps required.",
+    "The pyramid geometry naturally amplifies hydraulic and acoustic resonance.",
+    "Water was available at the plateau level during the relevant period.",
+    "The subterranean passages could serve as hydraulic conduits.",
+    "The Grand Gallery could function as an acoustic resonator.",
+    "The King's Chamber granite could resonate at frequencies excited by the hydraulic system."
+  ],
+  "category": "alternative",
+  "version": "1.0.0"
+}

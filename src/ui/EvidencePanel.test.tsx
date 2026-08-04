@@ -5,7 +5,11 @@ import { EvidencePanel } from './EvidencePanel';
 
 describe('EvidencePanel', () => {
   beforeEach(() => {
-    useAppStore.setState({ selectedEvidenceId: null, bookmarkedObjectIds: [] });
+    useAppStore.setState({
+      selectedEvidenceId: null,
+      bookmarkedObjectIds: [],
+      activeMonument: 'osiris',
+    });
   });
   it('renders evidence list and search input', () => {
     render(<EvidencePanel />);

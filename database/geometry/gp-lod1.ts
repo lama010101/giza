@@ -111,6 +111,26 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
     }),
   );
 
+  // Remaining exterior architecture: surviving casing on south/east/west faces,
+  // casing debris, corner sockets, pyramid enclosure wall traces, and pyramidion.
+  // Grouped in a single inferred visualization node so the custom mesh can model
+  // the ring wall and multiple corner sockets without inflating the scene graph.
+  nodes.push(
+    calculated({
+      id: 'exterior-detail',
+      name: 'Exterior Detail (casing, sockets, wall, pyramidion)',
+      position: { x: 0, y: 0, z: 0 },
+      size: { x: 0, y: 0, z: 0 },
+      objectId: 'OBJ-0102',
+      evidenceIds: ['EV-100002'],
+      sourceIds: ['SRC-0101'],
+      layer: 'exterior',
+      color: '#c2b090',
+      opacity: 0.4,
+      derivation: 'inferred',
+    }),
+  );
+
   // --- Entrance ---
   nodes.push(
     calculated({
@@ -228,8 +248,8 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         y: GP_SUBTERRANEAN.height,
         z: GP_SUBTERRANEAN.depth,
       },
-      objectId: 'OBJ-0107',
-      evidenceIds: ['EV-100007'],
+      objectId: 'OBJ-0106',
+      evidenceIds: ['EV-100006'],
       sourceIds: ['SRC-0101'],
       layer: 'subterranean',
       color: '#6a5a40',
@@ -269,6 +289,72 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         color: '#c2ab7a',
         opacity: 0.4,
         derivation: 'calculated',
+      }),
+    );
+
+    // Plug blocks: three granite blocks at the lower (north) end of the AP
+    const plugCount = GP_ASCENDING_PASSAGE.plugBlockCount;
+    const plugLength = GP_ASCENDING_PASSAGE.plugBlockLength;
+    for (let i = 0; i < plugCount; i += 1) {
+      const plugStart = slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, i * plugLength);
+      const plugEnd = slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, (i + 1) * plugLength);
+      const plugBox = slopedBoxFromFloorEndpoints(
+        plugStart,
+        plugEnd,
+        GP_ASCENDING_PASSAGE.width,
+        GP_ASCENDING_PASSAGE.height,
+      );
+      nodes.push(
+        calculated({
+          id: `ascending-plug-${i + 1}`,
+          name: `Ascending Passage Plug Block ${i + 1}`,
+          position: plugBox.position,
+          rotation: plugBox.rotation,
+          size: plugBox.size,
+          objectId: 'OBJ-0108',
+          evidenceIds: ['EV-100008'],
+          sourceIds: ['SRC-0101'],
+          layer: 'passages',
+          color: '#5a5a5a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
+
+    // Al-Mamun bypass tunnel: medieval cut around the plug blocks, rejoining AP above them
+    // Inferred dimensions; the bypass runs roughly parallel to AP, offset to the east.
+    const BYPASS_OFFSET_X = 1.2;
+    const BYPASS_START_DIST = 0.5;
+    const BYPASS_END_DIST = 4.0;
+    const bypassStart: Vector3 = {
+      ...slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, BYPASS_START_DIST),
+      x: apStart.x + BYPASS_OFFSET_X,
+    };
+    const bypassEnd: Vector3 = {
+      ...slopedEndpoint(apStart, -GP_ASCENDING_PASSAGE.angleDeg, BYPASS_END_DIST),
+      x: apStart.x + BYPASS_OFFSET_X,
+    };
+    const bypassBox = slopedBoxFromFloorEndpoints(
+      bypassStart,
+      bypassEnd,
+      GP_ASCENDING_PASSAGE.width,
+      GP_ASCENDING_PASSAGE.height,
+    );
+    nodes.push(
+      calculated({
+        id: 'al-mamun-bypass',
+        name: 'Al-Mamun Bypass Tunnel',
+        position: bypassBox.position,
+        rotation: bypassBox.rotation,
+        size: bypassBox.size,
+        objectId: 'OBJ-0104',
+        evidenceIds: ['EV-100004', 'EV-100008'],
+        sourceIds: ['SRC-0103', 'SRC-0101'],
+        layer: 'passages',
+        color: '#b06a4a',
+        opacity: 0.6,
+        derivation: 'inferred',
       }),
     );
   }
@@ -461,10 +547,10 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         position: qcPassageBox.position,
         rotation: qcPassageBox.rotation,
         size: qcPassageBox.size,
-        objectId: 'OBJ-0117',
-        evidenceIds: ['EV-100017'],
+        objectId: 'OBJ-0120',
+        evidenceIds: ['EV-100020'],
         sourceIds: ['SRC-0101'],
-        layer: 'queens-complex',
+        layer: 'passages',
         color: '#c2ab7a',
         opacity: 0.4,
         derivation: 'calculated',
@@ -517,13 +603,41 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         size: kcNorthBox.size,
         objectId: 'OBJ-0121',
         evidenceIds: ['EV-100021'],
-        sourceIds: ['SRC-0103'],
+        sourceIds: ['SRC-0105'],
         layer: 'shafts',
         color: '#7a6a4a',
         opacity: 0.5,
         derivation: 'calculated',
       }),
     );
+
+    // KC north shaft "door" / blocking stone (Pyramid Rover 2002, Block ~21)
+    {
+      const kcNorthDoorInner = slopedEndpoint(kcNorthStart, GP_KC_SHAFTS.north.angleDeg, 21.0, -1);
+      const kcNorthDoorOuter = slopedEndpoint(kcNorthStart, GP_KC_SHAFTS.north.angleDeg, 21.2, -1);
+      const kcNorthDoorBox = slopedBoxFromFloorEndpoints(
+        kcNorthDoorInner,
+        kcNorthDoorOuter,
+        GP_KC_SHAFTS.north.diameter,
+        GP_KC_SHAFTS.north.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'kc-north-shaft-door',
+          name: "KC North Shaft Blocking Stone ('Door')",
+          position: kcNorthDoorBox.position,
+          rotation: kcNorthDoorBox.rotation,
+          size: kcNorthDoorBox.size,
+          objectId: 'OBJ-0121',
+          evidenceIds: ['EV-100021'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
 
     // KC south shaft: starts at KC south wall ceiling, goes up toward south face
     const kcSouthStart: Vector3 = {
@@ -561,7 +675,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         size: kcSouthBox.size,
         objectId: 'OBJ-0122',
         evidenceIds: ['EV-100022'],
-        sourceIds: ['SRC-0103'],
+        sourceIds: ['SRC-0105'],
         layer: 'shafts',
         color: '#7a6a4a',
         opacity: 0.5,
@@ -599,7 +713,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         size: qcNorthBox.size,
         objectId: 'OBJ-0123',
         evidenceIds: ['EV-100023'],
-        sourceIds: ['SRC-0103'],
+        sourceIds: ['SRC-0105'],
         layer: 'shafts',
         color: '#7a6a4a',
         opacity: 0.5,
@@ -629,13 +743,66 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         size: qcSouthBox.size,
         objectId: 'OBJ-0124',
         evidenceIds: ['EV-100024'],
-        sourceIds: ['SRC-0103'],
+        sourceIds: ['SRC-0105'],
         layer: 'shafts',
         color: '#7a6a4a',
         opacity: 0.5,
         derivation: 'calculated',
       }),
     );
+
+    // QC shaft blocking stones ('doors') — limestone slabs just inside the shaft ends
+    {
+      const qcNorthDoorOuter = slopedEndpoint(qcNorthEnd, GP_QC_SHAFTS.north.angleDeg, 0.1, 1);
+      const qcNorthDoorInner = slopedEndpoint(qcNorthEnd, GP_QC_SHAFTS.north.angleDeg, 0.3, 1);
+      const qcNorthDoorBox = slopedBoxFromFloorEndpoints(
+        qcNorthDoorInner,
+        qcNorthDoorOuter,
+        GP_QC_SHAFTS.north.diameter,
+        GP_QC_SHAFTS.north.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'qc-north-shaft-door',
+          name: "QC North Shaft Blocking Stone ('Door')",
+          position: qcNorthDoorBox.position,
+          rotation: qcNorthDoorBox.rotation,
+          size: qcNorthDoorBox.size,
+          objectId: 'OBJ-0123',
+          evidenceIds: ['EV-100023'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+
+      const qcSouthDoorOuter = slopedEndpoint(qcSouthEnd, -GP_QC_SHAFTS.south.angleDeg, 0.1, -1);
+      const qcSouthDoorInner = slopedEndpoint(qcSouthEnd, -GP_QC_SHAFTS.south.angleDeg, 0.3, -1);
+      const qcSouthDoorBox = slopedBoxFromFloorEndpoints(
+        qcSouthDoorInner,
+        qcSouthDoorOuter,
+        GP_QC_SHAFTS.south.diameter,
+        GP_QC_SHAFTS.south.diameter,
+      );
+      nodes.push(
+        calculated({
+          id: 'qc-south-shaft-door',
+          name: "QC South Shaft Blocking Stone ('Door')",
+          position: qcSouthDoorBox.position,
+          rotation: qcSouthDoorBox.rotation,
+          size: qcSouthDoorBox.size,
+          objectId: 'OBJ-0124',
+          evidenceIds: ['EV-100024'],
+          sourceIds: ['SRC-0105'],
+          layer: 'shafts',
+          color: '#9a8a6a',
+          opacity: 0.9,
+          derivation: 'inferred',
+        }),
+      );
+    }
   }
 
   // --- Well Shaft ---

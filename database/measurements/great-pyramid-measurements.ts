@@ -49,6 +49,10 @@ export const GP_ASCENDING_PASSAGE = {
   width: 0.97,
   /** Passage height (m) — 47.24 in */
   height: 1.2,
+  /** Number of granite plug blocks at the lower (north) end */
+  plugBlockCount: 3,
+  /** Sloped length of each plug block (m) — inferred from Petrie passage surveys */
+  plugBlockLength: 1.06,
 } as const;
 
 export const GP_GRAND_GALLERY = {

@@ -1,19 +1,21 @@
 import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
-import type { ThreeEvent } from '@react-three/fiber';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
-import type { BlockoutNode } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
 import { useAppStore } from '@/store/app';
 import { useLightingStore } from '@/store/lighting';
+import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import { CameraRig } from './CameraRig';
 import { WaterPlane } from './WaterPlane';
-import type { SceneNodeWithWorld } from './sceneGraph';
+import { WaterMesh } from './WaterMesh';
+import { Level0Surface } from './Level0Surface';
+import { BlockoutMesh } from './BlockoutMesh';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
+  'level-0': { metalness: 0.0, roughness: 0.95 },
   shafts: { metalness: 0.05, roughness: 0.9 },
   'level-1': { metalness: 0.1, roughness: 0.8 },
   'level-2': { metalness: 0.1, roughness: 0.8 },
@@ -23,72 +25,8 @@ const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
 
 const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter((n) => n.layer.startsWith('level-'));
 
-interface BlockoutMeshProps {
-  node: SceneNodeWithWorld;
-  block: BlockoutNode;
-  rule?: VisualizationRule;
-}
-
-function BlockoutMesh({ node, block, rule }: BlockoutMeshProps): JSX.Element {
-  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
-  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
-  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
-  const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
-  const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
-  const { position } = node.worldTransform;
-  const color = rule?.color ?? block.color;
-  const opacity = rule?.opacity ?? block.opacity ?? 1;
-
-  const measurementMode = useAppStore((s) => s.measurementMode);
-  const addMeasurementPoint = useAppStore((s) => s.addMeasurementPoint);
-
-  const handleClick = (event: ThreeEvent<MouseEvent>): void => {
-    event.stopPropagation();
-    if (measurementMode) {
-      addMeasurementPoint({ x: event.point.x, y: event.point.y, z: event.point.z });
-      return;
-    }
-    const evidenceId = node.metadata.evidenceIds?.[0];
-    if (evidenceId) {
-      setSelectedEvidenceId(evidenceId);
-      setSidePanelTab('evidence');
-      setEvidencePanelOpen(true);
-    }
-  };
-
-  const handlePointerOver = (event: ThreeEvent<PointerEvent>): void => {
-    event.stopPropagation();
-    setHoveredNodeId(node.id);
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handlePointerOut = (): void => {
-    setHoveredNodeId(null);
-    document.body.style.cursor = 'auto';
-  };
-
-  const pbr = LAYER_PBR[block.layer] ?? { metalness: 0.1, roughness: 0.85 };
-
-  return (
-    <mesh
-      position={[position.x, position.y, position.z]}
-      rotation={[block.rotation?.x ?? 0, block.rotation?.y ?? 0, block.rotation?.z ?? 0]}
-      onClick={handleClick}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-    >
-      <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
-      <meshStandardMaterial
-        color={color}
-        transparent={opacity < 1}
-        opacity={opacity}
-        metalness={pbr.metalness}
-        roughness={pbr.roughness}
-        emissive={hovered ? '#3b82f6' : '#000000'}
-        emissiveIntensity={hovered ? 0.35 : 0}
-      />
-    </mesh>
-  );
+function getPbr(layer: string): { metalness: number; roughness: number } {
+  return LAYER_PBR[layer] ?? { metalness: 0.1, roughness: 0.85 };
 }
 
 function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
@@ -114,6 +52,8 @@ export function OsirisScene(): JSX.Element {
   const directionalElevation = useLightingStore((s) => s.directionalElevation);
   const localIntensity = useLightingStore((s) => s.localIntensity);
   const background = useLightingStore((s) => s.background);
+
+  const waterLevel = useSimulationStore((s) => s.waterLevel);
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
@@ -171,10 +111,27 @@ export function OsirisScene(): JSX.Element {
           color="#ffe4b5"
         />
       ))}
+      {/* Level 0 — Surface context (M09-T03) */}
+      <Level0Surface />
       {visibleNodes.map(({ node, block, rule }) => (
-        <BlockoutMesh key={node.id} node={node} block={block} rule={rule} />
+        <BlockoutMesh
+          key={node.id}
+          node={node}
+          block={block}
+          rule={rule}
+          pbr={getPbr(block.layer)}
+        />
       ))}
       {hydraulicActive && <WaterPlane />}
+      {hydraulicActive && (
+        <WaterMesh
+          position={[-1.4, -30.4, -7.0]}
+          size={6.5}
+          elevation={waterLevel}
+          turbidity={0.3}
+          color="#0a4a6b"
+        />
+      )}
       {measurementStart && <MeasurementMarker point={measurementStart} />}
       {measurementEnd && <MeasurementMarker point={measurementEnd} />}
     </Canvas>
