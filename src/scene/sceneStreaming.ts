@@ -67,17 +67,18 @@ class SceneStreamer {
   }
 
   /**
-   * Determines which nodes should be loaded/unloaded based on camera position.
+   * Determines which leaf nodes should be loaded/unloaded based on camera position.
+   * Leaf nodes are those with no children (i.e. actual scene content, not group nodes).
    */
   update(
     graph: SceneGraph,
     cameraPosition: { x: number; y: number; z: number },
   ): { toLoad: string[]; toUnload: string[] } {
-    const allNodes = graph.getAllNodes();
+    const leafNodes = graph.getAllNodes().filter((node) => node.children.length === 0);
     const toLoad: string[] = [];
     const toUnload: string[] = [];
 
-    for (const node of allNodes) {
+    for (const node of leafNodes) {
       const pos = node.localTransform.position;
       const dx = pos.x - cameraPosition.x;
       const dy = pos.y - cameraPosition.y;
@@ -144,9 +145,19 @@ class SceneStreamer {
   }
 
   /**
-   * Resets the streamer. Intended for testing.
+   * Applies the current loaded set to the scene graph visibility flags.
    */
-  _resetForTesting(): void {
+  applyVisibility(graph: SceneGraph): void {
+    const loaded = this.state.loadedNodeIds;
+    for (const node of graph.getAllNodes()) {
+      node.visible = loaded.has(node.id);
+    }
+  }
+
+  /**
+   * Resets the streamer to its initial state and default configuration.
+   */
+  reset(): void {
     this.state = {
       loadedNodeIds: new Set(),
       pinnedNodeIds: new Set(),
@@ -159,6 +170,13 @@ class SceneStreamer {
       maxLoadedNodes: 100,
       pinByDefault: false,
     };
+  }
+
+  /**
+   * Resets the streamer. Intended for testing.
+   */
+  _resetForTesting(): void {
+    this.reset();
   }
 }
 

@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { DoubleSide } from 'three';
 import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
 import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -9,6 +10,8 @@ import { useLightingStore } from '@/store/lighting';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
+import type { SceneGraph } from './sceneGraph';
+import { sceneStreamer } from './sceneStreaming';
 import { CameraRig } from './CameraRig';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
 import { AntechamberMesh } from './AntechamberMesh';
@@ -47,6 +50,135 @@ function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
   );
 }
 
+interface StreamingControllerProps {
+  graph: SceneGraph;
+  onLoadedChange: () => void;
+}
+
+const STREAMING_LOAD_DISTANCE = 100;
+const STREAMING_UNLOAD_DISTANCE = 120;
+const STREAMING_MAX_LOADED = 100;
+
+function StreamingController({ graph, onLoadedChange }: StreamingControllerProps): JSX.Element {
+  const { camera } = useThree();
+
+  useLayoutEffect(() => {
+    sceneStreamer.reset();
+    sceneStreamer.setConfig({
+      loadDistance: STREAMING_LOAD_DISTANCE,
+      unloadDistance: STREAMING_UNLOAD_DISTANCE,
+      maxLoadedNodes: STREAMING_MAX_LOADED,
+      pinByDefault: false,
+    });
+
+    // The exterior shell and entrances are always resident so the user can
+    // approach and enter the monument from the initial camera position.
+    for (const node of graph.getAllNodes()) {
+      if (node.metadata.layer === 'exterior') {
+        sceneStreamer.pin(node.id);
+      }
+    }
+
+    const { toLoad, toUnload } = sceneStreamer.update(graph, camera.position);
+    sceneStreamer.applyVisibility(graph);
+    if (toLoad.length > 0 || toUnload.length > 0) {
+      onLoadedChange();
+    }
+  }, [graph, camera, onLoadedChange]);
+
+  useFrame(() => {
+    const { toLoad, toUnload } = sceneStreamer.update(graph, camera.position);
+    sceneStreamer.applyVisibility(graph);
+    if (toLoad.length > 0 || toUnload.length > 0) {
+      onLoadedChange();
+    }
+  });
+
+  return <></>;
+}
+
+function findBlockByObjectId(
+  blocks: Map<string, UnifiedBlock>,
+  objectId: string,
+): UnifiedBlock | undefined {
+  for (const block of blocks.values()) {
+    if (block.objectId === objectId) return block;
+  }
+  return undefined;
+}
+
+function WaterOverlay({
+  rule,
+  block,
+}: {
+  rule: VisualizationRule;
+  block: UnifiedBlock;
+}): JSX.Element {
+  const { position, size } = block;
+  const waterY = position.y - size.y * 0.25;
+  return (
+    <mesh position={[position.x, waterY, position.z]} rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[size.x * 0.9, size.z * 0.9]} />
+      <meshStandardMaterial
+        color={rule.color ?? '#4488ff'}
+        transparent
+        opacity={rule.opacity ?? 0.3}
+        side={DoubleSide}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+function GeometryOverlay({
+  rule,
+  block,
+}: {
+  rule: VisualizationRule;
+  block: UnifiedBlock;
+}): JSX.Element {
+  const { position, size, rotation } = block;
+  const rx = rotation?.x ?? 0;
+  const ry = rotation?.y ?? 0;
+  const rz = rotation?.z ?? 0;
+  return (
+    <mesh
+      position={[position.x, position.y, position.z]}
+      rotation={[rx, ry, rz]}
+      scale={[1.01, 1.01, 1.01]}
+    >
+      <boxGeometry args={[size.x, size.y, size.z]} />
+      <meshStandardMaterial
+        color={rule.color ?? '#ffffff'}
+        transparent
+        opacity={rule.opacity ?? 0.3}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+interface HypothesisOverlaysProps {
+  rules: VisualizationRule[];
+  blocks: Map<string, UnifiedBlock>;
+}
+
+function HypothesisOverlays({ rules, blocks }: HypothesisOverlaysProps): JSX.Element {
+  return (
+    <>
+      {rules.map((rule, index) => {
+        const block = findBlockByObjectId(blocks, rule.target);
+        if (!block) return null;
+        const key = `${rule.target}-${rule.overlay}-${index}`;
+        if (rule.overlay === 'water' || rule.overlay === 'water-level') {
+          return <WaterOverlay key={key} rule={rule} block={block} />;
+        }
+        return <GeometryOverlay key={key} rule={rule} block={block} />;
+      })}
+    </>
+  );
+}
+
 function HypothesisMesh({ node }: { node: HypothesisGeometryNode }): JSX.Element {
   const pos = node.position;
   const rot = node.rotation ?? { x: 0, y: 0, z: 0 };
@@ -69,6 +201,10 @@ function HypothesisMesh({ node }: { node: HypothesisGeometryNode }): JSX.Element
 
 export function GreatPyramidScene(): JSX.Element {
   const lod = useAppStore((s) => s.lod);
+  const [streamTick, setStreamTick] = useState(0);
+  const handleStreamUpdate = useCallback(() => setStreamTick((t) => t + 1), []);
+  // streamTick is a render trigger for the streaming controller; the value itself is unused.
+  void streamTick;
   const graph = useMemo(() => buildGreatPyramidSceneGraph(lod), [lod]);
   const blocks = useMemo<Map<string, UnifiedBlock>>(() => {
     const source: UnifiedBlock[] =
@@ -81,8 +217,6 @@ export function GreatPyramidScene(): JSX.Element {
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
   const background = useLightingStore((s) => s.background);
-
-  const hydraulicActive = activeHypothesisIds.includes('THEORY-GP-001');
 
   const hypothesisGeometryNodes: HypothesisGeometryNode[] = useMemo(() => {
     if (activeHypothesisIds.length === 0) return [];
@@ -101,6 +235,15 @@ export function GreatPyramidScene(): JSX.Element {
     }
   }
 
+  const activeHighlightRules = activeRules.filter((r) => r.overlay === 'highlight');
+  const activeOverlayRules = activeRules.filter(
+    (r) =>
+      r.overlay !== 'highlight' &&
+      r.overlay !== 'label' &&
+      r.overlay !== 'annotation' &&
+      r.overlay !== 'interpretive-object',
+  );
+
   const visibleNodes = graph
     .getAllVisibleNodes()
     .filter((node) => blocks.has(node.id))
@@ -110,16 +253,18 @@ export function GreatPyramidScene(): JSX.Element {
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
-      const rule = block.overlay
+      const visibilityRule = block.overlay
         ? activeRules.find((r) => r.overlay === block.overlay)
         : activeRules.find((r) => r.target === node.metadata.objectId);
-      return { node, block, rule };
+      const materialRule = activeHighlightRules.find((r) => r.target === node.metadata.objectId);
+      return { node, block, rule: materialRule, visibilityRule };
     })
-    .filter(({ block, rule }) => !block.overlay || rule !== undefined);
+    .filter(({ block, visibilityRule }) => !block.overlay || visibilityRule !== undefined);
 
   return (
     <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
       <CameraRig />
+      <StreamingController graph={graph} onLoadedChange={handleStreamUpdate} />
       <color attach="background" args={[background]} />
       <GreatPyramidLighting />
       {visibleNodes.map(({ node, block, rule }) => {
@@ -156,12 +301,7 @@ export function GreatPyramidScene(): JSX.Element {
       {hypothesisGeometryNodes.map((hnode) => (
         <HypothesisMesh key={hnode.id} node={hnode} />
       ))}
-      {hydraulicActive && (
-        <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[200, 200]} />
-          <meshStandardMaterial color="#4488ff" transparent opacity={0.3} />
-        </mesh>
-      )}
+      <HypothesisOverlays rules={activeOverlayRules} blocks={blocks} />
       {measurementStart && <MeasurementMarker point={measurementStart} />}
       {measurementEnd && <MeasurementMarker point={measurementEnd} />}
     </Canvas>
