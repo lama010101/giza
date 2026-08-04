@@ -51,6 +51,11 @@ describe('Osiris Shaft E2E Traversal Test (M09-T22)', () => {
       render(<OsirisScene />);
       expect(screen.getByTestId('r3f-canvas')).toBeInTheDocument();
     });
+
+    it('renders evidence hotspots in the scene', () => {
+      render(<OsirisScene />);
+      expect(screen.getByTestId('evidence-hotspots')).toBeInTheDocument();
+    });
   });
 
   describe('2. All levels present (Level 0–3)', () => {

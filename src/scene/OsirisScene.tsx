@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
-import { useAppStore } from '@/store/app';
+import { useAppStore, type SceneLayer } from '@/store/app';
 import { useLightingStore } from '@/store/lighting';
 import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
@@ -13,6 +13,8 @@ import { WaterPlane } from './WaterPlane';
 import { WaterMesh } from './WaterMesh';
 import { Level0Surface } from './Level0Surface';
 import { BlockoutMesh } from './BlockoutMesh';
+import { EvidenceHotspots } from './EvidenceHotspots';
+import { generateOsirisHotspots } from './osirisHotspots';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
   'level-0': { metalness: 0.0, roughness: 0.95 },
@@ -54,6 +56,14 @@ export function OsirisScene(): JSX.Element {
   const background = useLightingStore((s) => s.background);
 
   const waterLevel = useSimulationStore((s) => s.waterLevel);
+
+  const osirisHotspots = useMemo(
+    () =>
+      generateOsirisHotspots().filter(
+        (h) => !hiddenLayers.includes(h.layer as unknown as SceneLayer),
+      ),
+    [hiddenLayers],
+  );
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
@@ -134,6 +144,7 @@ export function OsirisScene(): JSX.Element {
       )}
       {measurementStart && <MeasurementMarker point={measurementStart} />}
       {measurementEnd && <MeasurementMarker point={measurementEnd} />}
+      <EvidenceHotspots hotspots={osirisHotspots} />
     </Canvas>
   );
 }
