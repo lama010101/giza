@@ -247,6 +247,98 @@ body,
   pointer-events: none;
 }
 
+/* ─── Left Panel (M07-T01) ─── */
+
+.left-panel {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  background: #141414;
+  border-right: 1px solid #2a2a2a;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.left-panel-header {
+  padding: 0.75rem;
+  border-bottom: 1px solid #2a2a2a;
+  flex-shrink: 0;
+}
+
+.left-panel-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.left-panel-section {
+  padding: 0.75rem;
+  border-bottom: 1px solid #2a2a2a;
+  overflow-y: auto;
+}
+
+.left-panel-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9a9a9a;
+}
+
+.left-panel-tree,
+.left-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.left-panel-tree-node {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-panel-tree-btn,
+.left-panel-list-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  color: #b0b0b0;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.left-panel-tree-btn:hover:not(:disabled),
+.left-panel-list-btn:hover {
+  background: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.left-panel-tree-btn:disabled {
+  color: #555555;
+  cursor: default;
+}
+
+.left-panel-tree-btn.selectable,
+.left-panel-list-btn.active {
+  color: #e0e0e0;
+  background: #2a2a2a;
+}
+
+.left-panel-tree-btn.group {
+  font-weight: 600;
+  color: #9a9a9a;
+}
+
+.left-panel-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #777777;
+}
+
 /* ─── Side Panel ─── */
 
 .side-panel {
@@ -809,6 +901,10 @@ body,
 /* ─── Responsive (M07-T01) ─── */
 
 @media (max-width: 768px) {
+  .left-panel {
+    display: none;
+  }
+
   .side-panel {
     width: 100%;
     max-width: 320px;
