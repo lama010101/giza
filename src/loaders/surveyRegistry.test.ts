@@ -95,6 +95,33 @@ describe('Manual Reconstruction', () => {
   });
 });
 
+describe('Great Pyramid Survey Coverage', () => {
+  it('includes Great Pyramid survey sources', () => {
+    const sources = getSurveySources();
+    expect(sources.some((s) => s.id.startsWith('SURV-GP-'))).toBe(true);
+    expect(sources.some((s) => s.name.includes('Petrie'))).toBe(true);
+    expect(sources.some((s) => s.name.includes('Cole'))).toBe(true);
+  });
+
+  it('finds Great Pyramid coverage by monument', () => {
+    const gp = getCoverageByMonument('MON-GP-001');
+    expect(gp.length).toBeGreaterThanOrEqual(10);
+    expect(gp.every((e) => e.monumentId === 'MON-GP-001')).toBe(true);
+  });
+
+  it('identifies Great Pyramid coverage gaps', () => {
+    const gaps = getCoverageGaps('MON-GP-001');
+    expect(gaps.length).toBeGreaterThanOrEqual(1);
+    expect(gaps.some((g) => g.status === 'unknown')).toBe(true);
+  });
+
+  it('links Great Pyramid sources to bibliographic records', () => {
+    const petrie = getSurveySourceById('SURV-GP-001');
+    expect(petrie?.sourceId).toBe('SRC-0101');
+    expect(petrie?.type).toBe('published_cad');
+  });
+});
+
 describe('Geometry Confidence by Survey Type', () => {
   it('laser scan has highest confidence', () => {
     expect(getGeometryConfidence('laser_scan')).toBe(99);
