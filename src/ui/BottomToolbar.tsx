@@ -8,6 +8,7 @@ const TOOLBAR_ITEMS: {
 }[] = [
   { id: 'scene', label: 'Camera', icon: '📷' },
   { id: 'evidence', label: 'Evidence', icon: '📋' },
+  { id: 'hypothesis', label: 'Theory', icon: '💡' },
   { id: 'simulation', label: 'Simulation', icon: '🌊' },
   { id: 'measure', label: 'Measure', icon: '📏' },
   { id: 'bookmarks', label: 'Bookmarks', icon: '🔖' },
@@ -26,7 +27,12 @@ export function BottomToolbar(): JSX.Element {
       setMeasurementMode(!measurementMode);
       return;
     }
-    if (item.id === 'scene' || item.id === 'evidence' || item.id === 'simulation') {
+    if (
+      item.id === 'scene' ||
+      item.id === 'evidence' ||
+      item.id === 'simulation' ||
+      item.id === 'hypothesis'
+    ) {
       setSidePanelTab(item.id);
       setEvidencePanelOpen(true);
     }
@@ -34,7 +40,8 @@ export function BottomToolbar(): JSX.Element {
 
   const isActive = (id: string): boolean => {
     if (id === 'measure') return measurementMode;
-    if (id === 'scene' || id === 'evidence' || id === 'simulation') return sidePanelTab === id;
+    if (id === 'scene' || id === 'evidence' || id === 'simulation' || id === 'hypothesis')
+      return sidePanelTab === id;
     return false;
   };
 

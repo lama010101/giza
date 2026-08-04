@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import type { ThreeEvent } from '@react-three/fiber';
-import { useAppStore } from '@/store/app';
+import { useSceneObjectClick } from './useSceneObjectClick';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
@@ -32,38 +31,11 @@ export interface GrandGalleryMeshProps {
 }
 
 export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): JSX.Element {
-  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
-  const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
-  const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
-  const measurementMode = useAppStore((s) => s.measurementMode);
-  const addMeasurementPoint = useAppStore((s) => s.addMeasurementPoint);
+  const { hovered, handleClick, handlePointerOver, handlePointerOut } = useSceneObjectClick(node);
 
   const { position } = node.worldTransform;
   const color = rule?.color ?? block.color;
   const opacity = rule?.opacity ?? block.opacity ?? 1;
-
-  const handleClick = (event: ThreeEvent<MouseEvent>): void => {
-    event.stopPropagation();
-    if (measurementMode) {
-      addMeasurementPoint({ x: event.point.x, y: event.point.y, z: event.point.z });
-      return;
-    }
-    const evidenceId = node.metadata.evidenceIds?.[0];
-    if (evidenceId) {
-      setSelectedEvidenceId(evidenceId);
-    }
-  };
-
-  const handlePointerOver = (event: ThreeEvent<PointerEvent>): void => {
-    event.stopPropagation();
-    setHoveredNodeId(node.id);
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handlePointerOut = (): void => {
-    setHoveredNodeId(null);
-    document.body.style.cursor = 'auto';
-  };
 
   function segmentColor(baseColor: string, kind: CorbelSegment['kind']): string {
     if (kind === 'notch' || kind === 'floor-slot') return '#5a4a3a';
