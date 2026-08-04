@@ -158,6 +158,40 @@ location.reload();
   location.assign('http://localhost:5173/?debug=queens-chamber');
   ```
 
+## Temporary `?cam=` debug camera URL
+
+If `OrbitControls` persists the camera position across reloads, the fastest way to frame a chamber or shaft is to add a temporary parser to `src/scene/CameraRig.tsx` and revert it after testing.
+
+Snippet to insert inside `CameraRig` (or as `useDebugCamera`):
+
+```tsx
+function useDebugCamera(): void {
+  const { camera } = useThree();
+  const setCameraTarget = useAppStore((s) => s.setCameraTarget);
+  useEffect(() => {
+    const cam = new URLSearchParams(window.location.search).get('cam');
+    if (cam) {
+      const [px, py, pz, tx, ty, tz] = cam.split(',').map(Number);
+      camera.position.set(px, py, pz);
+      setCameraTarget({ x: tx, y: ty, z: tz });
+    }
+  }, [camera, setCameraTarget]);
+}
+```
+
+Usage: `http://localhost:5173/?cam=15,45.94,20,7.22,45.94,8.43` places the camera at `{15,45.94,20}` looking at the King's Chamber center.
+
+## Verifying lighting modes and the Subterranean Chamber
+
+- The `Lighting` dropdown is in the top-right header. It opens a popover with a `Mode` `<select>` (`Documentary`, `Exploration`, `Scientific Inspection`).
+- Default `Exploration` keeps the Subterranean Chamber dark (only ambient + directional light).
+- `Scientific Inspection` enables a local point light for the `subterranean` layer in `GreatPyramidLighting.tsx`, making the chamber visibly brighter.
+- To test the toggle:
+  1. Hide all layers except **Subterranean**.
+  2. Place the camera outside the box (e.g. `?cam=6,-26,-1,0,-28.02,-4.205194157548073`).
+  3. Open **Lighting** → select **Scientific Inspection**.
+  4. The chamber should brighten compared to the default `Exploration` view.
+
 ## Useful smoke commands
 
 ```bash
