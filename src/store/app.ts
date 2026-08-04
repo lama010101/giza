@@ -52,7 +52,7 @@ export const MONUMENT_LAYERS: Record<Monument, readonly SceneLayer[]> = {
   ] as const,
 };
 
-interface AppState {
+export interface AppState {
   mode: AppMode;
   activeMonument: Monument;
   activeHypothesisIds: string[];
