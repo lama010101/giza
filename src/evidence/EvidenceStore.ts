@@ -1,4 +1,4 @@
-import { EvidenceSchema, type Evidence } from '@/schemas/evidence';
+import { EvidenceSchema, type Evidence, type GeometryRef } from '@/schemas/evidence';
 import type { Source } from '@/schemas/source';
 import type { Location } from '@/schemas/location';
 import type { SceneObject } from '@/schemas/object';
@@ -18,6 +18,7 @@ export interface CreateEvidenceInput {
   sourceIds?: string[];
   locationId?: string;
   objectIds?: string[];
+  geometryRefs?: GeometryRef[];
   dependencyIds?: string[];
   conflictIds?: string[];
   tags?: string[];
@@ -39,6 +40,7 @@ export interface UpdateEvidenceInput {
   sourceIds?: string[];
   locationId?: string;
   objectIds?: string[];
+  geometryRefs?: GeometryRef[];
   dependencyIds?: string[];
   conflictIds?: string[];
   tags?: string[];
@@ -96,7 +98,7 @@ export class EvidenceStore {
       sourceIds: input.sourceIds ?? [],
       locationId: input.locationId,
       objectIds: input.objectIds ?? [],
-      geometryRefs: [],
+      geometryRefs: input.geometryRefs ?? [],
       mediaIds: [],
       dependencyIds: input.dependencyIds ?? [],
       conflictIds: input.conflictIds ?? [],

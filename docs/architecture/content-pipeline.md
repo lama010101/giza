@@ -100,7 +100,25 @@ The pipeline does not bypass the review state machine. A reviewer must:
 This keeps a single source of truth for status transitions and audit
 (`auditLog.ts`).
 
-## Stage 4 — Hotspot Creation (`hotspotCreation.ts`)
+## Stage 4 — Object Linkage (`objectLinkage.ts`)
+
+Responsibility: attach approved evidence to the scene objects (OBJ-NNNN) it
+references, creating bidirectional, auditable geometry links.
+
+- `detectObjectReferences(text, objects): ObjectReference[]`
+  - Matches object names from a catalog against the evidence text. Longer
+    names are matched first so "King's Chamber" wins over "Chamber".
+- `linkEvidenceToObject(evidenceId, objectId, options): Evidence | undefined`
+  - Adds the object to `evidence.objectIds` and creates a `GeometryRef` with
+    a supported relation and confidence contribution.
+- `linkEvidenceToObjects(evidenceId, refs, options): Evidence | undefined`
+  - Batch version for multiple object references.
+
+Linking updates the `EvidenceStore` so downstream confidence propagation and
+mesh evidence flagging see the new relationship. A mesh without at least one
+supporting evidence link is still flagged in Debug Mode.
+
+## Stage 5 — Hotspot Creation (`hotspotCreation.ts`)
 
 Responsibility: turn approved evidence into scene hotspots without modifying
 geometry.
@@ -122,7 +140,24 @@ geometry.
 enforces the approve step — you cannot accidentally place a draft into the
 scene.
 
-## Stage 5 — End-to-End Orchestration (`contentPipeline.ts`)
+## Stage 6 — Simulation Parameter Capture (`simulationParameterCapture.ts`)
+
+Responsibility: extract candidate simulation inputs (flow rate, water level,
+temperature, density, etc.) from evidence text and tag them with provenance
+per GIZA - 06 §1.6.
+
+- `captureSimulationParameters(text, options): SimulationParameter[]`
+  - Pattern-matches common hydraulic/acoustic/structural parameters.
+  - Classifies provenance as `Measured`, `Published`, `Estimated`,
+    `User-defined`, or `Experimental` when the surrounding text declares it.
+  - Records the originating evidence ID(s) on each parameter.
+- `linkParameterToEvidence(parameter, evidenceId): SimulationParameter`
+  - Adds an evidence provenance ID to a captured parameter.
+
+Captured parameters are data only — they do not alter a running simulation
+until a researcher explicitly imports them into a `Simulation` record.
+
+## Stage 7 — End-to-End Orchestration (`contentPipeline.ts`)
 
 `runContentPipeline(input: PipelineInput): PipelineResult` runs the full flow:
 
@@ -131,12 +166,18 @@ scene.
 3. **Review** — wrap candidates as `ReviewableEvidence`. If
    `input.autoApprove` is set (test/admin path only), approve them;
    otherwise leave them `pending` for a human reviewer.
-4. **Create hotspots** for every approved evidence item that has an entry in
+4. **Link** approved evidence to any objects named in `input.objectCatalog`.
+5. **Capture** candidate simulation parameters when `input.simulationId` is set.
+6. **Create hotspots** for every approved evidence item that has an entry in
    `input.hotspotPositions` (a map of evidenceId → `Vector3`).
 
 `PipelineResult` reports: `extracted`, `reviewed`, `approved`, `hotspots`,
-and `errors`. Errors are collected, never thrown — a single bad file does
-not abort the batch.
+`objectLinks`, `simulationParameters`, and `errors`. Errors are collected,
+never thrown — a single bad file does not abort the batch.
+
+`runPipelineReviewBridge(reviewables, options, store)` performs the same
+sequence against the canonical `EvidenceStore`, writing object links and
+returning captured parameters for every auto-published evidence record.
 
 ## End-to-End Flow Diagram
 
@@ -158,10 +199,16 @@ not abort the batch.
           │  Approve    │─▶ Evidence (Draft → Published)
           └──────┬──────┘
                  │
-          ┌──────▼──────┐
-          │  Hotspot    │─▶ ApprovedHotspot[]
-          │  Creation   │
-          └─────────────┘
+    ┌────────────┼────────────┐
+    │            │            │
+    ▼            ▼            ▼
+ ┌──────┐   ┌────────┐  ┌──────────┐
+ │Object│   │Capture │  │ Hotspot  │
+ │ Link │   │  SIM   │  │ Creation │
+ └──┬───┘   └───┬────┘  └────┬─────┘
+    │           │            │
+    ▼           ▼            ▼
+OBJ-NNNN  SIM-NNN params  ApprovedHotspot[]
 ```
 
 ## Seed Dataset

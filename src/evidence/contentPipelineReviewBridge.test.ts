@@ -156,5 +156,66 @@ describe('Content Pipeline Review Bridge (M03.5-T04)', () => {
       );
       expect(result.published).toHaveLength(0);
     });
+
+    it('links published evidence to objects when objectCatalog is provided', () => {
+      const reviewables = [
+        makeReviewable('draft-001', {
+          title: "King's Chamber measurement",
+          text: "King's Chamber is 5.24m wide.",
+        }),
+      ];
+      const result = runPipelineReviewBridge(
+        reviewables,
+        {
+          defaultReviewer: 'r1',
+          editor: 'e1',
+          autoPublish: true,
+          objectCatalog: [
+            {
+              id: 'OBJ-0001',
+              name: "King's Chamber",
+              type: 'Architecture',
+              objectClass: 'Original Architecture',
+              confidence: 80,
+              sourceIds: [],
+              evidence: [],
+            },
+          ],
+        },
+        store,
+      );
+
+      expect(result.published).toHaveLength(1);
+      expect(result.objectLinks).toHaveLength(1);
+      expect(result.objectLinks[0].objectId).toBe('OBJ-0001');
+
+      const evidence = store.getById(result.published[0]);
+      expect(evidence!.objectIds).toContain('OBJ-0001');
+      expect(evidence!.geometryRefs[0].meshId).toBe('OBJ-0001');
+    });
+
+    it('captures simulation parameters from published evidence text', () => {
+      const reviewables = [
+        makeReviewable('draft-001', {
+          title: 'Flow observation',
+          text: 'The flow rate was 0.7 m³/s.',
+        }),
+      ];
+      const result = runPipelineReviewBridge(
+        reviewables,
+        {
+          defaultReviewer: 'r1',
+          editor: 'e1',
+          autoPublish: true,
+          simulationId: 'SIM-001',
+        },
+        store,
+      );
+
+      expect(result.published).toHaveLength(1);
+      expect(result.simulationParameters.length).toBeGreaterThanOrEqual(1);
+      expect(result.simulationParameters[0].simulationId).toBe('SIM-001');
+      expect(result.simulationParameters[0].evidenceIds).toContain(result.published[0]);
+    });
   });
 });

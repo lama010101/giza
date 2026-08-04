@@ -9,10 +9,16 @@
  */
 
 import type { EvidenceClass } from '@/schemas/evidence';
+import type { SceneObject } from '@/schemas/object';
 import { evidenceStore, type EvidenceStore } from './EvidenceStore';
 import { assignReviewer, recordReviewDecision, allReviewsApproved } from './reviewWorkflow';
 import { submitEvidence, verifyEvidence, publishEvidence } from './lifecycleController';
 import type { ReviewableEvidence } from './evidenceExtraction';
+import { detectObjectReferences, linkEvidenceToObjects } from './objectLinkage';
+import {
+  captureSimulationParameters,
+  type SimulationParameter,
+} from './simulationParameterCapture';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -29,10 +35,19 @@ export interface ReviewRoutingResult {
   error?: string;
 }
 
+export interface ObjectLinkResult {
+  evidenceId: string;
+  objectId: string;
+  objectName: string;
+  confidence: number;
+}
+
 export interface PipelineReviewResult {
   submissions: SubmissionResult[];
   routing: ReviewRoutingResult[];
   published: string[];
+  objectLinks: ObjectLinkResult[];
+  simulationParameters: SimulationParameter[];
   errors: string[];
 }
 
@@ -43,6 +58,10 @@ export interface PipelineReviewOptions {
   editor: string;
   /** Auto-publish when all reviews are approved. */
   autoPublish?: boolean;
+  /** Optional object catalog for auto-linking published evidence to objects. */
+  objectCatalog?: SceneObject[];
+  /** Optional simulation ID for auto-capture of parameters from evidence text. */
+  simulationId?: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -228,5 +247,39 @@ export function runPipelineReviewBridge(
     }
   }
 
-  return { submissions, routing, published, errors };
+  // Stage 4: Object linkage and simulation parameter capture on published evidence.
+  const objectLinks: ObjectLinkResult[] = [];
+  const simulationParameters: SimulationParameter[] = [];
+
+  for (const evidenceId of published) {
+    const evidence = store.getById(evidenceId);
+    if (!evidence) continue;
+
+    const evidenceText = `${evidence.title} ${evidence.description}`;
+
+    if (options.objectCatalog && options.objectCatalog.length > 0) {
+      const refs = detectObjectReferences(evidenceText, options.objectCatalog);
+      if (refs.length > 0) {
+        try {
+          linkEvidenceToObjects(evidenceId, refs, { relation: 'measured_from' }, store);
+          objectLinks.push(...refs.map((ref) => ({ evidenceId, ...ref })));
+        } catch (e) {
+          errors.push(
+            `Object linking ${evidenceId} failed: ${e instanceof Error ? e.message : String(e)}`,
+          );
+        }
+      }
+    }
+
+    if (options.simulationId) {
+      const params = captureSimulationParameters(evidenceText, {
+        simulationId: options.simulationId,
+        evidenceIds: [evidenceId],
+        provenance: 'Estimated',
+      });
+      simulationParameters.push(...params);
+    }
+  }
+
+  return { submissions, routing, published, objectLinks, simulationParameters, errors };
 }
