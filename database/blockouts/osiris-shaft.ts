@@ -13,6 +13,8 @@ export interface BlockoutNode {
   color: string;
   opacity?: number;
   overlay?: string;
+  /** Optional master material override for this node. */
+  materialId?: string;
 }
 
 export interface Blockout {

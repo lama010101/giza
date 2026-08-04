@@ -17,23 +17,25 @@ import { GreatPyramidExteriorMesh } from './GreatPyramidExteriorMesh';
 import { KingsChamberMesh } from './KingsChamberMesh';
 import { QueensChamberMesh } from './QueensChamberMesh';
 import { BlockoutMesh } from './BlockoutMesh';
+import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
 
-function getPbr(layer: string): { metalness: number; roughness: number } {
-  return LAYER_PBR[layer] ?? { metalness: 0.1, roughness: 0.85 };
-}
-
-const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
-  exterior: { metalness: 0.05, roughness: 0.9 },
-  passages: { metalness: 0.1, roughness: 0.85 },
-  subterranean: { metalness: 0.1, roughness: 0.85 },
-  gallery: { metalness: 0.15, roughness: 0.8 },
-  'kings-complex': { metalness: 0.2, roughness: 0.7 },
-  'queens-complex': { metalness: 0.15, roughness: 0.75 },
-  relieving: { metalness: 0.15, roughness: 0.8 },
-  shafts: { metalness: 0.05, roughness: 0.9 },
+const GP_LAYER_MATERIAL: Record<string, string> = {
+  exterior: 'MAT_LocalLimestone',
+  passages: 'MAT_TuraLimestone',
+  subterranean: 'MAT_Bedrock',
+  gallery: 'MAT_TuraLimestone',
+  'kings-complex': 'MAT_AswanGranite',
+  'queens-complex': 'MAT_TuraLimestone',
+  relieving: 'MAT_AswanGranite',
+  shafts: 'MAT_TuraLimestone',
 };
+
+function getPbr(block: UnifiedBlock): { metalness: number; roughness: number } {
+  const materialId = block.materialId ?? GP_LAYER_MATERIAL[block.layer];
+  return materialId ? getPbrForMaterial(materialId) : DEFAULT_PBR;
+}
 
 function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
   return (
@@ -176,7 +178,7 @@ export function GreatPyramidScene(): JSX.Element {
             node={node}
             block={block}
             rule={rule}
-            pbr={getPbr(block.layer)}
+            pbr={getPbr(block)}
             isPyramid={isPyramid}
           />
         );

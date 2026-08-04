@@ -6,6 +6,7 @@ import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { GP_EXTERNAL } from '@db/measurements/great-pyramid-measurements';
 import { degToRad } from '@db/geometry/gp-geometry-utils';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
 
 export interface ExteriorDetailBlock {
   id: string;
@@ -37,6 +38,7 @@ interface ExteriorSegment {
   coneArgs?: [number, number, number];
   color: string;
   opacity: number;
+  materialId?: string;
 }
 
 const CASING_Y = 5;
@@ -69,6 +71,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: casingColor,
     opacity: 0.7,
+    materialId: 'MAT_TuraLimestone',
   });
   segments.push({
     key: 'casing-east',
@@ -78,6 +81,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: casingColor,
     opacity: 0.7,
+    materialId: 'MAT_TuraLimestone',
   });
   segments.push({
     key: 'casing-west',
@@ -87,6 +91,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: casingColor,
     opacity: 0.7,
+    materialId: 'MAT_TuraLimestone',
   });
 
   // Casing fragment debris field around the base
@@ -97,6 +102,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: debrisColor,
     opacity: 0.08,
+    materialId: 'MAT_TuraLimestone',
   });
 
   // Corner foundation sockets at the four base corners
@@ -114,6 +120,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
       geometry: 'box',
       color: socketColor,
       opacity: 0.9,
+      materialId: 'MAT_LocalLimestone',
     });
   }
 
@@ -127,6 +134,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: wallColor,
     opacity: 0.35,
+    materialId: 'MAT_LocalLimestone',
   });
   segments.push({
     key: 'enclosure-wall-south',
@@ -135,6 +143,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: wallColor,
     opacity: 0.35,
+    materialId: 'MAT_LocalLimestone',
   });
   segments.push({
     key: 'enclosure-wall-east',
@@ -143,6 +152,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: wallColor,
     opacity: 0.35,
+    materialId: 'MAT_LocalLimestone',
   });
   segments.push({
     key: 'enclosure-wall-west',
@@ -151,6 +161,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     geometry: 'box',
     color: wallColor,
     opacity: 0.35,
+    materialId: 'MAT_LocalLimestone',
   });
 
   // Pyramidion reconstruction (transparent inferred capstone)
@@ -162,6 +173,7 @@ function buildExteriorSegments(): ExteriorSegment[] {
     coneArgs: [1, pyramidionHeight, 4],
     color: pyramidionColor,
     opacity: 0.5,
+    materialId: 'MAT_TuraLimestone',
   });
 
   return segments;
@@ -217,13 +229,14 @@ export function GreatPyramidExteriorMesh({
     >
       {segments.map((seg) => {
         const opacity = Math.min(seg.opacity * baseOpacity, 1);
+        const pbr = getPbrForMaterial(seg.materialId ?? 'MAT_LocalLimestone');
         const material = (
           <meshStandardMaterial
             color={rule?.color ?? seg.color}
             transparent={opacity < 1}
             opacity={opacity}
-            metalness={0.05}
-            roughness={0.9}
+            metalness={pbr.metalness}
+            roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

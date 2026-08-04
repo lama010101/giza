@@ -4,6 +4,9 @@ import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
+
+const pbr = getPbrForMaterial('MAT_Bedrock');
 
 export interface SubterraneanChamberBlock {
   id: string;
@@ -167,8 +170,8 @@ export function SubterraneanChamberMesh({
             color={segmentColor(color, seg.kind)}
             transparent={opacity < 1 || seg.kind !== 'chamber'}
             opacity={seg.kind === 'chamber' ? opacity * 0.4 : 0.85}
-            metalness={0.1}
-            roughness={0.95}
+            metalness={pbr.metalness}
+            roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

@@ -13,6 +13,8 @@ export interface BlockoutNode {
   color: string;
   opacity?: number;
   overlay?: string;
+  /** Optional master material override for this node. */
+  materialId?: string;
 }
 
 export interface Blockout {
@@ -39,6 +41,7 @@ export const greatPyramidBlockout: Blockout = {
       layer: 'exterior',
       color: '#c2b090',
       opacity: 0.15,
+      materialId: 'MAT_LocalLimestone',
     },
     {
       id: 'casing-north',
@@ -52,6 +55,7 @@ export const greatPyramidBlockout: Blockout = {
       layer: 'exterior',
       color: '#e8e0d0',
       opacity: 0.7,
+      materialId: 'MAT_TuraLimestone',
     },
     {
       id: 'exterior-detail',
@@ -465,6 +469,7 @@ export const greatPyramidBlockout: Blockout = {
       layer: 'shafts',
       color: '#6a5a40',
       opacity: 0.5,
+      materialId: 'MAT_LocalLimestone',
     },
     {
       id: 'grotto',
@@ -478,6 +483,7 @@ export const greatPyramidBlockout: Blockout = {
       layer: 'passages',
       color: '#7a6a4a',
       opacity: 0.5,
+      materialId: 'MAT_Bedrock',
     },
   ],
 };

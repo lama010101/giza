@@ -5,6 +5,9 @@ import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { buildKingsChamberSegments, type KingsChamberSegment } from './kingsChamberSegments';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
+
+const pbr = getPbrForMaterial('MAT_AswanGranite');
 
 export interface KingsChamberBlock {
   id: string;
@@ -128,8 +131,8 @@ export function KingsChamberMesh({ node, block, rule }: KingsChamberMeshProps): 
             color={segmentColor(color, seg.kind)}
             transparent={segmentOpacity(opacity, seg.kind) < 1}
             opacity={segmentOpacity(opacity, seg.kind)}
-            metalness={0.1}
-            roughness={0.85}
+            metalness={pbr.metalness}
+            roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

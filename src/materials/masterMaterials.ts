@@ -16,6 +16,10 @@ export interface MasterMaterial {
   evidenceRefs: string[];
 }
 
+/**
+ * Core master material library (M06A, Phase 1a reduced).
+ * Kept at exactly 5 entries; benchmark and M06A tests rely on this count.
+ */
 export const MASTER_MATERIALS: MasterMaterial[] = [
   {
     id: 'MAT_TuraLimestone',
@@ -101,10 +105,111 @@ export const MASTER_MATERIALS: MasterMaterial[] = [
   },
 ];
 
+/**
+ * Great Pyramid-specific extension materials (M11-T23).
+ * These are kept separate from the core M06A library so Phase 1a tests remain valid.
+ */
+export const GREAT_PYRAMID_MATERIALS: MasterMaterial[] = [
+  {
+    id: 'MAT_Mortar',
+    name: 'Mortar',
+    baseShader: 'Stone',
+    maps: {
+      albedo: 'MAT_Mortar_albedo.ktx2',
+      normal: 'MAT_Mortar_normal.ktx2',
+      roughness: 'MAT_Mortar_roughness.ktx2',
+    },
+    properties: {
+      metallic: 0.0,
+      roughnessBase: 0.95,
+      subsurface: 0.0,
+    },
+    evidenceRefs: [],
+  },
+  {
+    id: 'MAT_GypsumPlaster',
+    name: 'Gypsum Plaster',
+    baseShader: 'Stone',
+    maps: {
+      albedo: 'MAT_GypsumPlaster_albedo.ktx2',
+      normal: 'MAT_GypsumPlaster_normal.ktx2',
+      roughness: 'MAT_GypsumPlaster_roughness.ktx2',
+    },
+    properties: {
+      metallic: 0.0,
+      roughnessBase: 0.7,
+      subsurface: 0.0,
+    },
+    evidenceRefs: [],
+  },
+  {
+    id: 'MAT_Bedrock',
+    name: 'Bedrock',
+    baseShader: 'Stone',
+    maps: {
+      albedo: 'MAT_Bedrock_albedo.ktx2',
+      normal: 'MAT_Bedrock_normal.ktx2',
+      roughness: 'MAT_Bedrock_roughness.ktx2',
+    },
+    properties: {
+      metallic: 0.0,
+      roughnessBase: 0.95,
+      subsurface: 0.0,
+    },
+    evidenceRefs: [],
+  },
+  {
+    id: 'MAT_WoodModern',
+    name: 'Wood (Modern)',
+    baseShader: 'Wood',
+    maps: {
+      albedo: 'MAT_WoodModern_albedo.ktx2',
+      normal: 'MAT_WoodModern_normal.ktx2',
+      roughness: 'MAT_WoodModern_roughness.ktx2',
+    },
+    properties: {
+      metallic: 0.0,
+      roughnessBase: 0.6,
+      subsurface: 0.0,
+    },
+    evidenceRefs: [],
+  },
+  {
+    id: 'MAT_SteelModern',
+    name: 'Steel (Modern)',
+    baseShader: 'Metal',
+    maps: {
+      albedo: 'MAT_SteelModern_albedo.ktx2',
+      normal: 'MAT_SteelModern_normal.ktx2',
+      roughness: 'MAT_SteelModern_roughness.ktx2',
+    },
+    properties: {
+      metallic: 0.8,
+      roughnessBase: 0.35,
+      subsurface: 0.0,
+    },
+    evidenceRefs: [],
+  },
+];
+
+const ALL_MATERIALS: MasterMaterial[] = [...MASTER_MATERIALS, ...GREAT_PYRAMID_MATERIALS];
+
 export function getMaterialById(id: string): MasterMaterial | undefined {
-  return MASTER_MATERIALS.find((m) => m.id === id);
+  return ALL_MATERIALS.find((m) => m.id === id);
 }
 
 export function getAllMaterials(): MasterMaterial[] {
   return [...MASTER_MATERIALS];
+}
+
+export const DEFAULT_PBR = { metalness: 0.1, roughness: 0.85 };
+
+export function getPbrForMaterial(id: string): { metalness: number; roughness: number } {
+  const material = getMaterialById(id);
+  return material
+    ? {
+        metalness: material.properties.metallic,
+        roughness: material.properties.roughnessBase,
+      }
+    : DEFAULT_PBR;
 }

@@ -4,6 +4,9 @@ import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
+
+const pbr = getPbrForMaterial('MAT_AswanGranite');
 
 export interface AntechamberBlock {
   id: string;
@@ -173,8 +176,8 @@ export function AntechamberMesh({ node, block, rule }: AntechamberMeshProps): JS
             color={segmentColor(color, seg.kind)}
             transparent={opacity < 1}
             opacity={seg.kind === 'chamber' ? opacity * 0.4 : opacity}
-            metalness={0.1}
-            roughness={0.85}
+            metalness={pbr.metalness}
+            roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />

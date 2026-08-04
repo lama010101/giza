@@ -37,6 +37,11 @@ export function MaterialSampleBlock({
     MAT_AswanGranite: '#8a4030',
     MAT_Basalt: '#2a2a2a',
     MAT_Water: '#0a4a6b',
+    MAT_Mortar: '#9a8a7a',
+    MAT_GypsumPlaster: '#d8d0c0',
+    MAT_Bedrock: '#6a5a4a',
+    MAT_WoodModern: '#8a6a4a',
+    MAT_SteelModern: '#5a5a60',
   };
   const color = colorMap[materialId] ?? '#888888';
 

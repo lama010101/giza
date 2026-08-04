@@ -6,6 +6,9 @@ import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { GP_GRAND_GALLERY } from '@db/measurements/great-pyramid-measurements';
 import { buildCorbelSegments, type CorbelSegment } from './grandGallerySegments';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
+
+const pbr = getPbrForMaterial('MAT_TuraLimestone');
 
 export interface GrandGalleryBlock {
   id: string;
@@ -86,8 +89,8 @@ export function GrandGalleryMesh({ node, block, rule }: GrandGalleryMeshProps): 
             color={segmentColor(color, seg.kind)}
             transparent={opacity < 1}
             opacity={seg.kind === 'floor' || seg.kind === 'ceiling' ? opacity : opacity * 0.85}
-            metalness={0.15}
-            roughness={0.8}
+            metalness={pbr.metalness}
+            roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}
             emissiveIntensity={hovered ? 0.35 : 0}
           />
