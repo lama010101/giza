@@ -240,4 +240,37 @@ describe('Content Pipeline — End-to-End (M03.5)', () => {
     expect(result.documents).toHaveLength(3);
     expect(result.extracted.length).toBeGreaterThanOrEqual(3);
   });
+
+  it('proposes object links when objectCatalog is provided', () => {
+    const input: PipelineInput = {
+      texts: ["The King's Chamber is 5.24m wide."],
+      autoApprove: true,
+      objectCatalog: [
+        {
+          id: 'OBJ-0001',
+          name: "King's Chamber",
+          type: 'Architecture',
+          objectClass: 'Original Architecture',
+          confidence: 80,
+          sourceIds: [],
+          evidence: [],
+        },
+      ],
+    };
+    const result = runContentPipeline(input);
+    expect(result.objectLinks.length).toBeGreaterThanOrEqual(1);
+    expect(result.objectLinks[0].objectId).toBe('OBJ-0001');
+  });
+
+  it('captures simulation parameters when simulationId is provided', () => {
+    const input: PipelineInput = {
+      texts: ['The measured flow rate was 0.7 m³/s.'],
+      autoApprove: true,
+      simulationId: 'SIM-001',
+    };
+    const result = runContentPipeline(input);
+    expect(result.simulationParameters.length).toBeGreaterThanOrEqual(1);
+    expect(result.simulationParameters[0].name).toBe('flow rate');
+    expect(result.simulationParameters[0].simulationId).toBe('SIM-001');
+  });
 });

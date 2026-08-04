@@ -24,6 +24,12 @@ import {
   validateHotspotDraft,
   approveHotspotDraft,
 } from './hotspotCreation';
+import type { SceneObject } from '@/schemas/object';
+import { detectObjectReferences, type ObjectReference } from './objectLinkage';
+import {
+  captureSimulationParameters,
+  type SimulationParameter,
+} from './simulationParameterCapture';
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -58,6 +64,16 @@ export interface PipelineInput {
    * `approved`) without a human reviewer. Never use in production.
    */
   autoApprove?: boolean;
+  /**
+   * Optional object catalog for extracting object references from text and
+   * proposing evidence → object links.
+   */
+  objectCatalog?: SceneObject[];
+  /**
+   * Optional simulation ID for extracting candidate simulation parameters from
+   * the ingested text.
+   */
+  simulationId?: string;
 }
 
 /**
@@ -76,6 +92,10 @@ export interface PipelineResult {
   hotspotDrafts: HotspotDraft[];
   /** Approved hotspots ready for the scene. */
   hotspots: ApprovedHotspot[];
+  /** Proposed evidence → object links (when `objectCatalog` is provided). */
+  objectLinks: (ObjectReference & { evidenceId: string })[];
+  /** Candidate simulation parameters (when `simulationId` is provided). */
+  simulationParameters: SimulationParameter[];
   /** Non-fatal errors collected per file/stage. */
   errors: string[];
 }
@@ -186,6 +206,37 @@ export function runContentPipeline(input: PipelineInput): PipelineResult {
     }
   }
 
+  // Stage 6: Extract object references and simulation parameters from text.
+  const objectLinks: (ObjectReference & { evidenceId: string })[] = [];
+  const simulationParameters: SimulationParameter[] = [];
+
+  if (input.autoApprove) {
+    const objectCatalog = input.objectCatalog ?? [];
+    const simulationId = input.simulationId;
+
+    for (const reviewable of reviewed) {
+      if (reviewable.status !== 'approved') continue;
+      const evidenceId = `EV-${reviewable.draftId.replace(/\D/g, '').padStart(6, '0')}`;
+      const text = `${reviewable.evidence.title} ${reviewable.evidence.text}`;
+
+      if (objectCatalog.length > 0) {
+        const refs = detectObjectReferences(text, objectCatalog);
+        for (const ref of refs) {
+          objectLinks.push({ evidenceId, ...ref });
+        }
+      }
+
+      if (simulationId) {
+        const params = captureSimulationParameters(text, {
+          simulationId,
+          evidenceIds: [evidenceId],
+          provenance: 'Estimated',
+        });
+        simulationParameters.push(...params);
+      }
+    }
+  }
+
   return {
     documents,
     extracted,
@@ -193,6 +244,8 @@ export function runContentPipeline(input: PipelineInput): PipelineResult {
     approved,
     hotspotDrafts,
     hotspots,
+    objectLinks,
+    simulationParameters,
     errors,
   };
 }
