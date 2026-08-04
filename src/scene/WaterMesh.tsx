@@ -18,6 +18,8 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+import { testId } from '@/utils/testId';
+
 export interface WaterProps {
   position?: [number, number, number];
   size?: number;
@@ -123,7 +125,7 @@ export function WaterMesh({
       ref={meshRef}
       rotation={[-Math.PI / 2, 0, 0]}
       position={[position[0], position[1] + elevation, position[2]]}
-      data-testid="water-mesh"
+      {...testId('water-mesh')}
     >
       <planeGeometry args={[size, size, 64, 64]} />
       <shaderMaterial

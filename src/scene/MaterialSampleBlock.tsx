@@ -7,6 +7,7 @@
 
 import { Text } from '@react-three/drei';
 import { MASTER_MATERIALS } from '@/materials/masterMaterials';
+import { testId } from '@/utils/testId';
 
 export interface MaterialSampleBlockProps {
   position: [number, number, number];
@@ -40,7 +41,7 @@ export function MaterialSampleBlock({
   const color = colorMap[materialId] ?? '#888888';
 
   return (
-    <group position={position} data-testid={`material-block-${materialId}`}>
+    <group position={position} {...testId(`material-block-${materialId}`)}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[1.5, 1.5, 1.5]} />
         <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
@@ -60,7 +61,7 @@ export function MaterialSampleRow(): JSX.Element {
   const spacing = 2.5;
 
   return (
-    <group data-testid="material-sample-row">
+    <group {...testId('material-sample-row')}>
       {materials.map((mat, i) => (
         <MaterialSampleBlock
           key={mat.id}

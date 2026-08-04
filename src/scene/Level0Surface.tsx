@@ -17,6 +17,8 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
+import { testId } from '@/utils/testId';
+
 export interface Level0SurfaceProps {
   /** Radius of the visible surface area */
   radius?: number;
@@ -60,14 +62,14 @@ export function Level0Surface({
   }, [radius]);
 
   return (
-    <group data-testid="level-0-surface">
+    <group {...testId('level-0-surface')}>
       {/* Limestone bedrock (flat slab below desert surface) */}
       <mesh
         geometry={bedrockGeometry}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.5, 0]}
         receiveShadow
-        data-testid="surface-bedrock"
+        {...testId('surface-bedrock')}
       >
         <meshStandardMaterial color="#c2b280" roughness={0.95} metalness={0.0} />
       </mesh>
@@ -78,7 +80,7 @@ export function Level0Surface({
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0.05, 0]}
         receiveShadow
-        data-testid="surface-desert"
+        {...testId('surface-desert')}
       >
         <meshStandardMaterial color="#e8d8a8" roughness={0.98} metalness={0.0} />
       </mesh>
@@ -88,7 +90,7 @@ export function Level0Surface({
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0.1, 0]}
         receiveShadow
-        data-testid="surface-excavation-perimeter"
+        {...testId('surface-excavation-perimeter')}
       >
         <ringGeometry args={[1.8, 3.0, 32]} />
         <meshStandardMaterial
@@ -102,14 +104,14 @@ export function Level0Surface({
       </mesh>
 
       {/* Entrance opening (dark patch at shaft top) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} data-testid="surface-entrance">
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} {...testId('surface-entrance')}>
         <planeGeometry args={[2.6, 3.0]} />
         <meshStandardMaterial color="#2a2010" roughness={1.0} metalness={0.0} />
       </mesh>
 
       {/* Modern protective fencing (wire-frame look) */}
       {showFencing && (
-        <group data-testid="surface-fencing">
+        <group {...testId('surface-fencing')}>
           {/* Four fence segments around the entrance */}
           {[
             {
@@ -129,7 +131,7 @@ export function Level0Surface({
               size: [0.05, 1.2, 8] as [number, number, number],
             },
           ].map((fence, i) => (
-            <mesh key={`fence-${i}`} position={fence.pos} data-testid={`fence-segment-${i}`}>
+            <mesh key={`fence-${i}`} position={fence.pos} {...testId(`fence-segment-${i}`)}>
               <boxGeometry args={fence.size} />
               <meshStandardMaterial
                 color="#888888"
@@ -149,7 +151,7 @@ export function Level0Surface({
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0.08, 10]}
         receiveShadow
-        data-testid="surface-visitor-path-n"
+        {...testId('surface-visitor-path-n')}
       >
         <planeGeometry args={[1.5, 12]} />
         <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
@@ -158,7 +160,7 @@ export function Level0Surface({
         rotation={[-Math.PI / 2, 0, 0]}
         position={[10, 0.08, 0]}
         receiveShadow
-        data-testid="surface-visitor-path-e"
+        {...testId('surface-visitor-path-e')}
       >
         <planeGeometry args={[12, 1.5]} />
         <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
@@ -173,7 +175,7 @@ export function Level0Surface({
           key={marker.id}
           position={marker.pos}
           castShadow
-          data-testid={`surface-reference-${marker.id}`}
+          {...testId(`surface-reference-${marker.id}`)}
         >
           <boxGeometry args={[0.3, 0.4, 0.3]} />
           <meshStandardMaterial

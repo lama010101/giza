@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useLightingStore } from '@/store/lighting';
+import { testId } from '@/utils/testId';
 
 /**
  * 5-layer lighting system per GIZA - 04 §6.11.
@@ -53,16 +54,16 @@ export function LayeredLighting(): JSX.Element {
   }, [scene, volumetricEnabled, volumetricDensity, background]);
 
   return (
-    <group data-testid="layered-lighting">
+    <group {...testId('layered-lighting')}>
       {/* Layer 1: Ambient */}
-      {ambientEnabled && <ambientLight intensity={ambientIntensity} data-testid="light-ambient" />}
+      {ambientEnabled && <ambientLight intensity={ambientIntensity} {...testId('light-ambient')} />}
 
       {/* Layer 2: Directional (sun) */}
       {directionalEnabled && (
         <directionalLight
           position={[directionalPosition.x, directionalPosition.y, directionalPosition.z]}
           intensity={directionalIntensity}
-          data-testid="light-directional"
+          {...testId('light-directional')}
         />
       )}
 
@@ -73,7 +74,7 @@ export function LayeredLighting(): JSX.Element {
           intensity={localIntensity}
           distance={100}
           decay={2}
-          data-testid="light-local"
+          {...testId('light-local')}
         />
       )}
 
@@ -81,7 +82,7 @@ export function LayeredLighting(): JSX.Element {
       {bounceEnabled && (
         <hemisphereLight
           args={[new THREE.Color(background), new THREE.Color('#3a2a1a'), bounceIntensity]}
-          data-testid="light-bounce"
+          {...testId('light-bounce')}
         />
       )}
 
@@ -93,7 +94,7 @@ export function LayeredLighting(): JSX.Element {
           distance={50}
           decay={1.5}
           color="#fff5e0"
-          data-testid="light-volumetric"
+          {...testId('light-volumetric')}
         />
       )}
     </group>

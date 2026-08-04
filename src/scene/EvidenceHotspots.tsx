@@ -6,6 +6,7 @@ import type { Hotspot } from '@/evidence/hotspot';
 import { getOverlayColor } from '@/evidence/evidenceOverlay';
 import { getEvidenceById } from '@/evidence/repository';
 import { useAppStore } from '@/store/app';
+import { testId } from '@/utils/testId';
 
 export interface EvidenceHotspotsProps {
   hotspots: Hotspot[];
@@ -37,7 +38,7 @@ export function EvidenceHotspots({ hotspots, visible = true }: EvidenceHotspotsP
   }
 
   return (
-    <group data-testid="evidence-hotspots">
+    <group {...testId('evidence-hotspots')}>
       {hotspots.map((hotspot) => (
         <HotspotHalo key={hotspot.id} hotspot={hotspot} onClick={handleClick} />
       ))}
