@@ -1,6 +1,7 @@
 import { useAppStore } from '@/store/app';
 import type { CameraMode, Monument, SidePanelTab } from '@/store/app';
 import { EvidencePanel } from './EvidencePanel';
+import { HypothesisPanel } from './HypothesisPanel';
 import { LayerPanel } from './LayerPanel';
 import { SimulationPanel } from './SimulationPanel';
 
@@ -13,6 +14,7 @@ const SECONDARY_TABS: { id: SidePanelTab; label: string }[] = [
   { id: 'scene', label: 'Scene' },
   { id: 'evidence', label: 'Evidence' },
   { id: 'simulation', label: 'Simulation' },
+  { id: 'hypothesis', label: 'Theory' },
 ];
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
@@ -101,6 +103,7 @@ export function SidePanel(): JSX.Element {
   const setActiveMonument = useAppStore((s) => s.setActiveMonument);
   const sidePanelTab = useAppStore((s) => s.sidePanelTab);
   const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
+  const selectedObjectId = useAppStore((s) => s.selectedObjectId);
 
   if (!evidencePanelOpen) {
     return (
@@ -159,6 +162,9 @@ export function SidePanel(): JSX.Element {
         {sidePanelTab === 'scene' && <SceneTab />}
         {sidePanelTab === 'evidence' && <EvidencePanel />}
         {sidePanelTab === 'simulation' && <SimulationPanel />}
+        {sidePanelTab === 'hypothesis' && (
+          <HypothesisPanel objectId={selectedObjectId ?? undefined} />
+        )}
       </div>
     </div>
   );

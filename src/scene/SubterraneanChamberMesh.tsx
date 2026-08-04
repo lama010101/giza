@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import type { ThreeEvent } from '@react-three/fiber';
 import { DoubleSide, FrontSide } from 'three';
-import { useAppStore } from '@/store/app';
+import { useSceneObjectClick } from './useSceneObjectClick';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { SceneNodeWithWorld } from './sceneGraph';
@@ -116,42 +115,11 @@ export function SubterraneanChamberMesh({
   block,
   rule,
 }: SubterraneanChamberMeshProps): JSX.Element {
-  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
-  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
-  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
-  const setHoveredNodeId = useAppStore((s) => s.setHoveredNodeId);
-  const hovered = useAppStore((s) => s.hoveredNodeId === node.id);
-  const measurementMode = useAppStore((s) => s.measurementMode);
-  const addMeasurementPoint = useAppStore((s) => s.addMeasurementPoint);
+  const { hovered, handleClick, handlePointerOver, handlePointerOut } = useSceneObjectClick(node);
 
   const { position } = node.worldTransform;
   const color = rule?.color ?? block.color;
   const opacity = rule?.opacity ?? block.opacity ?? 1;
-
-  const handleClick = (event: ThreeEvent<MouseEvent>): void => {
-    event.stopPropagation();
-    if (measurementMode) {
-      addMeasurementPoint({ x: event.point.x, y: event.point.y, z: event.point.z });
-      return;
-    }
-    const evidenceId = node.metadata.evidenceIds?.[0];
-    if (evidenceId) {
-      setSelectedEvidenceId(evidenceId);
-      setSidePanelTab('evidence');
-      setEvidencePanelOpen(true);
-    }
-  };
-
-  const handlePointerOver = (event: ThreeEvent<PointerEvent>): void => {
-    event.stopPropagation();
-    setHoveredNodeId(node.id);
-    document.body.style.cursor = 'pointer';
-  };
-
-  const handlePointerOut = (): void => {
-    setHoveredNodeId(null);
-    document.body.style.cursor = 'auto';
-  };
 
   const segments = useMemo(() => buildSubterraneanSegments(block.size), [block.size]);
   const rotation = block.rotation ?? { x: 0, y: 0, z: 0 };

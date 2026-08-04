@@ -20,7 +20,7 @@ export const DEFAULT_CAMERA_TARGET: Record<Monument, Vector3> = {
   osiris: { x: -1.4, y: -15, z: -7 },
   'great-pyramid': { x: 0, y: 70, z: 0 },
 };
-export type SidePanelTab = 'scene' | 'evidence' | 'simulation';
+export type SidePanelTab = 'scene' | 'evidence' | 'simulation' | 'hypothesis';
 
 export const SCENE_LAYERS = [
   'shafts',
@@ -57,6 +57,7 @@ interface AppState {
   activeMonument: Monument;
   activeHypothesisIds: string[];
   activeLocationId: string | null;
+  selectedObjectId: string | null;
   selectedEvidenceId: string | null;
   evidencePanelOpen: boolean;
   lightingPanelOpen: boolean;
@@ -79,6 +80,7 @@ interface AppState {
   setHiddenLayers: (layers: SceneLayer[]) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
+  setSelectedObjectId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
   setEvidencePanelOpen: (open: boolean) => void;
   setLightingPanelOpen: (open: boolean) => void;
@@ -112,6 +114,7 @@ export const useAppStore = create<AppState>()(
         activeMonument: 'great-pyramid',
         activeHypothesisIds: [],
         activeLocationId: null,
+        selectedObjectId: null,
         selectedEvidenceId: null,
         evidencePanelOpen: true,
         lightingPanelOpen: false,
@@ -140,6 +143,7 @@ export const useAppStore = create<AppState>()(
         setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
         setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
+        setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),
         setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
         setEvidencePanelOpen: (evidencePanelOpen) => set({ evidencePanelOpen }),
         setLightingPanelOpen: (lightingPanelOpen) => set({ lightingPanelOpen }),
