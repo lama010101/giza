@@ -8,13 +8,13 @@
  */
 
 import type { ThreeEvent } from '@react-three/fiber';
-import { DoubleSide, FrontSide } from 'three';
+import { DoubleSide } from 'three';
 import { useAppStore } from '@/store/app';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import type { SceneNodeWithWorld } from './sceneGraph';
 
-const MIN_HIT_SIZE = 0.3;
+const MIN_HIT_SIZE = 0.8;
 
 interface BlockoutLike {
   color: string;
@@ -126,7 +126,7 @@ export function BlockoutMesh({
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
-        side={FrontSide}
+        side={DoubleSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}

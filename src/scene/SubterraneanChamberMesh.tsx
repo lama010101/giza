@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { ThreeEvent } from '@react-three/fiber';
+import { DoubleSide, FrontSide } from 'three';
 import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
 import type { VisualizationRule } from '@/schemas/hypothesis';
@@ -169,7 +170,8 @@ export function SubterraneanChamberMesh({
           <meshStandardMaterial
             color={segmentColor(color, seg.kind)}
             transparent={opacity < 1 || seg.kind !== 'chamber'}
-            opacity={seg.kind === 'chamber' ? opacity * 0.4 : 0.85}
+            opacity={seg.kind === 'chamber' ? opacity : 0.85}
+            side={seg.kind === 'chamber' ? DoubleSide : FrontSide}
             metalness={pbr.metalness}
             roughness={pbr.roughness}
             emissive={hovered ? '#3b82f6' : '#000000'}

@@ -1,6 +1,6 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { DoubleSide } from 'three';
+import { AdditiveBlending, DoubleSide } from 'three';
 import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
 import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -124,6 +124,7 @@ function WaterOverlay({
         transparent
         opacity={rule.opacity ?? 0.3}
         side={DoubleSide}
+        blending={AdditiveBlending}
         depthWrite={false}
       />
     </mesh>
@@ -152,6 +153,8 @@ function GeometryOverlay({
         color={rule.color ?? '#ffffff'}
         transparent
         opacity={rule.opacity ?? 0.3}
+        side={DoubleSide}
+        blending={AdditiveBlending}
         depthWrite={false}
       />
     </mesh>
@@ -205,6 +208,7 @@ export function GreatPyramidScene(): JSX.Element {
   const handleStreamUpdate = useCallback(() => setStreamTick((t) => t + 1), []);
   // streamTick is a render trigger for the streaming controller; the value itself is unused.
   void streamTick;
+  const [hypothesisTick, setHypothesisTick] = useState(0);
   const graph = useMemo(() => buildGreatPyramidSceneGraph(lod), [lod]);
   const blocks = useMemo<Map<string, UnifiedBlock>>(() => {
     const source: UnifiedBlock[] =
@@ -218,11 +222,22 @@ export function GreatPyramidScene(): JSX.Element {
 
   const background = useLightingStore((s) => s.background);
 
+  // Keep the hypothesis engine's active set in sync with the UI store so
+  // overlay geometry is computed correctly on first render.
+  useEffect(() => {
+    hypothesisEngine.setActive(activeHypothesisIds);
+    setHypothesisTick((t) => t + 1);
+  }, [activeHypothesisIds]);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  // hypothesisTick is incremented by the effect above after syncing the engine;
+  // it is intentionally included so the memo re-runs once the active set is applied.
   const hypothesisGeometryNodes: HypothesisGeometryNode[] = useMemo(() => {
     if (activeHypothesisIds.length === 0) return [];
     const context = getDefaultHypothesisContext();
     return hypothesisEngine.getGeometryNodes(context);
-  }, [activeHypothesisIds]);
+  }, [activeHypothesisIds, hypothesisTick]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const activeRules: VisualizationRule[] = [];
   if (activeHypothesisIds.length > 0) {
