@@ -22,6 +22,23 @@ None for local dev-server testing.
 3. The side panel on the right defaults to the **Scene** tab. Primary monument tabs are **Osiris** and **Pyramid**.
 4. The 3D scene renders in the left viewport.
 
+## Testing the shared `BlockoutMesh` and thin-shaft hit tolerance
+
+`src/scene/BlockoutMesh.tsx` is now the single component used by both `GreatPyramidScene.tsx` and `OsirisScene.tsx`. For any block whose smallest dimension is below 0.3 m it renders an invisible larger hit volume alongside the visual mesh and attaches pointer events to that volume.
+
+Practical impact:
+- Thin shafts such as `QC South Shaft` (~0.21 m cross-section) and `KC South Shaft` can now be hovered and clicked from a normal zoomed-in viewport angle.
+- Existing chamber nodes (`King's Chamber`, `Queen's Chamber`, `Grand Gallery`, `Subterranean Chamber`, `Campbell's Chamber`) continue to hover/click as before.
+
+To verify a shaft:
+1. Switch to `LOD1`.
+2. Hide the **Exterior** layer.
+3. Set `cameraTarget` to the shaft midpoint, e.g. `{x:0, y:46.5, z:32.3}` for `QC South Shaft`.
+4. Scroll to zoom in until the shaft band is a thick diagonal line, then move the cursor over it.
+5. The overlay should read `QC South Shaft`; clicking it opens the Evidence panel.
+
+If the viewport angle is awkward, a temporary `?cam=px,py,pz,tx,ty,tz` URL parser can be added to `src/scene/CameraRig.tsx` for one-shot placement and reverted after testing.
+
 ## How to switch between LOD0 and LOD1
 
 There is no in-app LOD UI. The current LOD is stored in the Zustand-persisted `giza-session` localStorage key:
