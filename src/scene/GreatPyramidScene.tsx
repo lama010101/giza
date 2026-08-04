@@ -18,6 +18,7 @@ import { KingsChamberMesh } from './KingsChamberMesh';
 import { QueensChamberMesh } from './QueensChamberMesh';
 import { BlockoutMesh } from './BlockoutMesh';
 import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
+import { GreatPyramidLighting } from './GreatPyramidLighting';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
 
@@ -79,11 +80,6 @@ export function GreatPyramidScene(): JSX.Element {
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
-  const ambientIntensity = useLightingStore((s) => s.ambientIntensity);
-  const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
-  const directionalAzimuth = useLightingStore((s) => s.directionalAzimuth);
-  const directionalElevation = useLightingStore((s) => s.directionalElevation);
-  const localIntensity = useLightingStore((s) => s.localIntensity);
   const background = useLightingStore((s) => s.background);
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-GP-001');
@@ -121,37 +117,11 @@ export function GreatPyramidScene(): JSX.Element {
     })
     .filter(({ block, rule }) => !block.overlay || rule !== undefined);
 
-  const chamberLightNodes = greatPyramidBlockout.nodes.filter((n) =>
-    ['subterranean', 'gallery', 'kings-complex', 'queens-complex'].includes(n.layer),
-  );
-
   return (
     <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
       <CameraRig />
       <color attach="background" args={[background]} />
-      <ambientLight intensity={ambientIntensity} />
-      <directionalLight
-        position={[
-          Math.cos((directionalAzimuth * Math.PI) / 180) *
-            Math.cos((directionalElevation * Math.PI) / 180) *
-            50,
-          Math.sin((directionalElevation * Math.PI) / 180) * 50,
-          Math.sin((directionalAzimuth * Math.PI) / 180) *
-            Math.cos((directionalElevation * Math.PI) / 180) *
-            50,
-        ]}
-        intensity={directionalIntensity}
-      />
-      {chamberLightNodes.map((node) => (
-        <pointLight
-          key={`light-${node.id}`}
-          position={[node.position.x, node.position.y + node.size.y / 2 + 1, node.position.z]}
-          intensity={localIntensity}
-          distance={20}
-          decay={1.5}
-          color="#ffe4b5"
-        />
-      ))}
+      <GreatPyramidLighting />
       {visibleNodes.map(({ node, block, rule }) => {
         if (node.id === 'grand-gallery') {
           return <GrandGalleryMesh key={node.id} node={node} block={block} rule={rule} />;

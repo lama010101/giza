@@ -13,7 +13,11 @@ import { testId } from '@/utils/testId';
  * Bounce is approximated as a hemisphere light from below.
  * Volumetric is approximated as fog density.
  */
-export function LayeredLighting(): JSX.Element {
+interface LayeredLightingProps {
+  skipLocal?: boolean;
+}
+
+export function LayeredLighting({ skipLocal = false }: LayeredLightingProps): JSX.Element {
   const { scene } = useThree();
 
   const ambientEnabled = useLightingStore((s) => s.ambientEnabled);
@@ -68,7 +72,7 @@ export function LayeredLighting(): JSX.Element {
       )}
 
       {/* Layer 3: Local (point light near origin) */}
-      {localEnabled && (
+      {!skipLocal && localEnabled && (
         <pointLight
           position={[0, 10, 0]}
           intensity={localIntensity}
