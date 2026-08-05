@@ -2,6 +2,12 @@
   box-sizing: border-box;
 }
 
+canvas {
+  /* Prevent browser touch gestures (scroll/zoom) so the 3D canvas can handle
+     pointer events directly on mobile. */
+  touch-action: none;
+}
+
 :root {
   /* Stone — neutral surfaces */
   --stone-950: #0d0d0d;
