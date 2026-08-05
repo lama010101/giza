@@ -1,5 +1,10 @@
+import { useMemo } from 'react';
 import { useAppStore } from '@/store/app';
 import type { CameraMode, Monument, SidePanelTab } from '@/store/app';
+import { getObjectById } from '@/evidence/repository';
+import { hypothesisEngine } from '@/theories/engineInstance';
+import { buildOsirisSceneGraph } from '@/scene/osirisSceneGraph';
+import { buildGreatPyramidSceneGraph } from '@/scene/greatPyramidSceneGraph';
 import { EvidencePanel } from './EvidencePanel';
 import { HypothesisPanel } from './HypothesisPanel';
 import { LayerPanel } from './LayerPanel';
@@ -18,6 +23,105 @@ const SECONDARY_TABS: { id: SidePanelTab; label: string }[] = [
 ];
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
+
+function getMonumentHypothesisIds(monument: Monument): string[] {
+  const allIds = hypothesisEngine.getPluginIds();
+  return allIds.filter((id) =>
+    monument === 'osiris' ? id.startsWith('THEORY-OSIRIS') : id.startsWith('THEORY-GP'),
+  );
+}
+
+function ExploreActions(): JSX.Element {
+  const mode = useAppStore((s) => s.mode);
+  const activeMonument = useAppStore((s) => s.activeMonument);
+  const lod = useAppStore((s) => s.lod);
+  const selectedObjectId = useAppStore((s) => s.selectedObjectId);
+  const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
+  const setActiveHypothesisIds = useAppStore((s) => s.setActiveHypothesisIds);
+  const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
+  const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
+  const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
+  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
+
+  const graph = useMemo(
+    () =>
+      activeMonument === 'great-pyramid'
+        ? buildGreatPyramidSceneGraph(lod)
+        : buildOsirisSceneGraph(),
+    [activeMonument, lod],
+  );
+
+  const selectedNode = useMemo(() => {
+    if (!selectedObjectId) return undefined;
+    return graph.getAllVisibleNodes().find((n) => n.metadata.objectId === selectedObjectId);
+  }, [graph, selectedObjectId]);
+
+  const selectedLayer = selectedNode?.metadata.layer;
+  const layerHidden = selectedLayer ? hiddenLayers.includes(selectedLayer as never) : false;
+
+  const handleInspect = (): void => {
+    if (!selectedObjectId) return;
+    const obj = getObjectById(selectedObjectId);
+    if (obj?.evidence && obj.evidence.length > 0) {
+      setSelectedEvidenceId(obj.evidence[0]);
+      setSidePanelTab('evidence');
+    } else {
+      setSidePanelTab('hypothesis');
+    }
+    setEvidencePanelOpen(true);
+  };
+
+  const handleSwitchTheory = (): void => {
+    const monumentIds = getMonumentHypothesisIds(activeMonument);
+    if (monumentIds.length === 0) return;
+    const active = activeHypothesisIds.filter((id) => monumentIds.includes(id));
+    const other = activeHypothesisIds.filter((id) => !monumentIds.includes(id));
+    let next: string;
+    if (active.length === 0) {
+      next = monumentIds[0];
+    } else {
+      const last = active[active.length - 1];
+      const idx = monumentIds.indexOf(last);
+      next = monumentIds[(idx + 1) % monumentIds.length];
+    }
+    setActiveHypothesisIds([...other, next]);
+  };
+
+  const handleRevealLayer = (): void => {
+    if (!selectedLayer) return;
+    setHiddenLayers(hiddenLayers.filter((l) => l !== (selectedLayer as never)));
+  };
+
+  if (mode !== 'Explore') return <></>;
+
+  return (
+    <section className="side-section" data-testid="explore-actions">
+      <h3>Explore</h3>
+      <div className="side-btn-group">
+        <button
+          type="button"
+          onClick={handleInspect}
+          disabled={!selectedObjectId}
+          title={selectedObjectId ? `Inspect ${selectedObjectId}` : 'Select an object first'}
+        >
+          Inspect
+        </button>
+        <button type="button" onClick={handleSwitchTheory}>
+          Switch theory
+        </button>
+        <button
+          type="button"
+          onClick={handleRevealLayer}
+          disabled={!layerHidden}
+          title={selectedLayer ? `Reveal ${selectedLayer}` : 'Select an object first'}
+        >
+          Reveal layer
+        </button>
+      </div>
+    </section>
+  );
+}
 
 function SceneTab(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
@@ -42,6 +146,7 @@ function SceneTab(): JSX.Element {
 
   return (
     <div className="side-tab-content">
+      <ExploreActions />
       {showCameraControls && (
         <section className="side-section">
           <h3>Camera</h3>

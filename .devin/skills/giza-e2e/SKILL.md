@@ -205,3 +205,16 @@ npx vitest run src/scene/gp-lod1.test.ts src/scene/greatPyramid.test.ts
 - No `Something went wrong` error fallback.
 - Browser console has no `console.error`/WebGL errors after load.
 - Hover overlays show expected names: `Pyramid Exterior (core masonry)`, `Grand Gallery`, `King's Chamber`, `Queen's Chamber`, `Subterranean Chamber`, and relieving/shaft nodes.
+
+## Testing camera modes and Osiris overlays
+
+- The `orbit` / `walk` / `fly` / `teleport` buttons only appear in the right side panel when the top mode is **Research** or when the current camera mode is not `orbit`.
+- Clicking a mode button updates the active class and `aria-pressed`; `teleport` shows the hint `Double-click to teleport`, and `walk`/`fly` show `Click to lock pointer · WASD to move`.
+- In `walk`/`fly` mode, `W`/`A`/`S`/`D` (and `Space` for fly) move the camera. If the side panel has an `<input>` focused, key presses may also type into that input while still moving the camera; defocus any input before long key-press tests.
+- Walk/fly use acceleration/deceleration helpers from `src/scene/cameraConstraints.ts`; a short key hold followed by release should show a brief coast before stopping.
+- `teleport` reverts the camera mode back to `orbit` after a double-click and sets the target to the raycast point.
+- In the **Osiris** scene, switch to the **Simulation** tab and check `Hydraulic Functionality Hypothesis (Osiris Shaft)` (`THEORY-OSIRIS-001`). The `SimulationPanel` should render the **Hydraulic Simulation** controls (Water Level, Inflow Rate, Outflow Rate, Channel Width), and blue overlays should appear:
+  - Chamber I water plane (`Chamber I Water` overlay)
+  - Northern conduit flow (`Northern Conduit Flow Overlay`)
+- Unchecking the hypothesis removes the overlays (regression check).
+- Clicking `Basalt Sarcophagus` or `Northern Conduit` in the scene hierarchy (or hovering/clicking in the viewport) opens the **Evidence** panel with the corresponding evidence item.
