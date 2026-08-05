@@ -13,6 +13,7 @@ import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
 import type { SceneGraph } from './sceneGraph';
 import { sceneStreamer } from './sceneStreaming';
 import { CameraRig } from './CameraRig';
+import { ScreenshotTaker } from './ScreenshotTaker';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
 import { AntechamberMesh } from './AntechamberMesh';
 import { SubterraneanChamberMesh } from './SubterraneanChamberMesh';
@@ -279,6 +280,7 @@ export function GreatPyramidScene(): JSX.Element {
   return (
     <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
       <CameraRig />
+      <ScreenshotTaker />
       <StreamingController graph={graph} onLoadedChange={handleStreamUpdate} />
       <color attach="background" args={[background]} />
       <GreatPyramidLighting />

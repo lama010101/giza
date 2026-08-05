@@ -71,6 +71,7 @@ export interface AppState {
   cameraTarget: Vector3;
   hiddenLayers: SceneLayer[];
   lod: LODLevel;
+  screenshotRequest: number | null;
   setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
@@ -79,6 +80,8 @@ export interface AppState {
   toggleLayer: (layer: SceneLayer) => void;
   setHiddenLayers: (layers: SceneLayer[]) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
+  requestScreenshot: () => void;
+  clearScreenshotRequest: () => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedObjectId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -128,6 +131,7 @@ export const useAppStore = create<AppState>()(
         cameraTarget: { x: 0, y: 70, z: 0 },
         hiddenLayers: [],
         lod: 'LOD0',
+        screenshotRequest: null,
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
@@ -142,6 +146,8 @@ export const useAppStore = create<AppState>()(
           })),
         setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
         setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
+        requestScreenshot: () => set({ screenshotRequest: Date.now() }),
+        clearScreenshotRequest: () => set({ screenshotRequest: null }),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
         setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),
         setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),

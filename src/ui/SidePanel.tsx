@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useAppStore, MONUMENT_LAYERS } from '@/store/app';
 import type { CameraMode, Monument, SidePanelTab, SceneLayer } from '@/store/app';
-import { getObjectById } from '@/evidence/repository';
-import { hypothesisEngine } from '@/theories/engineInstance';
+import { getObjectById, getSourceById } from '@/evidence/repository';
+import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
 import { buildOsirisSceneGraph } from '@/scene/osirisSceneGraph';
 import { buildGreatPyramidSceneGraph } from '@/scene/greatPyramidSceneGraph';
 import { EvidencePanel } from './EvidencePanel';
@@ -131,6 +131,7 @@ function ResearchSceneTools(): JSX.Element {
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
+  const requestScreenshot = useAppStore((s) => s.requestScreenshot);
 
   const graph = useMemo(
     () =>
@@ -154,6 +155,23 @@ function ResearchSceneTools(): JSX.Element {
     () => allNodes.filter((n) => (n.metadata.evidenceIds ?? []).length > 0).length,
     [allNodes],
   );
+
+  const confidenceByHypothesis = useMemo(() => {
+    if (!selectedObjectId || activeHypothesisIds.length === 0) return [];
+    const context = getDefaultHypothesisContext();
+    const byObject = hypothesisEngine.computeConfidenceByObject(
+      context,
+      getSourceById,
+      activeHypothesisIds,
+    );
+    return activeHypothesisIds
+      .map((id) => {
+        const hypothesis = hypothesisEngine.getHypothesis(id, context);
+        const confidence = byObject[id]?.[selectedObjectId];
+        return { id, name: hypothesis.name, confidence };
+      })
+      .filter((h) => h.confidence !== undefined);
+  }, [selectedObjectId, activeHypothesisIds]);
 
   const handleIsolateLayer = (): void => {
     if (!selectedLayer) return;
@@ -206,7 +224,24 @@ function ResearchSceneTools(): JSX.Element {
             <button type="button" onClick={handleResetLayers}>
               Reset layers
             </button>
+            <button type="button" onClick={requestScreenshot}>
+              Screenshot
+            </button>
           </div>
+        </div>
+      )}
+
+      {confidenceByHypothesis.length > 0 && (
+        <div className="confidence-card" data-testid="confidence-viz">
+          <h4>Confidence by theory</h4>
+          <dl>
+            {confidenceByHypothesis.map((h) => (
+              <div key={h.id}>
+                <dt title={h.id}>{h.name}</dt>
+                <dd>{h.confidence}%</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       )}
 

@@ -10,6 +10,7 @@ import type { Vector3 } from '@/schemas/location';
 import { getPbrForMaterial } from '@/materials/masterMaterials';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import { CameraRig } from './CameraRig';
+import { ScreenshotTaker } from './ScreenshotTaker';
 import { WaterPlane } from './WaterPlane';
 import { WaterMesh } from './WaterMesh';
 import { Level0Surface } from './Level0Surface';
@@ -104,6 +105,7 @@ export function OsirisScene(): JSX.Element {
   return (
     <Canvas camera={{ position: [16, -6, 22], fov: 55 }}>
       <CameraRig />
+      <ScreenshotTaker />
       <color attach="background" args={[background]} />
       <ambientLight intensity={ambientIntensity} />
       <directionalLight
