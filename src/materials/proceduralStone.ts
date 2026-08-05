@@ -82,15 +82,17 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 export function sampleProceduralStone(u: number, v: number, seed = 0): number {
   const rng = createSeededRng(seed);
 
-  // Base roughness for clean limestone
-  let value = 0.48;
+  // Base value for intact limestone. The texture is used as a roughness/bump
+  // multiplier, so a value near 1.0 keeps the authored PBR roughness intact
+  // while allowing streaks to be smoother and erosion/cracks to be rougher.
+  let value = 0.9;
 
   // Edge erosion: rougher (lighter) near UV boundaries, simulating worn corners
   const edgeDist = Math.min(u, 1 - u, v, 1 - v) * 2;
-  const erosion = Math.pow(1 - edgeDist, 2) * 0.18;
+  const erosion = Math.pow(1 - edgeDist, 2) * 0.12;
   value += erosion;
 
-  // Mineral streaks: a few angled bands
+  // Mineral streaks: a few angled bands of smoother (lower) values
   const streaks = Math.floor(rng.next() * 3) + 2;
   for (let i = 0; i < streaks; i++) {
     const angle = rng.next() * Math.PI;
@@ -99,16 +101,16 @@ export function sampleProceduralStone(u: number, v: number, seed = 0): number {
     const projection = u * Math.cos(angle) + v * Math.sin(angle);
     const rawStreak = Math.sin(projection * freq + phase + fbm(u * 2, v * 2, seed, 3) * 2);
     const streak = Math.pow(Math.abs(rawStreak), 6) * 0.12;
-    value += streak;
+    value -= streak;
   }
 
   // Micro-cracks: high-frequency fbm with threshold
   const crackNoise = fbm(u * 60 + seed, v * 60 + seed, seed + 7, 5);
-  const crack = smoothstep(0.58, 0.68, crackNoise) * 0.2;
+  const crack = smoothstep(0.58, 0.68, crackNoise) * 0.08;
   value += crack;
 
-  // Dust / surface variation: low-frequency fbm
-  const dust = fbm(u * 3, v * 3, seed + 13, 3) * 0.08;
+  // Dust / surface variation: low-frequency fbm (slightly rougher)
+  const dust = fbm(u * 3, v * 3, seed + 13, 3) * 0.05;
   value += dust;
 
   return Math.max(0, Math.min(1, value));

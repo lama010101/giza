@@ -48,6 +48,7 @@ export function BaseShaderMaterial({
         side={DoubleSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
+        roughnessMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
         bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
         bumpScale={proceduralDetail ? 0.015 : 0}
         emissive={hovered ? '#3b82f6' : '#000000'}
@@ -66,6 +67,7 @@ export function BaseShaderMaterial({
       side={1}
       metalness={pbr.metalness}
       roughness={pbr.roughness}
+      roughnessMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
       bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
       bumpScale={proceduralDetail ? 0.015 : 0}
       emissive={hovered ? '#3b82f6' : '#000000'}
