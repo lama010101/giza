@@ -7,6 +7,7 @@ import { useLightingStore } from '@/store/lighting';
 import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import { CameraRig } from './CameraRig';
 import { WaterPlane } from './WaterPlane';
@@ -27,8 +28,14 @@ const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
 
 const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter((n) => n.layer.startsWith('level-'));
 
-function getPbr(layer: string): { metalness: number; roughness: number } {
-  return LAYER_PBR[layer] ?? { metalness: 0.1, roughness: 0.85 };
+function getPbr(block: (typeof osirisBlockout.nodes)[number]): {
+  metalness: number;
+  roughness: number;
+} {
+  if (block.materialId) {
+    return getPbrForMaterial(block.materialId);
+  }
+  return LAYER_PBR[block.layer] ?? { metalness: 0.1, roughness: 0.85 };
 }
 
 function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
@@ -124,13 +131,7 @@ export function OsirisScene(): JSX.Element {
       {/* Level 0 — Surface context (M09-T03) */}
       <Level0Surface />
       {visibleNodes.map(({ node, block, rule }) => (
-        <BlockoutMesh
-          key={node.id}
-          node={node}
-          block={block}
-          rule={rule}
-          pbr={getPbr(block.layer)}
-        />
+        <BlockoutMesh key={node.id} node={node} block={block} rule={rule} pbr={getPbr(block)} />
       ))}
       {hydraulicActive && <WaterPlane />}
       {hydraulicActive && (

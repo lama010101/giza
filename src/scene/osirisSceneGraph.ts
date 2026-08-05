@@ -19,24 +19,47 @@ const DEFAULT_SURVEY_REF: SurveyReference = {
 /**
  * Per-layer confidence values per GIZA-03 §2.7.
  */
-const LAYER_CONFIDENCE: Record<string, number | undefined> = {
+const LAYER_CONFIDENCE: Record<string, number> = {
   'level-0': 100, // Surface (modern, measured)
+  monument: 100, // Root grouping node
   shafts: 98, // Entrance shaft
   'level-1': 96, // Main chambers
   'level-2': 96, // Main chambers
   'level-3': 96, // Main chambers
 };
 
+const DEFAULT_CONFIDENCE = 90;
+
 /**
  * Per-node confidence overrides for elements with different certainty.
  * Per GIZA-03 §2.7: water level = variable, conduit = 85, fractures = 80.
  */
 const NODE_CONFIDENCE_OVERRIDE: Record<string, number> = {
+  'shaft-a': 98,
+  'chamber-a': 96,
+  'shaft-b': 95,
+  'chamber-b': 96,
+  'shaft-c': 95,
+  'chamber-i': 96,
+  'central-island': 92,
+  'sarcophagus-i': 88,
   'northern-conduit': 85,
   'chamber-i-water': 50, // variable — estimated
-  'eastern-tunnel': 65, // partially explored
+  'niche-2-sarcophagus': 85,
+  'niche-7-sarcophagus': 85,
+  'chamber-b-east-passage': 80,
   'east-corridor': 75, // partially surveyed
   vault: 80,
+  'eastern-tunnel': 65, // partially explored
+  'surface-bedrock': 100,
+  'surface-desert': 100,
+  'surface-excavation-perimeter': 100,
+  'surface-entrance': 100,
+  'surface-fencing': 100,
+  'surface-visitor-path-n': 100,
+  'surface-visitor-path-e': 100,
+  'surface-reference-marker-1': 100,
+  'surface-reference-marker-2': 100,
 };
 
 export function buildOsirisSceneGraph(): SceneGraph {
@@ -55,7 +78,8 @@ export function buildOsirisSceneGraph(): SceneGraph {
   });
 
   for (const node of osirisBlockout.nodes) {
-    const confidence = NODE_CONFIDENCE_OVERRIDE[node.id] ?? LAYER_CONFIDENCE[node.layer];
+    const confidence =
+      NODE_CONFIDENCE_OVERRIDE[node.id] ?? LAYER_CONFIDENCE[node.layer] ?? DEFAULT_CONFIDENCE;
 
     graph.addNode({
       id: node.id,

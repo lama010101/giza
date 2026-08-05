@@ -21,6 +21,7 @@ interface BlockoutLike {
   size: Vector3;
   rotation?: Vector3;
   layer: string;
+  materialId?: string;
 }
 
 interface BlockoutMeshProps {

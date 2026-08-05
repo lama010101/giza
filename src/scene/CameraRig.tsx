@@ -1,12 +1,22 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, PointerLockControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
+import {
+  DEFAULT_CONSTRAINTS,
+  RESEARCH_CONSTRAINTS,
+  FLY_CONSTRAINTS,
+  applyAcceleration,
+  applyDeceleration,
+  clampCameraPosition,
+  isSlopeAllowed,
+  slopeFromNormal,
+  applyCameraSettings,
+  type CameraConstraints,
+} from './cameraConstraints';
 
-const WALK_SPEED = 5;
-const FLY_SPEED = 12;
 const KEY_MAP: Record<string, string> = {
   KeyW: 'forward',
   KeyA: 'left',
@@ -15,6 +25,12 @@ const KEY_MAP: Record<string, string> = {
   Space: 'up',
   ShiftLeft: 'down',
 };
+
+function getConstraints(mode: string, cameraMode: string): CameraConstraints {
+  if (cameraMode === 'fly') return FLY_CONSTRAINTS;
+  if (mode === 'Research') return RESEARCH_CONSTRAINTS;
+  return DEFAULT_CONSTRAINTS;
+}
 
 function useKeyboardMovement(): Record<string, boolean> {
   const keys = useRef<Record<string, boolean>>({});
@@ -39,35 +55,118 @@ function useKeyboardMovement(): Record<string, boolean> {
   return keys.current;
 }
 
+function hasMovementInput(keys: Record<string, boolean>, isFlying: boolean): boolean {
+  if (keys.forward || keys.back || keys.left || keys.right) return true;
+  if (isFlying && (keys.up || keys.down)) return true;
+  return false;
+}
+
+function inputDirection(keys: Record<string, boolean>, isFlying: boolean): THREE.Vector3 {
+  const direction = new THREE.Vector3();
+  if (keys.forward) direction.z -= 1;
+  if (keys.back) direction.z += 1;
+  if (keys.left) direction.x -= 1;
+  if (keys.right) direction.x += 1;
+  if (isFlying && keys.up) direction.y += 1;
+  if (isFlying && keys.down) direction.y -= 1;
+  return direction;
+}
+
+function worldDirectionFromCamera(
+  camera: THREE.Camera,
+  local: THREE.Vector3,
+  isFlying: boolean,
+): THREE.Vector3 {
+  const m = camera.matrixWorld.elements;
+  const forward = new THREE.Vector3(-m[8], -m[9], -m[10]).normalize();
+  const right = new THREE.Vector3(m[0], m[1], m[2]).normalize();
+
+  const world = new THREE.Vector3()
+    .addScaledVector(forward, -local.z)
+    .addScaledVector(right, local.x);
+
+  if (isFlying) {
+    const up = new THREE.Vector3(m[4], m[5], m[6]).normalize();
+    world.addScaledVector(up, local.y);
+  } else {
+    world.y = 0;
+  }
+
+  if (world.lengthSq() > 0) world.normalize();
+  return world;
+}
+
 function WalkControls(): JSX.Element {
-  const { camera } = useThree();
+  const { camera, scene } = useThree();
   const keys = useKeyboardMovement();
-  const direction = useRef(new THREE.Vector3());
   const velocity = useRef(new THREE.Vector3());
+  const constraints = useRef(DEFAULT_CONSTRAINTS);
+  const appMode = useAppStore((s) => s.mode);
+  const cameraMode = useAppStore((s) => s.cameraMode);
+  const raycaster = useMemo(() => new THREE.Raycaster(), []);
+  const down = useMemo(() => new THREE.Vector3(0, -1, 0), []);
+
+  useEffect(() => {
+    constraints.current = getConstraints(appMode, cameraMode);
+    applyCameraSettings(camera as THREE.PerspectiveCamera, constraints.current);
+  }, [appMode, cameraMode, camera]);
 
   useFrame((_, delta) => {
-    const speed = WALK_SPEED * delta;
-    direction.current.set(0, 0, 0);
+    const dt = Math.min(delta, 0.1);
+    const moving = hasMovementInput(keys, false);
+    const target = worldDirectionFromCamera(camera, inputDirection(keys, false), false);
 
-    if (keys.forward) direction.current.z -= 1;
-    if (keys.back) direction.current.z += 1;
-    if (keys.left) direction.current.x -= 1;
-    if (keys.right) direction.current.x += 1;
+    if (moving) {
+      velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
+    } else {
+      velocity.current = applyDeceleration(velocity.current, constraints.current, dt);
+    }
 
-    direction.current.normalize().multiplyScalar(speed);
-    camera.getWorldDirection(velocity.current);
-    velocity.current.y = 0;
-    velocity.current.normalize();
+    if (velocity.current.lengthSq() === 0) return;
 
-    const right = new THREE.Vector3();
-    right.crossVectors(velocity.current, camera.up).normalize();
+    const step = velocity.current.clone().multiplyScalar(dt);
+    const nextPosition = camera.position.clone().add(step);
 
-    velocity.current.multiplyScalar(direction.current.z);
-    right.multiplyScalar(direction.current.x);
+    // Height / ground clamping with slope check.
+    raycaster.set(nextPosition.clone().add(new THREE.Vector3(0, 2, 0)), down);
+    raycaster.far = 100;
+    const groundHits = raycaster.intersectObjects(scene.children, true);
+    const ground = groundHits.find((h) => h.face?.normal);
 
-    camera.position.add(velocity.current);
-    camera.position.add(right);
-    camera.position.y = Math.max(camera.position.y, -30.65);
+    if (ground) {
+      const normal = ground
+        .face!.normal.clone()
+        .transformDirection(ground.object.matrixWorld)
+        .normalize();
+      const slope = slopeFromNormal(normal);
+      if (isSlopeAllowed(slope, constraints.current)) {
+        nextPosition.y = Math.max(
+          nextPosition.y,
+          ground.point.y + constraints.current.collisionRadius,
+        );
+      } else {
+        // Prevent moving up steep slopes by removing the vertical component.
+        step.y = Math.min(step.y, 0);
+        nextPosition.copy(camera.position).add(step);
+      }
+    }
+
+    // Simple wall collision: ray from current position toward next position.
+    const moveDir = nextPosition.clone().sub(camera.position);
+    if (moveDir.lengthSq() > 0) {
+      raycaster.set(camera.position, moveDir.clone().normalize());
+      raycaster.far = moveDir.length() + constraints.current.collisionRadius;
+      const hits = raycaster.intersectObjects(scene.children, true);
+      const hit = hits.find((h) => h.distance <= moveDir.length());
+      if (hit?.face) {
+        const safeDistance = Math.max(0, hit.distance - constraints.current.collisionRadius);
+        moveDir.normalize().multiplyScalar(safeDistance);
+        nextPosition.copy(camera.position).add(moveDir);
+      }
+    }
+
+    nextPosition.copy(clampCameraPosition(nextPosition, constraints.current));
+    camera.position.copy(nextPosition);
   });
 
   return <PointerLockControls makeDefault />;
@@ -76,33 +175,32 @@ function WalkControls(): JSX.Element {
 function FlyControls(): JSX.Element {
   const { camera } = useThree();
   const keys = useKeyboardMovement();
-  const direction = useRef(new THREE.Vector3());
   const velocity = useRef(new THREE.Vector3());
+  const constraints = useRef(FLY_CONSTRAINTS);
+  const appMode = useAppStore((s) => s.mode);
+  const cameraMode = useAppStore((s) => s.cameraMode);
+
+  useEffect(() => {
+    constraints.current = getConstraints(appMode, cameraMode);
+    applyCameraSettings(camera as THREE.PerspectiveCamera, constraints.current);
+  }, [appMode, cameraMode, camera]);
 
   useFrame((_, delta) => {
-    const speed = FLY_SPEED * delta;
-    direction.current.set(0, 0, 0);
+    const dt = Math.min(delta, 0.1);
+    const moving = hasMovementInput(keys, true);
+    const target = worldDirectionFromCamera(camera, inputDirection(keys, true), true);
 
-    if (keys.forward) direction.current.z -= 1;
-    if (keys.back) direction.current.z += 1;
-    if (keys.left) direction.current.x -= 1;
-    if (keys.right) direction.current.x += 1;
-    if (keys.up) direction.current.y += 1;
-    if (keys.down) direction.current.y -= 1;
+    if (moving) {
+      velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
+    } else {
+      velocity.current = applyDeceleration(velocity.current, constraints.current, dt);
+    }
 
-    direction.current.normalize().multiplyScalar(speed);
-    camera.getWorldDirection(velocity.current);
-    velocity.current.normalize();
+    if (velocity.current.lengthSq() === 0) return;
 
-    const right = new THREE.Vector3();
-    right.crossVectors(velocity.current, camera.up).normalize();
-
-    velocity.current.multiplyScalar(direction.current.z);
-    right.multiplyScalar(direction.current.x);
-
-    camera.position.add(velocity.current);
-    camera.position.add(right);
-    camera.position.y += direction.current.y;
+    const step = velocity.current.clone().multiplyScalar(dt);
+    const nextPosition = camera.position.clone().add(step);
+    camera.position.copy(clampCameraPosition(nextPosition, constraints.current));
   });
 
   return <PointerLockControls makeDefault />;
@@ -112,6 +210,10 @@ function TeleportControls(): JSX.Element {
   const { camera, gl } = useThree();
   const setCameraMode = useAppStore((s) => s.setCameraMode);
   const cameraTarget = useAppStore((s) => s.cameraTarget);
+
+  useEffect(() => {
+    applyCameraSettings(camera as THREE.PerspectiveCamera, DEFAULT_CONSTRAINTS);
+  }, [camera]);
 
   useEffect(() => {
     const handleDoubleClick = (event: MouseEvent): void => {
