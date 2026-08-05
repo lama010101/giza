@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useAppStore } from '@/store/app';
-import type { CameraMode, Monument, SidePanelTab } from '@/store/app';
+import { useAppStore, MONUMENT_LAYERS } from '@/store/app';
+import type { CameraMode, Monument, SidePanelTab, SceneLayer } from '@/store/app';
 import { getObjectById } from '@/evidence/repository';
 import { hypothesisEngine } from '@/theories/engineInstance';
 import { buildOsirisSceneGraph } from '@/scene/osirisSceneGraph';
@@ -123,6 +123,112 @@ function ExploreActions(): JSX.Element {
   );
 }
 
+function ResearchSceneTools(): JSX.Element {
+  const mode = useAppStore((s) => s.mode);
+  const activeMonument = useAppStore((s) => s.activeMonument);
+  const lod = useAppStore((s) => s.lod);
+  const selectedObjectId = useAppStore((s) => s.selectedObjectId);
+  const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
+  const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
+
+  const graph = useMemo(
+    () =>
+      activeMonument === 'great-pyramid'
+        ? buildGreatPyramidSceneGraph(lod)
+        : buildOsirisSceneGraph(),
+    [activeMonument, lod],
+  );
+
+  const selectedNode = useMemo(() => {
+    if (!selectedObjectId) return undefined;
+    return graph.getAllVisibleNodes().find((n) => n.metadata.objectId === selectedObjectId);
+  }, [graph, selectedObjectId]);
+
+  const selectedLayer = selectedNode?.metadata.layer as SceneLayer | undefined;
+  const selectedObject = selectedObjectId ? getObjectById(selectedObjectId) : undefined;
+
+  const allNodes = useMemo(() => graph.getAllNodes(), [graph]);
+  const visibleNodes = useMemo(() => graph.getAllVisibleNodes(), [graph]);
+  const nodesWithEvidence = useMemo(
+    () => allNodes.filter((n) => (n.metadata.evidenceIds ?? []).length > 0).length,
+    [allNodes],
+  );
+
+  const handleIsolateLayer = (): void => {
+    if (!selectedLayer) return;
+    const monumentLayers = MONUMENT_LAYERS[activeMonument];
+    setHiddenLayers(monumentLayers.filter((l) => l !== selectedLayer));
+  };
+
+  const handleResetLayers = (): void => {
+    setHiddenLayers([]);
+  };
+
+  if (mode !== 'Research') return <></>;
+
+  return (
+    <section className="side-section" data-testid="research-tools">
+      <h3>Research</h3>
+
+      {selectedNode && (
+        <div className="metadata-card" data-testid="metadata-card">
+          <h4>Selected object</h4>
+          <dl>
+            <dt>Name</dt>
+            <dd>{selectedObject?.name ?? selectedNode.name}</dd>
+            <dt>ID</dt>
+            <dd>{selectedObjectId}</dd>
+            {selectedObject?.objectClass && (
+              <>
+                <dt>Class</dt>
+                <dd>{selectedObject.objectClass}</dd>
+              </>
+            )}
+            <dt>Layer</dt>
+            <dd>{selectedLayer ?? '—'}</dd>
+            <dt>Confidence</dt>
+            <dd>{selectedNode.metadata.confidence ?? '—'}%</dd>
+            <dt>Evidence</dt>
+            <dd>{(selectedNode.metadata.evidenceIds ?? []).length}</dd>
+            <dt>Sources</dt>
+            <dd>{(selectedNode.metadata.sourceIds ?? []).length}</dd>
+          </dl>
+          <div className="side-btn-group">
+            <button
+              type="button"
+              onClick={handleIsolateLayer}
+              disabled={!selectedLayer}
+              title={selectedLayer ? `Isolate ${selectedLayer}` : 'Select an object first'}
+            >
+              Isolate layer
+            </button>
+            <button type="button" onClick={handleResetLayers}>
+              Reset layers
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="stats-card" data-testid="geometry-stats">
+        <h4>Scene stats</h4>
+        <dl>
+          <dt>Total nodes</dt>
+          <dd>{allNodes.length}</dd>
+          <dt>Visible nodes</dt>
+          <dd>{visibleNodes.length}</dd>
+          <dt>Nodes with evidence</dt>
+          <dd>{nodesWithEvidence}</dd>
+          <dt>Hidden layers</dt>
+          <dd>{hiddenLayers.length}</dd>
+          <dt>Active theories</dt>
+          <dd>{activeHypothesisIds.length}</dd>
+        </dl>
+      </div>
+    </section>
+  );
+}
+
 function SceneTab(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const setCameraMode = useAppStore((s) => s.setCameraMode);
@@ -147,6 +253,7 @@ function SceneTab(): JSX.Element {
   return (
     <div className="side-tab-content">
       <ExploreActions />
+      <ResearchSceneTools />
       {showCameraControls && (
         <section className="side-section">
           <h3>Camera</h3>
