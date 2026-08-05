@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -72,6 +72,15 @@ export function OsirisScene(): JSX.Element {
       ),
     [hiddenLayers],
   );
+
+  const [hypothesisTick, setHypothesisTick] = useState(0);
+  useEffect(() => {
+    hypothesisEngine.setActive(activeHypothesisIds);
+    setHypothesisTick((t) => t + 1);
+  }, [activeHypothesisIds]);
+  // hypothesisTick is incremented after the engine active set is synced; it is
+  // intentionally unused so the overlay geometry re-runs against the latest rules.
+  void hypothesisTick;
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 

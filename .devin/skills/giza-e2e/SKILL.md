@@ -218,3 +218,33 @@ npx vitest run src/scene/gp-lod1.test.ts src/scene/greatPyramid.test.ts
   - Northern conduit flow (`Northern Conduit Flow Overlay`)
 - Unchecking the hypothesis removes the overlays (regression check).
 - Clicking `Basalt Sarcophagus` or `Northern Conduit` in the scene hierarchy (or hovering/clicking in the viewport) opens the **Evidence** panel with the corresponding evidence item.
+
+## Explore / Research side-panel tools (PR #17)
+
+- Select an object from the **left Explorer hierarchy** to populate the new right-panel tools. Viewport clicks set `selectedObjectId` only when an active hypothesis is present, so the hierarchy is the most reliable way to test Explore/Research tools in a neutral state.
+- In **Explore** mode the side panel shows `Inspect`, `Switch theory`, and `Reveal layer`.
+  - `Inspect` is disabled until an object is selected.
+  - `Switch theory` rotates `activeHypothesisIds` through the hypotheses for the current monument.
+  - `Reveal layer` is only enabled when the selected object's layer is currently hidden; clicking it removes that layer from `hiddenLayers`.
+- In **Research** mode the side panel shows a **Selected object** metadata card and **Scene stats**.
+  - `Isolate layer` hides every layer except the selected object's layer.
+  - `Reset layers` clears `hiddenLayers`.
+  - `Screenshot` triggers a PNG download (`giza-screenshot-<timestamp>.png` in `~/Downloads`). Verify by checking the file appears and starts with the PNG magic bytes (`8950 4e47`).
+- A **Confidence by theory** card appears in Research only when the selected object's `objectId` is in an active hypothesis's `affectedStructures`. If the card is missing, check whether the object is listed in the hypothesis plugin.
+
+## Screenshot export verification
+
+- Click the `Screenshot` button in either Great Pyramid or Osiris scene.
+- Wait ~1 second, then run in a shell:
+  ```bash
+  ls -la ~/Downloads/giza-screenshot-*.png
+  head -c 4 ~/Downloads/giza-screenshot-<timestamp>.png | xxd
+  ```
+- The file should exist and start with `8950 4e47` (`.PNG`).
+
+## Osiris hydraulic overlay framing
+
+- After checking `Hydraulic Functionality Hypothesis (Osiris Shaft)` (`THEORY-OSIRIS-001`) in the **Simulation** tab, the **Hydraulic Simulation** controls appear.
+- The blue Chamber I water plane and Northern Conduit flow overlay are present in the render graph but may be out of the default camera frame.
+- To see them, orbit/zoom toward Chamber I or use the left **Navigation** → `Level 3 — Chamber I` and rotate the view.
+- The water overlay remains visible at the default `Water Level` (0.50 m). The simulation slider value is controlled by React state; dragging the slider handle is more reliable than setting `.value` from the console.

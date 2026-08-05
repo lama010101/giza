@@ -55,6 +55,7 @@ export function LeftPanel(): JSX.Element {
   const bookmarkedObjectIds = useAppStore((s) => s.bookmarkedObjectIds);
   const selectedObjectId = useAppStore((s) => s.selectedObjectId);
   const setSelectedObjectId = useAppStore((s) => s.setSelectedObjectId);
+  const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
   const setCameraTarget = useAppStore((s) => s.setCameraTarget);
   const setSidePanelTab = useAppStore((s) => s.setSidePanelTab);
   const setEvidencePanelOpen = useAppStore((s) => s.setEvidencePanelOpen);
@@ -79,8 +80,10 @@ export function LeftPanel(): JSX.Element {
     if (node.metadata.objectId) {
       setSelectedObjectId(node.metadata.objectId);
       if (node.metadata.evidenceIds && node.metadata.evidenceIds.length > 0) {
+        setSelectedEvidenceId(node.metadata.evidenceIds[0]);
         setSidePanelTab('evidence');
       } else {
+        setSelectedEvidenceId(null);
         setSidePanelTab('hypothesis');
       }
       setEvidencePanelOpen(true);
@@ -96,7 +99,13 @@ export function LeftPanel(): JSX.Element {
       setCameraTarget({ x: pos.x, y: pos.y, z: pos.z });
     }
     setSelectedObjectId(objectId);
-    setSidePanelTab('hypothesis');
+    if (obj.evidence && obj.evidence.length > 0) {
+      setSelectedEvidenceId(obj.evidence[0]);
+      setSidePanelTab('evidence');
+    } else {
+      setSelectedEvidenceId(null);
+      setSidePanelTab('hypothesis');
+    }
     setEvidencePanelOpen(true);
   };
 
