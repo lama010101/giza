@@ -1,5 +1,9 @@
 import { DoubleSide } from 'three';
 import { MASTER_MATERIALS } from './masterMaterials';
+import { createProceduralStoneTexture } from './proceduralStone';
+
+/** Shared procedural stone detail map so every mesh does not allocate its own texture. */
+const STONE_BUMP_TEXTURE = createProceduralStoneTexture({ seed: 0, size: 256 });
 
 export interface BaseShaderMaterialProps {
   /** Master material id used to look up the base shader and default properties. */
@@ -12,6 +16,8 @@ export interface BaseShaderMaterialProps {
   pbr: { metalness: number; roughness: number };
   /** Whether the object is currently hovered for emphasis. */
   hovered?: boolean;
+  /** Apply procedural stone detail (micro-cracks, mineral streaks, edge erosion). */
+  proceduralDetail?: boolean;
 }
 
 /**
@@ -19,8 +25,8 @@ export interface BaseShaderMaterialProps {
  *
  * Maps `baseShader` strings from `masterMaterials.ts` to concrete Three.js
  * material components. Currently supports the `Stone` base shader via
- * `meshStandardMaterial`. Future base shaders (e.g. `Water`, `Metal`) can be
- * added here without touching scene components.
+ * `meshStandardMaterial` with a shared procedural bump map. Future base shaders
+ * (e.g. `Water`, `Metal`) can be added here without touching scene components.
  */
 export function BaseShaderMaterial({
   materialId,
@@ -28,6 +34,7 @@ export function BaseShaderMaterial({
   opacity = 1,
   pbr,
   hovered = false,
+  proceduralDetail = true,
 }: BaseShaderMaterialProps): JSX.Element {
   const master = materialId ? MASTER_MATERIALS.find((m) => m.id === materialId) : undefined;
   const baseShader = master?.baseShader ?? 'Stone';
@@ -41,6 +48,8 @@ export function BaseShaderMaterial({
         side={DoubleSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
+        bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
+        bumpScale={proceduralDetail ? 0.015 : 0}
         emissive={hovered ? '#3b82f6' : '#000000'}
         emissiveIntensity={hovered ? 0.35 : 0}
       />
@@ -57,6 +66,8 @@ export function BaseShaderMaterial({
       side={1}
       metalness={pbr.metalness}
       roughness={pbr.roughness}
+      bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
+      bumpScale={proceduralDetail ? 0.015 : 0}
       emissive={hovered ? '#3b82f6' : '#000000'}
       emissiveIntensity={hovered ? 0.35 : 0}
     />
