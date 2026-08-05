@@ -7,10 +7,10 @@
  * without requiring pixel-perfect cursor placement.
  */
 
-import { DoubleSide } from 'three';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import type { SceneNodeWithWorld } from './sceneGraph';
+import { BaseShaderMaterial } from '@/materials/BaseShaderMaterial';
 import { useSceneObjectClick } from './useSceneObjectClick';
 
 const MIN_HIT_SIZE = 0.8;
@@ -73,15 +73,12 @@ export function BlockoutMesh({
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <coneGeometry args={[baseSide / Math.sqrt(2), block.size.y, 4]} />
-      <meshStandardMaterial
+      <BaseShaderMaterial
         color={color}
-        transparent={opacity < 1}
         opacity={opacity}
-        side={DoubleSide}
-        metalness={pbr.metalness}
-        roughness={pbr.roughness}
-        emissive={hovered ? '#3b82f6' : '#000000'}
-        emissiveIntensity={hovered ? 0.35 : 0}
+        pbr={pbr}
+        materialId={block.materialId}
+        hovered={hovered}
       />
     </mesh>
   ) : (
@@ -91,15 +88,12 @@ export function BlockoutMesh({
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
-      <meshStandardMaterial
+      <BaseShaderMaterial
         color={color}
-        transparent={opacity < 1}
         opacity={opacity}
-        side={DoubleSide}
-        metalness={pbr.metalness}
-        roughness={pbr.roughness}
-        emissive={hovered ? '#3b82f6' : '#000000'}
-        emissiveIntensity={hovered ? 0.35 : 0}
+        pbr={pbr}
+        materialId={block.materialId}
+        hovered={hovered}
       />
     </mesh>
   );
