@@ -16,6 +16,12 @@ import {
   applyCameraSettings,
   type CameraConstraints,
 } from './cameraConstraints';
+import {
+  DEFAULT_GAMEPAD_STATE,
+  readGamepadState,
+  applyGamepadLook,
+  combinedMovementInput,
+} from './gamepad';
 
 const KEY_MAP: Record<string, string> = {
   KeyW: 'forward',
@@ -105,6 +111,7 @@ function WalkControls(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const down = useMemo(() => new THREE.Vector3(0, -1, 0), []);
+  const gamepad = useRef(DEFAULT_GAMEPAD_STATE);
 
   useEffect(() => {
     constraints.current = getConstraints(appMode, cameraMode);
@@ -113,8 +120,11 @@ function WalkControls(): JSX.Element {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1);
-    const moving = hasMovementInput(keys, false);
-    const target = worldDirectionFromCamera(camera, inputDirection(keys, false), false);
+    gamepad.current = readGamepadState(false);
+    applyGamepadLook(camera, gamepad.current, dt);
+    const input = combinedMovementInput(keys, gamepad.current, false);
+    const moving = hasMovementInput(input, false);
+    const target = worldDirectionFromCamera(camera, inputDirection(input, false), false);
 
     if (moving) {
       velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
@@ -179,6 +189,7 @@ function FlyControls(): JSX.Element {
   const constraints = useRef(FLY_CONSTRAINTS);
   const appMode = useAppStore((s) => s.mode);
   const cameraMode = useAppStore((s) => s.cameraMode);
+  const gamepad = useRef(DEFAULT_GAMEPAD_STATE);
 
   useEffect(() => {
     constraints.current = getConstraints(appMode, cameraMode);
@@ -187,8 +198,11 @@ function FlyControls(): JSX.Element {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1);
-    const moving = hasMovementInput(keys, true);
-    const target = worldDirectionFromCamera(camera, inputDirection(keys, true), true);
+    gamepad.current = readGamepadState(true);
+    applyGamepadLook(camera, gamepad.current, dt);
+    const input = combinedMovementInput(keys, gamepad.current, true);
+    const moving = hasMovementInput(input, true);
+    const target = worldDirectionFromCamera(camera, inputDirection(input, true), true);
 
     if (moving) {
       velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
