@@ -38,6 +38,18 @@ export const SCENE_LAYERS = [
 ] as const;
 export type SceneLayer = (typeof SCENE_LAYERS)[number];
 
+export const VISIBILITY_LAYERS = [
+  'Geometry',
+  'Modern',
+  'Water',
+  'Geology',
+  'Evidence',
+  'Theory',
+  'Simulation',
+  'Annotations',
+] as const;
+export type VisibilityLayer = (typeof VISIBILITY_LAYERS)[number];
+
 export const MONUMENT_LAYERS: Record<Monument, readonly SceneLayer[]> = {
   osiris: ['shafts', 'level-1', 'level-2', 'level-3', 'monument'] as const,
   'great-pyramid': [
@@ -70,6 +82,7 @@ export interface AppState {
   cameraMode: CameraMode;
   cameraTarget: Vector3;
   hiddenLayers: SceneLayer[];
+  hiddenVisibilityLayers: VisibilityLayer[];
   lod: LODLevel;
   screenshotRequest: number | null;
   setLOD: (lod: LODLevel) => void;
@@ -79,6 +92,8 @@ export interface AppState {
   setCameraTarget: (target: Vector3) => void;
   toggleLayer: (layer: SceneLayer) => void;
   setHiddenLayers: (layers: SceneLayer[]) => void;
+  toggleVisibilityLayer: (layer: VisibilityLayer) => void;
+  setHiddenVisibilityLayers: (layers: VisibilityLayer[]) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   requestScreenshot: () => void;
   clearScreenshotRequest: () => void;
@@ -106,6 +121,7 @@ const PERSISTED_KEYS: (keyof AppState)[] = [
   'cameraMode',
   'cameraTarget',
   'hiddenLayers',
+  'hiddenVisibilityLayers',
   'lod',
 ];
 
@@ -130,6 +146,7 @@ export const useAppStore = create<AppState>()(
         cameraMode: 'orbit',
         cameraTarget: { x: 0, y: 70, z: 0 },
         hiddenLayers: [],
+        hiddenVisibilityLayers: [],
         lod: 'LOD0',
         screenshotRequest: null,
         setLOD: (lod) => set({ lod }),
@@ -145,6 +162,13 @@ export const useAppStore = create<AppState>()(
               : [...state.hiddenLayers, layer],
           })),
         setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
+        toggleVisibilityLayer: (layer) =>
+          set((state) => ({
+            hiddenVisibilityLayers: state.hiddenVisibilityLayers.includes(layer)
+              ? state.hiddenVisibilityLayers.filter((l) => l !== layer)
+              : [...state.hiddenVisibilityLayers, layer],
+          })),
+        setHiddenVisibilityLayers: (hiddenVisibilityLayers) => set({ hiddenVisibilityLayers }),
         setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
         requestScreenshot: () => set({ screenshotRequest: Date.now() }),
         clearScreenshotRequest: () => set({ screenshotRequest: null }),

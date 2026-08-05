@@ -14,6 +14,7 @@ import type { SceneGraph } from './sceneGraph';
 import { sceneStreamer } from './sceneStreaming';
 import { CameraRig } from './CameraRig';
 import { ScreenshotTaker } from './ScreenshotTaker';
+import { getVisibilityLayer } from './visibilityLayers';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
 import { AntechamberMesh } from './AntechamberMesh';
 import { SubterraneanChamberMesh } from './SubterraneanChamberMesh';
@@ -218,6 +219,7 @@ export function GreatPyramidScene(): JSX.Element {
   }, [lod]);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
@@ -265,7 +267,10 @@ export function GreatPyramidScene(): JSX.Element {
     .filter((node) => blocks.has(node.id))
     .filter((node) => {
       const block = blocks.get(node.id)!;
-      return !hiddenLayers.includes(block.layer as never);
+      return (
+        !hiddenLayers.includes(block.layer as never) &&
+        !hiddenVisibilityLayers.includes(getVisibilityLayer(block))
+      );
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
@@ -315,12 +320,17 @@ export function GreatPyramidScene(): JSX.Element {
           />
         );
       })}
-      {hypothesisGeometryNodes.map((hnode) => (
-        <HypothesisMesh key={hnode.id} node={hnode} />
-      ))}
-      <HypothesisOverlays rules={activeOverlayRules} blocks={blocks} />
-      {measurementStart && <MeasurementMarker point={measurementStart} />}
-      {measurementEnd && <MeasurementMarker point={measurementEnd} />}
+      {!hiddenVisibilityLayers.includes('Theory') &&
+        hypothesisGeometryNodes.map((hnode) => <HypothesisMesh key={hnode.id} node={hnode} />)}
+      {!hiddenVisibilityLayers.includes('Theory') && (
+        <HypothesisOverlays rules={activeOverlayRules} blocks={blocks} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementStart && (
+        <MeasurementMarker point={measurementStart} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
+        <MeasurementMarker point={measurementEnd} />
+      )}
     </Canvas>
   );
 }

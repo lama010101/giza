@@ -75,11 +75,15 @@ describe('useAppStore camera mode', () => {
 
 describe('useAppStore layer visibility', () => {
   beforeEach(() => {
-    useAppStore.setState({ hiddenLayers: [] });
+    useAppStore.setState({ hiddenLayers: [], hiddenVisibilityLayers: [] });
   });
 
   it('starts with no hidden layers', () => {
     expect(useAppStore.getState().hiddenLayers).toEqual([]);
+  });
+
+  it('starts with no hidden visibility layers', () => {
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual([]);
   });
 
   it('toggles a layer on (hidden)', () => {
@@ -97,5 +101,17 @@ describe('useAppStore layer visibility', () => {
     useAppStore.getState().toggleLayer('shafts');
     useAppStore.getState().toggleLayer('level-1');
     expect(useAppStore.getState().hiddenLayers).toEqual(['shafts', 'level-1']);
+  });
+
+  it('toggles a visibility layer', () => {
+    useAppStore.getState().toggleVisibilityLayer('Evidence');
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual(['Evidence']);
+    useAppStore.getState().toggleVisibilityLayer('Evidence');
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual([]);
+  });
+
+  it('can replace all visibility layers', () => {
+    useAppStore.getState().setHiddenVisibilityLayers(['Theory', 'Water']);
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual(['Theory', 'Water']);
   });
 });

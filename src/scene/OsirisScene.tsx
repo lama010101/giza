@@ -17,6 +17,7 @@ import { Level0Surface } from './Level0Surface';
 import { BlockoutMesh } from './BlockoutMesh';
 import { EvidenceHotspots } from './EvidenceHotspots';
 import { generateOsirisHotspots } from './osirisHotspots';
+import { getVisibilityLayer } from './visibilityLayers';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
   'level-0': { metalness: 0.0, roughness: 0.95 },
@@ -53,6 +54,7 @@ export function OsirisScene(): JSX.Element {
   const blocks = useMemo(() => new Map(osirisBlockout.nodes.map((n) => [n.id, n])), []);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
 
@@ -100,7 +102,10 @@ export function OsirisScene(): JSX.Element {
     .filter((node) => blocks.has(node.id))
     .filter((node) => {
       const block = blocks.get(node.id)!;
-      return !hiddenLayers.includes(block.layer as never);
+      return (
+        !hiddenLayers.includes(block.layer as never) &&
+        !hiddenVisibilityLayers.includes(getVisibilityLayer(block))
+      );
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
@@ -140,12 +145,12 @@ export function OsirisScene(): JSX.Element {
         />
       ))}
       {/* Level 0 — Surface context (M09-T03) */}
-      <Level0Surface />
+      <Level0Surface hiddenVisibilityLayers={hiddenVisibilityLayers} />
       {visibleNodes.map(({ node, block, rule }) => (
         <BlockoutMesh key={node.id} node={node} block={block} rule={rule} pbr={getPbr(block)} />
       ))}
-      {hydraulicActive && <WaterPlane />}
-      {hydraulicActive && (
+      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && <WaterPlane />}
+      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && (
         <WaterMesh
           position={[-1.4, -30.4, -7.0]}
           size={6.5}
@@ -154,9 +159,16 @@ export function OsirisScene(): JSX.Element {
           color="#0a4a6b"
         />
       )}
-      {measurementStart && <MeasurementMarker point={measurementStart} />}
-      {measurementEnd && <MeasurementMarker point={measurementEnd} />}
-      <EvidenceHotspots hotspots={osirisHotspots} />
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementStart && (
+        <MeasurementMarker point={measurementStart} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
+        <MeasurementMarker point={measurementEnd} />
+      )}
+      <EvidenceHotspots
+        hotspots={osirisHotspots}
+        visible={!hiddenVisibilityLayers.includes('Evidence')}
+      />
     </Canvas>
   );
 }

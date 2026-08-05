@@ -8,6 +8,7 @@ import { buildGreatPyramidSceneGraph } from '@/scene/greatPyramidSceneGraph';
 import { EvidencePanel } from './EvidencePanel';
 import { HypothesisPanel } from './HypothesisPanel';
 import { LayerPanel } from './LayerPanel';
+import { VisibilityLayerPanel } from './VisibilityLayerPanel';
 import { SimulationPanel } from './SimulationPanel';
 
 const PRIMARY_TABS: { id: Monument; label: string }[] = [
@@ -338,6 +339,9 @@ function SceneTab(): JSX.Element {
 
       <section className="side-section">
         <LayerPanel />
+      </section>
+      <section className="side-section">
+        <VisibilityLayerPanel />
       </section>
     </div>
   );

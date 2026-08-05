@@ -17,6 +17,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
+import type { VisibilityLayer } from '@/store/app';
 import { testId } from '@/utils/testId';
 
 export interface Level0SurfaceProps {
@@ -24,6 +25,8 @@ export interface Level0SurfaceProps {
   radius?: number;
   /** Show modern fencing (optional per spec) */
   showFencing?: boolean;
+  /** Toggleable visibility layers from the 8-layer system (M05-T05). */
+  hiddenVisibilityLayers?: VisibilityLayer[];
 }
 
 /**
@@ -48,7 +51,10 @@ function generateTerrainUndulations(geometry: THREE.PlaneGeometry, amplitude: nu
 export function Level0Surface({
   radius = 30,
   showFencing = true,
+  hiddenVisibilityLayers = [],
 }: Level0SurfaceProps): JSX.Element {
+  const hideGeology = hiddenVisibilityLayers.includes('Geology');
+  const hideModern = hiddenVisibilityLayers.includes('Modern');
   // Desert surface with terrain undulations
   const desertGeometry = useMemo(() => {
     const geo = new THREE.PlaneGeometry(radius * 2, radius * 2, 32, 32);
@@ -64,53 +70,65 @@ export function Level0Surface({
   return (
     <group {...testId('level-0-surface')}>
       {/* Limestone bedrock (flat slab below desert surface) */}
-      <mesh
-        geometry={bedrockGeometry}
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -0.5, 0]}
-        receiveShadow
-        {...testId('surface-bedrock')}
-      >
-        <meshStandardMaterial color="#c2b280" roughness={0.95} metalness={0.0} />
-      </mesh>
+      {!hideGeology && (
+        <mesh
+          geometry={bedrockGeometry}
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -0.5, 0]}
+          receiveShadow
+          {...testId('surface-bedrock')}
+        >
+          <meshStandardMaterial color="#c2b280" roughness={0.95} metalness={0.0} />
+        </mesh>
+      )}
 
       {/* Desert surface with terrain undulations */}
-      <mesh
-        geometry={desertGeometry}
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.05, 0]}
-        receiveShadow
-        {...testId('surface-desert')}
-      >
-        <meshStandardMaterial color="#e8d8a8" roughness={0.98} metalness={0.0} />
-      </mesh>
+      {!hideGeology && (
+        <mesh
+          geometry={desertGeometry}
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.05, 0]}
+          receiveShadow
+          {...testId('surface-desert')}
+        >
+          <meshStandardMaterial color="#e8d8a8" roughness={0.98} metalness={0.0} />
+        </mesh>
+      )}
 
       {/* Excavation perimeter (darker ring around entrance) */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.1, 0]}
-        receiveShadow
-        {...testId('surface-excavation-perimeter')}
-      >
-        <ringGeometry args={[1.8, 3.0, 32]} />
-        <meshStandardMaterial
-          color="#a89868"
-          roughness={0.9}
-          metalness={0.0}
-          transparent
-          opacity={0.6}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+      {!hideModern && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.1, 0]}
+          receiveShadow
+          {...testId('surface-excavation-perimeter')}
+        >
+          <ringGeometry args={[1.8, 3.0, 32]} />
+          <meshStandardMaterial
+            color="#a89868"
+            roughness={0.9}
+            metalness={0.0}
+            transparent
+            opacity={0.6}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
 
       {/* Entrance opening (dark patch at shaft top) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} {...testId('surface-entrance')}>
-        <planeGeometry args={[2.6, 3.0]} />
-        <meshStandardMaterial color="#2a2010" roughness={1.0} metalness={0.0} />
-      </mesh>
+      {!hideGeology && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.12, 0]}
+          {...testId('surface-entrance')}
+        >
+          <planeGeometry args={[2.6, 3.0]} />
+          <meshStandardMaterial color="#2a2010" roughness={1.0} metalness={0.0} />
+        </mesh>
+      )}
 
       {/* Modern protective fencing (wire-frame look) */}
-      {showFencing && (
+      {showFencing && !hideModern && (
         <group {...testId('surface-fencing')}>
           {/* Four fence segments around the entrance */}
           {[
@@ -147,46 +165,54 @@ export function Level0Surface({
       )}
 
       {/* Visitor paths (lighter colored strips) */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.08, 10]}
-        receiveShadow
-        {...testId('surface-visitor-path-n')}
-      >
-        <planeGeometry args={[1.5, 12]} />
-        <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
-      </mesh>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[10, 0.08, 0]}
-        receiveShadow
-        {...testId('surface-visitor-path-e')}
-      >
-        <planeGeometry args={[12, 1.5]} />
-        <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
-      </mesh>
+      {!hideModern && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.08, 10]}
+          receiveShadow
+          {...testId('surface-visitor-path-n')}
+        >
+          <planeGeometry args={[1.5, 12]} />
+          <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
+        </mesh>
+      )}
+      {!hideModern && (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[10, 0.08, 0]}
+          receiveShadow
+          {...testId('surface-visitor-path-e')}
+        >
+          <planeGeometry args={[12, 1.5]} />
+          <meshStandardMaterial color="#d4c498" roughness={0.95} metalness={0.0} />
+        </mesh>
+      )}
 
       {/* Reference markers (survey markers — bright orange for visibility) */}
-      {[
-        { pos: [5, 0.2, 5] as [number, number, number], id: 'marker-1' },
-        { pos: [-5, 0.2, -5] as [number, number, number], id: 'marker-2' },
-      ].map((marker) => (
-        <mesh
-          key={marker.id}
-          position={marker.pos}
-          castShadow
-          {...testId(`surface-reference-${marker.id}`)}
-        >
-          <boxGeometry args={[0.3, 0.4, 0.3]} />
-          <meshStandardMaterial
-            color="#ff6600"
-            roughness={0.4}
-            metalness={0.3}
-            emissive="#ff3300"
-            emissiveIntensity={0.1}
-          />
-        </mesh>
-      ))}
+      {!hideModern && (
+        <>
+          {[
+            { pos: [5, 0.2, 5] as [number, number, number], id: 'marker-1' },
+            { pos: [-5, 0.2, -5] as [number, number, number], id: 'marker-2' },
+          ].map((marker) => (
+            <mesh
+              key={marker.id}
+              position={marker.pos}
+              castShadow
+              {...testId(`surface-reference-${marker.id}`)}
+            >
+              <boxGeometry args={[0.3, 0.4, 0.3]} />
+              <meshStandardMaterial
+                color="#ff6600"
+                roughness={0.4}
+                metalness={0.3}
+                emissive="#ff3300"
+                emissiveIntensity={0.1}
+              />
+            </mesh>
+          ))}
+        </>
+      )}
     </group>
   );
 }
