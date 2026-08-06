@@ -21,6 +21,8 @@
     "test:integration:ui": "playwright test --ui",
     "governance": "node scripts/governance-smoke.mjs",
     "docs": "node scripts/docs.mjs",
+    "generate-assets": "tsx scripts/generateExportAssets.ts",
+    "verify-assets": "tsx scripts/verifyExportAssets.mjs",
     "prepare": "husky"
   },
   "dependencies": {
