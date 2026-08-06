@@ -4,6 +4,10 @@ coverage/
 test-results/
 playwright-report/
 docs/api/
+docs/schema/
+docs/site/
+docs/mkdocs-temp/
+.venv-docs/
 *.log
 .DS_Store
 
