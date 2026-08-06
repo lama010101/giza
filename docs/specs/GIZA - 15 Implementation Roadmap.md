@@ -1,6 +1,6 @@
 # GIZA — Implementation Roadmap
 
-**Version:** 0.6 Draft
+**Version:** 0.7 Draft
 **Status:** Working Specification
 **Last update:** 2026-08-06
 
@@ -1549,6 +1549,7 @@ Large scientific projects carry known risks. Each risk has an owner layer, a lik
 | R13 | Loss of scientific traceability over time | Medium | High | Definition of Scientific Done (§1.5) enforced; evidence linkage required for release beyond Internal Alpha; audit history immutable (08 §1.22) |
 | R14 | Dependency supply-chain compromise | Low | High | Versions pinned, ≥7 days old, no `latest` (M00-T02, M-1-T06); lockfile committed; reviewed on every update |
 | R15 | CI workflow files blocked by token scope | High | Low | M-1-T09 PR labeler/stale-issue/docs workflow files prepared locally; push requires `workflow` OAuth scope; grant scope and push |
+| R16 | GitHub `quality` CI check fails with inaccessible logs | High | High | `git_ci_job_logs` returns `BlobNotFound` for failing `quality` job IDs; the same pipeline passes locally and in clean `node:20` Docker clones; a base-branch test PR (#19) failed identically, confirming the issue is preexisting/infrastructure-side; requires GitHub Actions log access or runner investigation |
 
 ---
 
