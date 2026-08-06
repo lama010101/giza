@@ -16,7 +16,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { osirisBlockout } from '../database/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '../database/blockouts/great-pyramid';
-import { getOsirisAssets, type AssetDefinition } from '../src/materials/assetDefinitions';
+import {
+  getOsirisAssets,
+  getGreatPyramidAssets,
+  type AssetDefinition,
+} from '../src/materials/assetDefinitions';
 
 // Polyfill FileReader for Node so GLTFExporter can read generated Blobs.
 class FileReaderPolyfill {
@@ -57,6 +61,10 @@ interface BlockoutNodeLike {
   position: { x: number; y: number; z: number };
   rotation?: { x: number; y: number; z: number };
   size: { x: number; y: number; z: number };
+  objectId?: string;
+  evidenceIds?: string[];
+  sourceIds?: string[];
+  materialId?: string;
   color: string;
   opacity?: number;
   overlay?: string;
@@ -226,6 +234,36 @@ function buildGizaExtras(asset: AssetDefinition) {
   };
 }
 
+function objectIdFromAssetId(assetId: string): string | null {
+  const match = /^GP-(OBJ-\d+)-LOD0$/.exec(assetId);
+  return match?.[1] ?? null;
+}
+
+async function generateGreatPyramidPerObjectAssets(gpNodes: BlockoutNodeLike[]) {
+  const objectDir = join(outDir, 'objects');
+  mkdirSync(objectDir, { recursive: true });
+
+  const assets = getGreatPyramidAssets();
+  for (const asset of assets) {
+    const objectId = objectIdFromAssetId(asset.id);
+    if (!objectId) continue;
+
+    const matches = gpNodes.filter((node) => node.objectId === objectId);
+    if (matches.length === 0) {
+      console.warn(`No blockout node found for asset ${asset.id}`);
+      continue;
+    }
+
+    const extras = buildGizaExtras(asset);
+    const outPath = join(objectDir, `${asset.id}.glb`);
+    const scene = buildScene(matches, true, extras);
+    scene.name = asset.name;
+    await exportGLB(scene, outPath);
+    // eslint-disable-next-line no-console
+    console.log(`Generated ${outPath} (${scene.children.length} nodes)`);
+  }
+}
+
 async function generateOsirisPerObjectAssets(osirisNodes: BlockoutNodeLike[]) {
   const objectDir = join(outDir, 'objects');
   mkdirSync(objectDir, { recursive: true });
@@ -346,6 +384,9 @@ async function main() {
 
   // Per-object Osiris assets with DoSD metadata embedded in glTF extras
   await generateOsirisPerObjectAssets(osirisNodes);
+
+  // Per-object Great Pyramid assets with DoSD metadata embedded in glTF extras
+  await generateGreatPyramidPerObjectAssets(gpNodes);
 
   // eslint-disable-next-line no-console
   console.log('All export assets generated.');

@@ -1,4 +1,7 @@
 import type { MasterMaterial } from '@/materials/masterMaterials';
+import { GREAT_PYRAMID_ASSETS, getGreatPyramidAssets } from './greatPyramidAssetDefinitions';
+
+export { getGreatPyramidAssets };
 
 export interface MaterialVariant {
   id: string;
@@ -249,18 +252,18 @@ export function getOsirisAssets(): AssetDefinition[] {
 }
 
 export function getAssetById(id: string): AssetDefinition | undefined {
-  return OSIRIS_ASSETS.find((a) => a.id === id);
+  return ALL_ASSETS.find((a) => a.id === id);
 }
 
 export function getAssetsByMonument(monument: string): AssetDefinition[] {
-  return OSIRIS_ASSETS.filter((a) => a.monument === monument);
+  return ALL_ASSETS.filter((a) => a.monument === monument);
 }
 
 export function getAssetsByLocation(location: string): AssetDefinition[] {
-  return OSIRIS_ASSETS.filter((a) => a.location === location);
+  return ALL_ASSETS.filter((a) => a.location === location);
 }
 
-export const ALL_ASSETS: AssetDefinition[] = [...OSIRIS_ASSETS];
+export const ALL_ASSETS: AssetDefinition[] = [...OSIRIS_ASSETS, ...GREAT_PYRAMID_ASSETS];
 
 export function getAllAssets(): AssetDefinition[] {
   return [...ALL_ASSETS];
