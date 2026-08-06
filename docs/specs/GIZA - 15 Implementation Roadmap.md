@@ -1,8 +1,8 @@
 # GIZA — Implementation Roadmap
 
-**Version:** 0.1 Draft
+**Version:** 0.6 Draft
 **Status:** Working Specification
-**Last update:** 2026-07-28
+**Last update:** 2026-08-06
 
 This document bridges the GIZA specification set (00–11, 16, 17) to executable work. It decomposes the project into 20 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. The Hydraulic-Acoustic System Hypothesis (*GIZA - 16*) is the first hypothesis plugin to be implemented and tested. The AI Development Governance & Engineering Standards (*GIZA - 17*) define the governance framework, quality gates, and definition of done that bind this roadmap to the specification set and the development playbook.
 
@@ -1548,6 +1548,7 @@ Large scientific projects carry known risks. Each risk has an owner layer, a lik
 | R12 | Fantasy / decorative archaeology elements introduced | Medium | High | Limestone shader "no baked dirt" (M09-T15); environmental rendering "NO fantasy cave elements" (M09-T12); review checklist in *GIZA - 99 Development Playbook* §8 |
 | R13 | Loss of scientific traceability over time | Medium | High | Definition of Scientific Done (§1.5) enforced; evidence linkage required for release beyond Internal Alpha; audit history immutable (08 §1.22) |
 | R14 | Dependency supply-chain compromise | Low | High | Versions pinned, ≥7 days old, no `latest` (M00-T02, M-1-T06); lockfile committed; reviewed on every update |
+| R15 | CI workflow files blocked by token scope | High | Low | M-1-T09 PR labeler/stale-issue/docs workflow files prepared locally; push requires `workflow` OAuth scope; grant scope and push |
 
 ---
 
@@ -1596,3 +1597,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | 2026-07-28 | 0.3 Draft | Architectural evolution: GIZA is now a Scientific Hypothesis Exploration Platform. Added M05.5 Hypothesis Framework Engine (15 tasks, 26 points) implementing the Hypothesis Framework spec (*GIZA - 11*): plugin architecture, predictions, per-object-per-hypothesis confidence, visualization rules, comparison framework, hypothesis selector UI, 3 sample plugins. Updated M01-T05 to full Hypothesis schema; added M01-T05a Prediction schema; updated M01-T09 for active hypotheses array. Updated M09 dependency to include M05.5. Updated task index (261 tasks), effort summary (426 points), critical path. |
 | 2026-07-28 | 0.4 Draft | Added M11.5 Hydraulic-Acoustic Hypothesis Plugin (15 tasks, 22 points) implementing the first hypothesis plugin (*GIZA - 16*): coupled hydraulic-acoustic resonator for the Great Pyramid, 7 predictions, 4 linked simulations (hydraulic, acoustic, structural, thermal), 8 experimental scenarios, visualization overlays, prediction-simulation loop, validation methodology. Updated M11 dependencies to include M05.5. Updated M12 dependencies to include M11.5. Updated task index (276 tasks), effort summary (448 points), critical path. |
 | 2026-07-28 | 0.5 Draft | Added reference to *GIZA - 17 AI Development Governance & Engineering Standards* in M-1 Repository Governance (spec ref and AI prompt). Updated intro to reference spec 17. |
+| 2026-08-06 | 0.6 Draft | Closed M06B Asset Production: generated actual `.glb` production assets (rubble, bedrock, granite, stairs/shafts, material samples, Osiris/Great Pyramid LODs) linked through `assets/asset-manifest.json`; asset definitions satisfy DoSD with evidence/source/confidence validation. Added `npm run generate-assets` and `npm run verify-assets`. Prepared M-1-T09 and M00-T12 CI workflow files; blocked pending `workflow` OAuth scope (risk R15 added). |
