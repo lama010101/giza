@@ -1,3 +1,5 @@
+import type { TouchInputState } from './touchControls';
+
 const DEADZONE = 0.15;
 const LOOK_SENSITIVITY = 2.5;
 
@@ -68,12 +70,20 @@ export function readGamepadState(isFlying: boolean): GamepadState {
   };
 }
 
+interface LookInput {
+  lookX: number;
+  lookY: number;
+}
+
 /**
- * Applies yaw and pitch to a camera using the gamepad look axes.
+ * Applies yaw and pitch to a camera using the look axes.
+ *
+ * Accepts any object with `lookX` and `lookY`, so gamepad, touch, or merged
+ * input can be passed without constructing a full GamepadState.
  */
 export function applyGamepadLook(
   camera: { rotation: { x: number; y: number } },
-  state: GamepadState,
+  state: LookInput,
   dt: number,
 ): void {
   if (state.lookX === 0 && state.lookY === 0) return;
@@ -87,19 +97,20 @@ export function applyGamepadLook(
 }
 
 /**
- * Merges keyboard and gamepad movement inputs.
+ * Merges keyboard, gamepad, and virtual touch movement inputs.
  */
 export function combinedMovementInput(
   keys: Record<string, boolean>,
   gamepad: GamepadState,
   isFlying: boolean,
+  touch?: TouchInputState,
 ): Record<string, boolean> {
   return {
-    forward: keys.forward || gamepad.forward,
-    back: keys.back || gamepad.back,
-    left: keys.left || gamepad.left,
-    right: keys.right || gamepad.right,
-    up: (isFlying && (keys.up || gamepad.up)) || false,
-    down: (isFlying && (keys.down || gamepad.down)) || false,
+    forward: keys.forward || gamepad.forward || !!touch?.forward,
+    back: keys.back || gamepad.back || !!touch?.back,
+    left: keys.left || gamepad.left || !!touch?.left,
+    right: keys.right || gamepad.right || !!touch?.right,
+    up: (isFlying && (keys.up || gamepad.up || !!touch?.up)) || false,
+    down: (isFlying && (keys.down || gamepad.down || !!touch?.down)) || false,
   };
 }

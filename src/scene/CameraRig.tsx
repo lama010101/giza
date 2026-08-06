@@ -22,6 +22,7 @@ import {
   applyGamepadLook,
   combinedMovementInput,
 } from './gamepad';
+import { TOUCH_STATE, useTouchLook } from './touchControls';
 
 const KEY_MAP: Record<string, string> = {
   KeyW: 'forward',
@@ -61,12 +62,6 @@ function useKeyboardMovement(): Record<string, boolean> {
   return keys.current;
 }
 
-function hasMovementInput(keys: Record<string, boolean>, isFlying: boolean): boolean {
-  if (keys.forward || keys.back || keys.left || keys.right) return true;
-  if (isFlying && (keys.up || keys.down)) return true;
-  return false;
-}
-
 function inputDirection(keys: Record<string, boolean>, isFlying: boolean): THREE.Vector3 {
   const direction = new THREE.Vector3();
   if (keys.forward) direction.z -= 1;
@@ -98,7 +93,9 @@ function worldDirectionFromCamera(
     world.y = 0;
   }
 
-  if (world.lengthSq() > 0) world.normalize();
+  // Preserve analog input magnitude (e.g., virtual joystick depth) while
+  // capping the maximum movement speed to 1.
+  if (world.lengthSq() > 0) world.clampLength(0, 1);
   return world;
 }
 
@@ -121,10 +118,29 @@ function WalkControls(): JSX.Element {
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1);
     gamepad.current = readGamepadState(false);
-    applyGamepadLook(camera, gamepad.current, dt);
-    const input = combinedMovementInput(keys, gamepad.current, false);
-    const moving = hasMovementInput(input, false);
-    const target = worldDirectionFromCamera(camera, inputDirection(input, false), false);
+
+    const touchLookX = TOUCH_STATE.lookX;
+    const touchLookY = TOUCH_STATE.lookY;
+    TOUCH_STATE.lookX = 0;
+    TOUCH_STATE.lookY = 0;
+    applyGamepadLook(
+      camera,
+      {
+        lookX: gamepad.current.lookX + touchLookX,
+        lookY: gamepad.current.lookY + touchLookY,
+      },
+      dt,
+    );
+
+    const input = combinedMovementInput(keys, gamepad.current, false, TOUCH_STATE);
+    const local = inputDirection(input, false);
+    if (TOUCH_STATE.moveActive) {
+      local.x += TOUCH_STATE.moveX;
+      local.z += TOUCH_STATE.moveY;
+      local.clampLength(0, 1);
+    }
+    const moving = local.lengthSq() > 0;
+    const target = worldDirectionFromCamera(camera, local, false);
 
     if (moving) {
       velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
@@ -199,10 +215,29 @@ function FlyControls(): JSX.Element {
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.1);
     gamepad.current = readGamepadState(true);
-    applyGamepadLook(camera, gamepad.current, dt);
-    const input = combinedMovementInput(keys, gamepad.current, true);
-    const moving = hasMovementInput(input, true);
-    const target = worldDirectionFromCamera(camera, inputDirection(input, true), true);
+
+    const touchLookX = TOUCH_STATE.lookX;
+    const touchLookY = TOUCH_STATE.lookY;
+    TOUCH_STATE.lookX = 0;
+    TOUCH_STATE.lookY = 0;
+    applyGamepadLook(
+      camera,
+      {
+        lookX: gamepad.current.lookX + touchLookX,
+        lookY: gamepad.current.lookY + touchLookY,
+      },
+      dt,
+    );
+
+    const input = combinedMovementInput(keys, gamepad.current, true, TOUCH_STATE);
+    const local = inputDirection(input, true);
+    if (TOUCH_STATE.moveActive) {
+      local.x += TOUCH_STATE.moveX;
+      local.z += TOUCH_STATE.moveY;
+      local.clampLength(0, 1);
+    }
+    const moving = local.lengthSq() > 0;
+    const target = worldDirectionFromCamera(camera, local, true);
 
     if (moving) {
       velocity.current = applyAcceleration(velocity.current, target, constraints.current, dt);
@@ -261,6 +296,9 @@ function TeleportControls(): JSX.Element {
 export function CameraRig(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const cameraTarget = useAppStore((s) => s.cameraTarget);
+  const { gl } = useThree();
+
+  useTouchLook(cameraMode, gl.domElement);
 
   if (cameraMode === 'walk') return <WalkControls />;
   if (cameraMode === 'fly') return <FlyControls />;

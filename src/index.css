@@ -253,6 +253,72 @@ body,
   pointer-events: none;
 }
 
+/* ─── Virtual Touch Controls (M07-T14) ─── */
+
+.virtual-controls {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.virtual-joystick-base,
+.virtual-button {
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.virtual-joystick-base {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid rgba(224, 224, 224, 0.25);
+  background: rgba(20, 20, 20, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.virtual-joystick-knob {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+.virtual-vertical-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.virtual-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.virtual-button:active {
+  background: var(--bg-hover);
+}
+
 /* ─── Left Panel (M07-T01) ─── */
 
 .left-panel {
