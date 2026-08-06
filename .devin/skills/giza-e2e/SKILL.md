@@ -248,3 +248,23 @@ npx vitest run src/scene/gp-lod1.test.ts src/scene/greatPyramid.test.ts
 - The blue Chamber I water plane and Northern Conduit flow overlay are present in the render graph but may be out of the default camera frame.
 - To see them, orbit/zoom toward Chamber I or use the left **Navigation** → `Level 3 — Chamber I` and rotate the view.
 - The water overlay remains visible at the default `Water Level` (0.50 m). The simulation slider value is controlled by React state; dragging the slider handle is more reliable than setting `.value` from the console.
+
+## Environment permission workarounds
+
+On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `EACCES` errors for Vite's optimizer cache and the build output. If `npm run dev` fails with a permission error or if `npm run build` cannot write to `dist`:
+- Use `cacheDir: '/tmp/vite-cache'` in `vite.config.ts` for the dev server and revert the line before committing.
+- Build to a writable directory: `npx vite build --outDir /tmp/giza-dist`.
+- Vitest may also fail to write `node_modules/.vite/vitest/results.json`; this is an environment artifact and does not indicate failing tests.
+
+## Valid persisted state values
+
+`localStorage.setItem('giza-session', JSON.stringify({ state: { ... }, version: 2 }))` should use known keys. In particular:
+- `activeMonument` must be `'great-pyramid'` or `'osiris'`. Persisting an unknown value now renders an empty layer list (a guard in `LayerPanel` prevents a crash), but the correct monument layers will not appear.
+
+## Testing virtual touch controls
+
+- The `VirtualControls` overlay only renders when `cameraMode` is `walk` or `fly`.
+- `fly` adds `Fly up` / `Fly down` buttons at the bottom-right.
+- `orbit` and `teleport` hide the overlay.
+- On a non-touch device the joystick and buttons may not drive camera movement because `touchControls.ts` attaches only to `pointerType === 'touch'`. The buttons and joystick still render and the Vitest `VirtualControls`/`touchControls` suites verify the logic.
+- To force a mobile viewport, use Chrome DevTools Device Toolbar or resize the window to a narrow width; the overlay visibility is governed by `cameraMode`, not viewport size.

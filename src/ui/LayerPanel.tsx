@@ -22,7 +22,7 @@ export function LayerPanel(): JSX.Element {
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
 
-  const monumentLayers = MONUMENT_LAYERS[activeMonument];
+  const monumentLayers = MONUMENT_LAYERS[activeMonument] ?? [];
   const allVisible = monumentLayers.every((l) => !hiddenLayers.includes(l));
 
   const handleToggleAll = (): void => {
