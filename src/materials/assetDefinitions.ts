@@ -19,6 +19,8 @@ export interface AssetDefinition {
   sourceIds: string[];
   confidence: number;
   lods: string[];
+  /** Path to the generated GLB production asset, if published. */
+  filePath?: string;
 }
 
 const RUBBLE_VARIANTS: MaterialVariant[] = [
@@ -134,6 +136,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Level1-ChamberA-LOD0.glb',
   },
   {
     id: 'OS-Level2-ChamberB-LOD0',
@@ -146,6 +149,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Level2-ChamberB-LOD0.glb',
   },
   {
     id: 'OS-Level3-ChamberI-LOD0',
@@ -158,6 +162,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-ChamberI-LOD0.glb',
   },
   {
     id: 'OS-Level3-CentralIsland-LOD0',
@@ -170,6 +175,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 96,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-CentralIsland-LOD0.glb',
   },
   {
     id: 'OS-Level3-Sarcophagus-LOD0',
@@ -182,6 +188,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001', 'SRC-0002'],
     confidence: 95,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-Sarcophagus-LOD0.glb',
   },
   {
     id: 'OS-Level3-NorthernConduit-LOD0',
@@ -194,6 +201,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 83,
     lods: ['LOD0', 'LOD1'],
+    filePath: 'assets/export/glB/objects/OS-Level3-NorthernConduit-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftA-LOD0',
@@ -206,6 +214,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftA-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftB-LOD0',
@@ -218,6 +227,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftB-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftC-LOD0',
@@ -230,6 +240,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftC-LOD0.glb',
   },
 ];
 

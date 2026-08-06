@@ -16,6 +16,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { osirisBlockout } from '../database/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '../database/blockouts/great-pyramid';
+import { getOsirisAssets, type AssetDefinition } from '../src/materials/assetDefinitions';
 
 // Polyfill FileReader for Node so GLTFExporter can read generated Blobs.
 class FileReaderPolyfill {
@@ -67,7 +68,11 @@ function hexToNumber(hex: string): number {
   return parseInt(normalized, 16);
 }
 
-function buildScene(nodes: BlockoutNodeLike[], includeOverlays = true): THREE.Scene {
+function buildScene(
+  nodes: BlockoutNodeLike[],
+  includeOverlays = true,
+  gizaExtras?: Record<string, unknown>,
+): THREE.Scene {
   const scene = new THREE.Scene();
   scene.name = 'GIZA generated asset';
 
@@ -88,7 +93,7 @@ function buildScene(nodes: BlockoutNodeLike[], includeOverlays = true): THREE.Sc
     if (node.rotation) {
       mesh.rotation.set(node.rotation.x, node.rotation.y, node.rotation.z);
     }
-    mesh.userData = { blockoutId: node.id, color: node.color };
+    mesh.userData = { blockoutId: node.id, color: node.color, giza: gizaExtras };
     scene.add(mesh);
   }
 
@@ -115,8 +120,13 @@ async function exportGLB(scene: THREE.Scene, outPath: string): Promise<void> {
   });
 }
 
-async function writeGLB(name: string, nodes: BlockoutNodeLike[], includeOverlays = true) {
-  const scene = buildScene(nodes, includeOverlays);
+async function writeGLB(
+  name: string,
+  nodes: BlockoutNodeLike[],
+  includeOverlays = true,
+  gizaExtras?: Record<string, unknown>,
+) {
+  const scene = buildScene(nodes, includeOverlays, gizaExtras);
   const outPath = join(outDir, `${name}.glb`);
   await exportGLB(scene, outPath);
   // eslint-disable-next-line no-console
@@ -198,6 +208,46 @@ function makeShaftFrame(id: string, name: string, color: string): BlockoutNodeLi
 
 function makeMaterialSample(id: string, name: string, color: string): BlockoutNodeLike {
   return makeNode(id, name, new THREE.Vector3(0, 0.5, 0), new THREE.Vector3(1, 1, 1), color);
+}
+
+function buildGizaExtras(asset: AssetDefinition) {
+  return {
+    assetId: asset.id,
+    monument: asset.monument,
+    location: asset.location,
+    objectClass: asset.objectClass,
+    materialId: asset.materialId,
+    evidenceIds: asset.evidenceIds,
+    sourceIds: asset.sourceIds,
+    confidence: asset.confidence,
+    lods: asset.lods,
+    generator: 'generateExportAssets.ts',
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+async function generateOsirisPerObjectAssets(osirisNodes: BlockoutNodeLike[]) {
+  const objectDir = join(outDir, 'objects');
+  mkdirSync(objectDir, { recursive: true });
+
+  const assets = getOsirisAssets();
+  for (const asset of assets) {
+    const matches = osirisNodes.filter((node) => node.name === asset.name);
+
+    if (matches.length === 0) {
+      console.warn(`No blockout node found for asset ${asset.id} (${asset.name})`);
+      continue;
+    }
+
+    const extras = buildGizaExtras(asset);
+    const fileName = `${asset.id}.glb`;
+    const outPath = join(objectDir, fileName);
+    const scene = buildScene(matches, true, extras);
+    scene.name = asset.name;
+    await exportGLB(scene, outPath);
+    // eslint-disable-next-line no-console
+    console.log(`Generated ${outPath} (${scene.children.length} nodes)`);
+  }
 }
 
 async function main() {
@@ -293,6 +343,9 @@ async function main() {
     gpNodes.filter((n) => n.id === 'pyramid-exterior' || n.layer === 'kings-complex'),
     false,
   );
+
+  // Per-object Osiris assets with DoSD metadata embedded in glTF extras
+  await generateOsirisPerObjectAssets(osirisNodes);
 
   // eslint-disable-next-line no-console
   console.log('All export assets generated.');

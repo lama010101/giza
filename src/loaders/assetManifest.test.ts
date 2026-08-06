@@ -13,7 +13,7 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
   describe('getAssetManifest', () => {
     it('returns the full manifest', () => {
       const m = getAssetManifest();
-      expect(m.version).toBe('1.1.0');
+      expect(m.version).toBe('1.2.0');
       expect(m.categories).toBeDefined();
     });
   });
@@ -48,6 +48,12 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
     it('returns export assets', () => {
       const assets = getAssetsByCategory('export');
       expect(assets.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('returns object assets', () => {
+      const assets = getAssetsByCategory('objects');
+      expect(assets.length).toBeGreaterThanOrEqual(9);
+      expect(assets[0].assetId).toMatch(/^OS-/);
     });
 
     it('returns empty for unknown category', () => {
@@ -92,7 +98,7 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
       expect(stats.total).toBeGreaterThanOrEqual(20);
       expect(stats.pending).toBe(0);
       expect(stats.published).toBeGreaterThan(0);
-      expect(Object.keys(stats.byCategory).length).toBe(6);
+      expect(Object.keys(stats.byCategory).length).toBe(7);
     });
   });
 
@@ -101,7 +107,8 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
       const ids = getManifestTaskIds();
       expect(ids).toContain('M06B-T01');
       expect(ids).toContain('M06B-T07');
-      expect(ids.length).toBe(6);
+      expect(ids).toContain('M06B-T08');
+      expect(ids.length).toBe(7);
     });
   });
 });

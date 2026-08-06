@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {
   ALL_VARIANTS,
   getRubbleVariants,
@@ -131,6 +134,44 @@ describe('Osiris Asset Definitions', () => {
     for (const asset of heroAssets) {
       expect(asset.lods).toContain('LOD0');
       expect(asset.lods).toContain('LOD3');
+    }
+  });
+});
+
+function loadGLB(filePath: string): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    const data = readFileSync(filePath);
+    // Copy Buffer into a Uint8Array backed by a clean ArrayBuffer so
+    // jsdom-based tests do not trip over the Node Buffer memory pool.
+    const buffer = new Uint8Array(data).buffer;
+    const loader = new GLTFLoader();
+    loader.parse(
+      buffer,
+      '',
+      (gltf) => resolve(gltf),
+      (err) => reject(err ?? new Error('GLTF parse failed')),
+    );
+  });
+}
+
+describe('Asset GLB production files', () => {
+  it('each Osiris asset has a generated .glb file with DoSD metadata', async () => {
+    for (const asset of getOsirisAssets()) {
+      expect(asset.filePath).toBeDefined();
+      const fullPath = resolve(process.cwd(), asset.filePath!);
+      expect(existsSync(fullPath)).toBe(true);
+
+      const gltf = (await loadGLB(fullPath)) as {
+        scene: { children: { userData: { giza?: Record<string, unknown> } }[] };
+      };
+      const first = gltf.scene.children[0];
+      const extras = first?.userData?.giza;
+      expect(extras).toBeDefined();
+      expect(extras?.assetId).toBe(asset.id);
+      expect(extras?.evidenceIds).toEqual(asset.evidenceIds);
+      expect(extras?.sourceIds).toEqual(asset.sourceIds);
+      expect(extras?.confidence).toBe(asset.confidence);
+      expect(extras?.materialId).toBe(asset.materialId);
     }
   });
 });

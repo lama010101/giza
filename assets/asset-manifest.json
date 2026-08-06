@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "generatedAt": "2026-08-06T07:35:00Z",
+  "version": "1.2.0",
+  "generatedAt": "2026-08-06T09:25:00Z",
   "description": "M06B asset manifest \u2014 produced GLB assets generated from surveyed blockout dimensions",
   "categories": {
     "rubble": {
@@ -191,6 +191,74 @@
           "format": "GLB",
           "status": "published",
           "filePath": "assets/export/glB/OS_LOD1.glb"
+        }
+      ]
+    },
+    "objects": {
+      "taskId": "M06B-T08",
+      "assets": [
+        {
+          "assetId": "OS-Level1-ChamberA-LOD0",
+          "name": "OS-Level1-ChamberA-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level1-ChamberA-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Level2-ChamberB-LOD0",
+          "name": "OS-Level2-ChamberB-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level2-ChamberB-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Level3-ChamberI-LOD0",
+          "name": "OS-Level3-ChamberI-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level3-ChamberI-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Level3-CentralIsland-LOD0",
+          "name": "OS-Level3-CentralIsland-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level3-CentralIsland-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Level3-Sarcophagus-LOD0",
+          "name": "OS-Level3-Sarcophagus-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level3-Sarcophagus-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Level3-NorthernConduit-LOD0",
+          "name": "OS-Level3-NorthernConduit-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Level3-NorthernConduit-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Shafts-ShaftA-LOD0",
+          "name": "OS-Shafts-ShaftA-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Shafts-ShaftA-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Shafts-ShaftB-LOD0",
+          "name": "OS-Shafts-ShaftB-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Shafts-ShaftB-LOD0.glb"
+        },
+        {
+          "assetId": "OS-Shafts-ShaftC-LOD0",
+          "name": "OS-Shafts-ShaftC-LOD0",
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/objects/OS-Shafts-ShaftC-LOD0.glb"
         }
       ]
     }

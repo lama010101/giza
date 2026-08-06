@@ -11,7 +11,14 @@ import assetManifestData from '../../assets/asset-manifest.json';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type AssetCategory = 'rubble' | 'bedrock' | 'granite' | 'stairs' | 'materials' | 'export';
+export type AssetCategory =
+  | 'rubble'
+  | 'bedrock'
+  | 'granite'
+  | 'stairs'
+  | 'materials'
+  | 'export'
+  | 'objects';
 export type AssetStatus = 'pending' | 'in_production' | 'published' | 'failed';
 
 export interface ManifestAsset {
