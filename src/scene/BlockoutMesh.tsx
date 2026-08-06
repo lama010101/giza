@@ -7,6 +7,7 @@
  * without requiring pixel-perfect cursor placement.
  */
 
+import type { Mesh } from 'three';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import type { SceneNodeWithWorld } from './sceneGraph';
@@ -30,6 +31,13 @@ interface BlockoutMeshProps {
   rule?: VisualizationRule;
   pbr: { metalness: number; roughness: number };
   isPyramid?: boolean;
+}
+
+function ensureUv2(mesh: Mesh): void {
+  const geometry = mesh.geometry;
+  if (!geometry.hasAttribute('uv2')) {
+    geometry.setAttribute('uv2', geometry.attributes.uv);
+  }
 }
 
 export function BlockoutMesh({
@@ -70,6 +78,7 @@ export function BlockoutMesh({
     <mesh
       position={[position.x, position.y, position.z]}
       rotation={[rotationX, rotationY, rotationZ]}
+      onUpdate={ensureUv2}
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <coneGeometry args={[baseSide / Math.sqrt(2), block.size.y, 4]} />
@@ -85,6 +94,7 @@ export function BlockoutMesh({
     <mesh
       position={[position.x, position.y, position.z]}
       rotation={[rotationX, rotationY, rotationZ]}
+      onUpdate={ensureUv2}
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />

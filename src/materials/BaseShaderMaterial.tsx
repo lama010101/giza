@@ -1,9 +1,15 @@
-import { DoubleSide } from 'three';
+import { DoubleSide, Vector2 } from 'three';
 import { MASTER_MATERIALS } from './masterMaterials';
-import { createProceduralStoneTexture } from './proceduralStone';
+import { createProceduralStoneTextures } from './proceduralStone';
 
-/** Shared procedural stone detail map so every mesh does not allocate its own texture. */
-const STONE_BUMP_TEXTURE = createProceduralStoneTexture({ seed: 0, size: 256 });
+/** Lazily-initialized shared procedural limestone PBR texture set. */
+let stoneTextures: ReturnType<typeof createProceduralStoneTextures> | undefined;
+
+function getStoneTextures() {
+  return (stoneTextures ??= createProceduralStoneTextures({ seed: 0, size: 128 }));
+}
+
+const NORMAL_SCALE = new Vector2(0.5, 0.5);
 
 export interface BaseShaderMaterialProps {
   /** Master material id used to look up the base shader and default properties. */
@@ -25,8 +31,9 @@ export interface BaseShaderMaterialProps {
  *
  * Maps `baseShader` strings from `masterMaterials.ts` to concrete Three.js
  * material components. Currently supports the `Stone` base shader via
- * `meshStandardMaterial` with a shared procedural bump map. Future base shaders
- * (e.g. `Water`, `Metal`) can be added here without touching scene components.
+ * `meshStandardMaterial` with a shared procedural limestone PBR texture set
+ * (albedo, normal, AO, height, roughness). Future base shaders (e.g.
+ * `Water`, `Metal`) can be added here without touching scene components.
  */
 export function BaseShaderMaterial({
   materialId,
@@ -38,6 +45,7 @@ export function BaseShaderMaterial({
 }: BaseShaderMaterialProps): JSX.Element {
   const master = materialId ? MASTER_MATERIALS.find((m) => m.id === materialId) : undefined;
   const baseShader = master?.baseShader ?? 'Stone';
+  const stone = proceduralDetail ? getStoneTextures() : undefined;
 
   if (baseShader === 'Stone') {
     return (
@@ -48,9 +56,14 @@ export function BaseShaderMaterial({
         side={DoubleSide}
         metalness={pbr.metalness}
         roughness={pbr.roughness}
-        roughnessMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
-        bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
-        bumpScale={proceduralDetail ? 0.015 : 0}
+        map={stone?.albedo}
+        normalMap={stone?.normal}
+        normalScale={NORMAL_SCALE}
+        aoMap={stone?.ao}
+        aoMapIntensity={0.8}
+        bumpMap={stone?.height}
+        bumpScale={proceduralDetail ? 0.005 : 0}
+        roughnessMap={stone?.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
         emissiveIntensity={hovered ? 0.35 : 0}
       />
@@ -64,12 +77,17 @@ export function BaseShaderMaterial({
       color={color}
       transparent={opacity < 1}
       opacity={opacity}
-      side={1}
+      side={DoubleSide}
       metalness={pbr.metalness}
       roughness={pbr.roughness}
-      roughnessMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
-      bumpMap={proceduralDetail ? STONE_BUMP_TEXTURE : undefined}
-      bumpScale={proceduralDetail ? 0.015 : 0}
+      map={stone?.albedo}
+      normalMap={stone?.normal}
+      normalScale={NORMAL_SCALE}
+      aoMap={stone?.ao}
+      aoMapIntensity={0.8}
+      bumpMap={stone?.height}
+      bumpScale={proceduralDetail ? 0.005 : 0}
+      roughnessMap={stone?.roughness}
       emissive={hovered ? '#3b82f6' : '#000000'}
       emissiveIntensity={hovered ? 0.35 : 0}
     />
