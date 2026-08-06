@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {
   ALL_VARIANTS,
   getRubbleVariants,
@@ -138,34 +137,33 @@ describe('Osiris Asset Definitions', () => {
   });
 });
 
-function loadGLB(filePath: string): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    const data = readFileSync(filePath);
-    // Copy Buffer into a Uint8Array backed by a clean ArrayBuffer so
-    // jsdom-based tests do not trip over the Node Buffer memory pool.
-    const buffer = new Uint8Array(data).buffer;
-    const loader = new GLTFLoader();
-    loader.parse(
-      buffer,
-      '',
-      (gltf) => resolve(gltf),
-      (err) => reject(err ?? new Error('GLTF parse failed')),
-    );
-  });
+interface GlbJson {
+  nodes?: { extras?: { giza?: Record<string, unknown> } }[];
+}
+
+function parseGLBJson(filePath: string): GlbJson {
+  const data = readFileSync(filePath);
+  const view = new DataView(data.buffer, data.byteOffset, 20);
+  const magic = new TextDecoder().decode(data.subarray(0, 4));
+  if (magic !== 'glTF') {
+    throw new Error(`Not a GLB: ${filePath}`);
+  }
+  const chunkLength = view.getUint32(12, true);
+  const jsonBytes = data.subarray(20, 20 + chunkLength);
+  const jsonStr = new TextDecoder().decode(jsonBytes);
+  return JSON.parse(jsonStr) as GlbJson;
 }
 
 describe('Asset GLB production files', () => {
-  it('each Osiris asset has a generated .glb file with DoSD metadata', async () => {
+  it('each Osiris asset has a generated .glb file with DoSD metadata', () => {
     for (const asset of getOsirisAssets()) {
       expect(asset.filePath).toBeDefined();
       const fullPath = resolve(process.cwd(), asset.filePath!);
       expect(existsSync(fullPath)).toBe(true);
 
-      const gltf = (await loadGLB(fullPath)) as {
-        scene: { children: { userData: { giza?: Record<string, unknown> } }[] };
-      };
-      const first = gltf.scene.children[0];
-      const extras = first?.userData?.giza;
+      const gltf = parseGLBJson(fullPath);
+      const first = gltf.nodes?.[0];
+      const extras = first?.extras?.giza;
       expect(extras).toBeDefined();
       expect(extras?.assetId).toBe(asset.id);
       expect(extras?.evidenceIds).toEqual(asset.evidenceIds);
