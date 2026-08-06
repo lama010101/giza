@@ -44,3 +44,4 @@ Every published asset must include GIZA metadata in `extras.giza`:
 - `confidence`: Confidence score (0-100)
 - `author`: Creator
 - `approvedBy`: Reviewer who approved publication
+<!-- CI base branch test -->
