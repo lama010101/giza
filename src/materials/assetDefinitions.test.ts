@@ -10,6 +10,9 @@ import {
   getAssetById,
   getAssetsByMonument,
   getAssetsByLocation,
+  getAllAssets,
+  validateAssetDefinition,
+  validateAllAssets,
 } from './assetDefinitions';
 
 describe('Material Variants', () => {
@@ -71,6 +74,15 @@ describe('Osiris Asset Definitions', () => {
     }
   });
 
+  it('each asset has source linkage', () => {
+    for (const asset of getOsirisAssets()) {
+      expect(asset.sourceIds.length).toBeGreaterThan(0);
+      for (const sourceId of asset.sourceIds) {
+        expect(sourceId).toMatch(/^SRC-\d{4}$/);
+      }
+    }
+  });
+
   it('each asset has confidence in valid range', () => {
     for (const asset of getOsirisAssets()) {
       expect(asset.confidence).toBeGreaterThanOrEqual(0);
@@ -120,5 +132,37 @@ describe('Osiris Asset Definitions', () => {
       expect(asset.lods).toContain('LOD0');
       expect(asset.lods).toContain('LOD3');
     }
+  });
+});
+
+describe('Asset Definition of Scientific Done (DoSD)', () => {
+  it('validateAssetDefinition accepts a valid asset', () => {
+    const asset = getAllAssets()[0];
+    const result = validateAssetDefinition(asset);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('validateAssetDefinition rejects an asset missing evidence or sources', () => {
+    const result = validateAssetDefinition({
+      id: 'TEST-Invalid',
+      name: 'Invalid Asset',
+      monument: 'OS',
+      location: 'Level3',
+      objectClass: 'Standard',
+      materialId: 'MAT_LocalLimestone',
+      evidenceIds: [],
+      sourceIds: [],
+      confidence: 50,
+      lods: ['LOD0'],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('validateAllAssets confirms every produced asset satisfies DoSD', () => {
+    const { valid, errors } = validateAllAssets();
+    expect(valid).toBe(true);
+    expect(errors).toEqual([]);
   });
 });

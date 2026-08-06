@@ -16,6 +16,7 @@ export interface AssetDefinition {
   objectClass: 'Hero' | 'Standard' | 'Background';
   materialId: string;
   evidenceIds: string[];
+  sourceIds: string[];
   confidence: number;
   lods: string[];
 }
@@ -130,6 +131,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000002'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
   },
@@ -141,6 +143,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000004'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
   },
@@ -152,6 +155,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000006', 'EV-000011'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
   },
@@ -163,6 +167,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000007'],
+    sourceIds: ['SRC-0001'],
     confidence: 96,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
   },
@@ -174,6 +179,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_Basalt',
     evidenceIds: ['EV-000008'],
+    sourceIds: ['SRC-0001', 'SRC-0002'],
     confidence: 95,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
   },
@@ -185,6 +191,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000009'],
+    sourceIds: ['SRC-0001'],
     confidence: 83,
     lods: ['LOD0', 'LOD1'],
   },
@@ -196,6 +203,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000001', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
   },
@@ -207,6 +215,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000003', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
   },
@@ -218,6 +227,7 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000005', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
   },
@@ -237,4 +247,40 @@ export function getAssetsByMonument(monument: string): AssetDefinition[] {
 
 export function getAssetsByLocation(location: string): AssetDefinition[] {
   return OSIRIS_ASSETS.filter((a) => a.location === location);
+}
+
+export const ALL_ASSETS: AssetDefinition[] = [...OSIRIS_ASSETS];
+
+export function getAllAssets(): AssetDefinition[] {
+  return [...ALL_ASSETS];
+}
+
+export function validateAssetDefinition(asset: AssetDefinition): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (!asset.evidenceIds || asset.evidenceIds.length === 0) {
+    errors.push(`Asset ${asset.id} has no evidence linkage (EV-).`);
+  }
+  if (!asset.sourceIds || asset.sourceIds.length === 0) {
+    errors.push(`Asset ${asset.id} has no source linkage (SRC-).`);
+  }
+  if (asset.confidence == null || asset.confidence < 0 || asset.confidence > 100) {
+    errors.push(
+      `Asset ${asset.id} confidence must be between 0 and 100 (got ${asset.confidence}).`,
+    );
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateAllAssets(): { valid: boolean; errors: string[] } {
+  const allErrors: string[] = [];
+  for (const asset of ALL_ASSETS) {
+    const result = validateAssetDefinition(asset);
+    allErrors.push(...result.errors);
+  }
+  return { valid: allErrors.length === 0, errors: allErrors };
 }
