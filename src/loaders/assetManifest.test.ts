@@ -13,7 +13,7 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
   describe('getAssetManifest', () => {
     it('returns the full manifest', () => {
       const m = getAssetManifest();
-      expect(m.version).toBe('1.0.0');
+      expect(m.version).toBe('1.1.0');
       expect(m.categories).toBeDefined();
     });
   });
@@ -75,9 +75,14 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
   });
 
   describe('getAssetsByStatus', () => {
-    it('returns pending assets', () => {
+    it('returns published assets', () => {
+      const published = getAssetsByStatus('published');
+      expect(published.length).toBeGreaterThan(0);
+    });
+
+    it('returns no pending assets after generation', () => {
       const pending = getAssetsByStatus('pending');
-      expect(pending.length).toBeGreaterThan(0);
+      expect(pending.length).toBe(0);
     });
   });
 
@@ -85,8 +90,8 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
     it('returns statistics', () => {
       const stats = getManifestStats();
       expect(stats.total).toBeGreaterThanOrEqual(20);
-      expect(stats.pending).toBeGreaterThan(0);
-      expect(stats.published).toBe(0);
+      expect(stats.pending).toBe(0);
+      expect(stats.published).toBeGreaterThan(0);
       expect(Object.keys(stats.byCategory).length).toBe(6);
     });
   });

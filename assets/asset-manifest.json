@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0",
-  "generatedAt": "2026-08-01T00:00:00Z",
-  "description": "M06B asset manifest — placeholder stubs for asset production pipeline",
+  "version": "1.1.0",
+  "generatedAt": "2026-08-06T07:35:00Z",
+  "description": "M06B asset manifest \u2014 produced GLB assets generated from surveyed blockout dimensions",
   "categories": {
     "rubble": {
       "taskId": "M06B-T01",
@@ -10,21 +10,21 @@
           "assetId": "RUBBLE_001",
           "name": "Mixed limestone rubble chunks",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/RUBBLE_001.glb"
         },
         {
           "assetId": "RUBBLE_002",
           "name": "Granite rubble fragments",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/RUBBLE_002.glb"
         },
         {
           "assetId": "RUBBLE_003",
           "name": "Small debris scatter",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/RUBBLE_003.glb"
         }
       ]
@@ -36,21 +36,21 @@
           "assetId": "BEDROCK_001",
           "name": "Tura limestone bedrock slab",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/BEDROCK_001.glb"
         },
         {
           "assetId": "BEDROCK_002",
           "name": "Local limestone bedrock",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/BEDROCK_002.glb"
         },
         {
           "assetId": "BEDROCK_003",
           "name": "Weathered limestone surface",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/BEDROCK_003.glb"
         }
       ]
@@ -62,21 +62,21 @@
           "assetId": "GRANITE_001",
           "name": "Aswan red granite block",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GRANITE_001.glb"
         },
         {
           "assetId": "GRANITE_002",
           "name": "Granite sarcophagus lid",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GRANITE_002.glb"
         },
         {
           "assetId": "GRANITE_003",
           "name": "Polished granite surface",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GRANITE_003.glb"
         }
       ]
@@ -88,28 +88,28 @@
           "assetId": "STAIR_001",
           "name": "Limestone stair section",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/STAIR_001.glb"
         },
         {
           "assetId": "STAIR_002",
           "name": "Granite stair section",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/STAIR_002.glb"
         },
         {
           "assetId": "SHAFT_001",
           "name": "Vertical shaft lining",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/SHAFT_001.glb"
         },
         {
           "assetId": "SHAFT_002",
           "name": "Shaft entrance frame",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/SHAFT_002.glb"
         }
       ]
@@ -120,37 +120,37 @@
         {
           "assetId": "MAT_TuraLimestone",
           "name": "Tura limestone rendered sample",
-          "format": "KTX2+GLB",
-          "status": "pending",
-          "filePath": "assets/materials/MAT_TuraLimestone.ktx2"
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/MAT_TuraLimestone.glb"
         },
         {
           "assetId": "MAT_LocalLimestone",
           "name": "Local limestone rendered sample",
-          "format": "KTX2+GLB",
-          "status": "pending",
-          "filePath": "assets/materials/MAT_LocalLimestone.ktx2"
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/MAT_LocalLimestone.glb"
         },
         {
           "assetId": "MAT_AswanGranite",
           "name": "Aswan granite rendered sample",
-          "format": "KTX2+GLB",
-          "status": "pending",
-          "filePath": "assets/materials/MAT_AswanGranite.ktx2"
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/MAT_AswanGranite.glb"
         },
         {
           "assetId": "MAT_Basalt",
           "name": "Basalt rendered sample",
-          "format": "KTX2+GLB",
-          "status": "pending",
-          "filePath": "assets/materials/MAT_Basalt.ktx2"
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/MAT_Basalt.glb"
         },
         {
           "assetId": "MAT_Water",
           "name": "Water surface rendered sample",
-          "format": "KTX2+GLB",
-          "status": "pending",
-          "filePath": "assets/materials/MAT_Water.ktx2"
+          "format": "GLB",
+          "status": "published",
+          "filePath": "assets/export/glB/MAT_Water.glb"
         }
       ]
     },
@@ -161,35 +161,35 @@
           "assetId": "GP_LOD0",
           "name": "Great Pyramid LOD0",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GP_LOD0.glb"
         },
         {
           "assetId": "GP_LOD1",
           "name": "Great Pyramid LOD1",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GP_LOD1.glb"
         },
         {
           "assetId": "GP_LOD2",
           "name": "Great Pyramid LOD2",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/GP_LOD2.glb"
         },
         {
           "assetId": "OS_LOD0",
           "name": "Osiris Shaft LOD0",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/OS_LOD0.glb"
         },
         {
           "assetId": "OS_LOD1",
           "name": "Osiris Shaft LOD1",
           "format": "GLB",
-          "status": "pending",
+          "status": "published",
           "filePath": "assets/export/glB/OS_LOD1.glb"
         }
       ]
