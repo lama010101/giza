@@ -23,6 +23,7 @@
     "docs": "node scripts/docs.mjs",
     "generate-assets": "tsx scripts/generateExportAssets.ts",
     "verify-assets": "tsx scripts/verifyExportAssets.mjs",
+    "generate-asset-catalog": "tsx scripts/generateAssetCatalog.ts",
     "prepare": "husky"
   },
   "dependencies": {
