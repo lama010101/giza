@@ -5,6 +5,7 @@ import {
   RepeatWrapping,
   LinearFilter,
   NoColorSpace,
+  SRGBColorSpace,
 } from 'three';
 
 export interface ProceduralStoneOptions {
@@ -93,6 +94,18 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
+}
+
+/**
+ * Encodes a linear-light value to the sRGB transfer curve.
+ *
+ * This is used when storing albedo values in a DataTexture that will be
+ * sampled by Three.js with SRGBColorSpace, so the shader decodes back to the
+ * original linear value.
+ */
+function linearToSRGB(linear: number): number {
+  if (linear <= 0.0031308) return 12.92 * linear;
+  return 1.055 * Math.pow(linear, 1 / 2.4) - 0.055;
 }
 
 /**
@@ -237,7 +250,7 @@ function fillStoneMaps(
       const v = y / (size - 1);
       const sample = sampleStoneSurface(u, v, seed);
       const index = (y * size + x) * 4;
-      const albedoByte = Math.round(sample.albedo * 255);
+      const albedoByte = Math.round(linearToSRGB(sample.albedo) * 255);
       const roughnessByte = Math.round(sample.roughness * 255);
       const aoByte = Math.round(sample.ao * 255);
       const heightByte = Math.round(sample.height * 255);
@@ -328,7 +341,6 @@ export function createProceduralStoneTextures(
   const roughnessTexture = new DataTexture(roughness, size, size, RGBAFormat, UnsignedByteType);
 
   for (const texture of [
-    albedoTexture,
     normalTexture,
     aoTexture,
     heightTexture,
@@ -338,6 +350,10 @@ export function createProceduralStoneTextures(
   ]) {
     configureTexture(texture);
   }
+  // Albedo is a color map, so it must be marked as sRGB and encoded with the
+  // sRGB transfer curve for meshStandardMaterial.map to decode correctly.
+  configureTexture(albedoTexture);
+  albedoTexture.colorSpace = SRGBColorSpace;
 
   return {
     albedo: albedoTexture,
