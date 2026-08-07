@@ -60,6 +60,11 @@ async function buildSchemaDocs() {
   execSync('npx tsx scripts/generateSchemaDocs.ts', { stdio: 'inherit', cwd: root });
 }
 
+async function buildAssetCatalog() {
+  console.log('Generating asset catalog...');
+  execSync('npx tsx scripts/generateAssetCatalog.ts', { stdio: 'inherit', cwd: root });
+}
+
 async function prepareMkDocsBuildDir() {
   await cleanDir(buildDir);
   await mkdir(buildDocsDir, { recursive: true });
@@ -117,6 +122,7 @@ async function main() {
   await ensureVenv();
   await buildApiDocs();
   await buildSchemaDocs();
+  await buildAssetCatalog();
   await prepareMkDocsBuildDir();
   await buildSite();
   console.log(`Documentation generated in ${siteDir}`);
