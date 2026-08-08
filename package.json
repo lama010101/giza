@@ -24,7 +24,7 @@
     "generate-assets": "tsx scripts/generateExportAssets.ts",
     "verify-assets": "tsx scripts/verifyExportAssets.mjs",
     "generate-asset-catalog": "tsx scripts/generateAssetCatalog.ts",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.CI !== 'true') { const { execSync } = require('child_process'); execSync('husky'); }\""
   },
   "dependencies": {
     "@react-three/drei": "9.109.2",

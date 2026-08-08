@@ -32,5 +32,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     pool: 'forks',
+    cache: process.env.CI ? false : undefined,
+    fileParallelism: process.env.CI ? false : undefined,
   },
 });
