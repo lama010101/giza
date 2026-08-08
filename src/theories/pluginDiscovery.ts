@@ -39,6 +39,7 @@ import { osirisMainstreamPlugin } from './plugins/osiris-mainstream';
 import { gpHydraulicAcousticPlugin } from './plugins/gp-hydraulic-acoustic';
 import { gpMainstreamPlugin } from './plugins/gp-mainstream';
 import { gpScanPyramidsPlugin } from './plugins/gp-scanpyramids';
+import { gpRampPlugin } from './plugins/gp-ramp';
 
 const BUILTIN_PLUGINS: HypothesisPlugin[] = [
   osirisHydraulicPlugin,
@@ -46,6 +47,7 @@ const BUILTIN_PLUGINS: HypothesisPlugin[] = [
   gpHydraulicAcousticPlugin,
   gpMainstreamPlugin,
   gpScanPyramidsPlugin,
+  gpRampPlugin,
 ];
 
 // ─── Discovery ───────────────────────────────────────────────────────────────
