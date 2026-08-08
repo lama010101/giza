@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
+import { filterVisibleNodes } from '@/theories/visibilityRules';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
 import { useAppStore, type SceneLayer } from '@/store/app';
 import { useLightingStore } from '@/store/lighting';
 import { useSimulationStore } from '@/store/simulation';
@@ -14,22 +16,12 @@ import { WaterMesh } from './WaterMesh';
 import { Level0Surface } from './Level0Surface';
 import { BlockoutMesh } from './BlockoutMesh';
 import { EvidenceHotspots } from './EvidenceHotspots';
+import { HypothesisGeometryMesh } from './HypothesisGeometryMesh';
 import { generateOsirisHotspots } from './osirisHotspots';
 
-const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
-  'level-0': { metalness: 0.0, roughness: 0.95 },
-  shafts: { metalness: 0.05, roughness: 0.9 },
-  'level-1': { metalness: 0.1, roughness: 0.8 },
-  'level-2': { metalness: 0.1, roughness: 0.8 },
-  'level-3': { metalness: 0.15, roughness: 0.75 },
-  monument: { metalness: 0.1, roughness: 0.85 },
-};
-
-const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter((n) => n.layer.startsWith('level-'));
-
-function getPbr(layer: string): { metalness: number; roughness: number } {
-  return LAYER_PBR[layer] ?? { metalness: 0.1, roughness: 0.85 };
-}
+const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter(
+  (n) => n.layer.startsWith('level-') && n.layer !== 'level-0',
+);
 
 function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
   return (
@@ -67,23 +59,28 @@ export function OsirisScene(): JSX.Element {
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
-  const activeRules: VisualizationRule[] = [];
-  if (activeHypothesisIds.length > 0) {
+  const { activeRules, geometryNodes } = useMemo(() => {
     const context = getDefaultHypothesisContext();
-    const seen = new Set<string>();
-    for (const node of osirisBlockout.nodes) {
-      if (!node.objectId || seen.has(node.objectId)) continue;
-      seen.add(node.objectId);
-      activeRules.push(...hypothesisEngine.getVisualizationRules(node.objectId, context));
+    const rules: VisualizationRule[] = [];
+    if (activeHypothesisIds.length > 0) {
+      const seen = new Set<string>();
+      for (const node of osirisBlockout.nodes) {
+        if (!node.objectId || seen.has(node.objectId)) continue;
+        seen.add(node.objectId);
+        rules.push(...hypothesisEngine.getVisualizationRules(node.objectId, context));
+      }
     }
-  }
+    const rawGeometry = hypothesisEngine.getGeometryNodes(context);
+    const visibleGeometry = filterVisibleNodes(rawGeometry, { hypothesisActive: true });
+    return { activeRules: rules, geometryNodes: visibleGeometry };
+  }, [activeHypothesisIds]);
 
   const visibleNodes = graph
     .getAllVisibleNodes()
     .filter((node) => blocks.has(node.id))
     .filter((node) => {
       const block = blocks.get(node.id)!;
-      return !hiddenLayers.includes(block.layer as never);
+      return !hiddenLayers.includes(block.layer as never) && block.layer !== 'level-0';
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
@@ -129,8 +126,11 @@ export function OsirisScene(): JSX.Element {
           node={node}
           block={block}
           rule={rule}
-          pbr={getPbr(block.layer)}
+          pbr={getPbrForMaterial(block.materialId ?? '')}
         />
+      ))}
+      {geometryNodes.map((node) => (
+        <HypothesisGeometryMesh key={node.id} node={node} />
       ))}
       {hydraulicActive && <WaterPlane />}
       {hydraulicActive && (

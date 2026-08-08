@@ -1,4 +1,6 @@
 import type { Hypothesis } from '@/schemas/hypothesis';
+import type { Vector3 } from '@/schemas/location';
+import type { HypothesisGeometryNode } from '@/theories/types';
 import type { HypothesisPlugin } from '../types';
 
 const hypothesis: Hypothesis = {
@@ -26,7 +28,13 @@ const hypothesis: Hypothesis = {
       status: 'confirmed',
     },
   ],
-  affectedStructures: ['OBJ-0006', 'OBJ-0007', 'OBJ-0008'],
+  affectedStructures: ['OBJ-0006', 'OBJ-0007', 'OBJ-0008', 'OBJ-0009'],
+  confidenceByObject: {
+    'OBJ-0006': 55,
+    'OBJ-0007': 50,
+    'OBJ-0008': 90,
+    'OBJ-0009': 45,
+  },
   supports: ['EV-000006', 'EV-000008'],
   contradicts: ['EV-000011'],
   requiredEvidence: ['EV-000008'],
@@ -40,14 +48,38 @@ const hypothesis: Hypothesis = {
       opacity: 0.4,
       label: 'Sarcophagus and burial assemblage',
     },
+    {
+      target: 'OBJ-0009',
+      overlay: 'dead-end',
+      conditions: {},
+      color: '#9ca3af',
+      opacity: 0.4,
+      label: 'Unfinished or later intrusion (dead end)',
+    },
   ],
   confidence: 0,
-  confidenceByObject: {},
   references: ['SRC-0001'],
   bibliography: [],
   status: 'published',
   tags: ['mainstream', 'funerary', 'osiris-shaft'],
 };
+
+const deadEndPosition: Vector3 = { x: -9.3, y: -30.3, z: -16.1 };
+
+const geometryNodes: HypothesisGeometryNode[] = [
+  {
+    id: 'osiris-mainstream-northern-conduit-dead-end',
+    name: 'Northern Conduit Dead End',
+    hypothesisId: 'THEORY-OSIRIS-002',
+    position: deadEndPosition,
+    rotation: { x: 0, y: (-3 * Math.PI) / 4, z: 0 },
+    size: { x: 0.65, y: 0.75, z: 1.2 },
+    color: '#9ca3af',
+    opacity: 0.4,
+    evidenceIds: ['EV-000009'],
+    visibilityRules: [{ defaultVisible: true }],
+  },
+];
 
 export const osirisMainstreamPlugin: HypothesisPlugin = {
   id: 'THEORY-OSIRIS-002',
@@ -57,4 +89,5 @@ export const osirisMainstreamPlugin: HypothesisPlugin = {
   getHypothesis: () => hypothesis,
   getVisualizationRules: (objectId) =>
     hypothesis.visualizationRules.filter((rule) => rule.target === objectId),
+  getGeometryNodes: () => geometryNodes,
 };

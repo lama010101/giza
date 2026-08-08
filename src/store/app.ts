@@ -52,6 +52,47 @@ export const MONUMENT_LAYERS: Record<Monument, readonly SceneLayer[]> = {
   ] as const,
 };
 
+/**
+ * Conceptual layer taxonomy (M05-T05).
+ * These tags describe *what kind* of geometry is being shown, independent of
+ * the storage-level `SCENE_LAYERS` used by the layer panel.
+ */
+export const CONCEPTUAL_LAYERS = [
+  'Geometry',
+  'Modern',
+  'Water',
+  'Geology',
+  'Evidence',
+  'Theory',
+  'Simulation',
+  'Annotations',
+] as const;
+export type ConceptualLayer = (typeof CONCEPTUAL_LAYERS)[number];
+
+/**
+ * Maps each scene/storage layer to the conceptual layers it participates in.
+ * `level-0` is intentionally included even though it is not a `SceneLayer`.
+ */
+export const LAYER_TO_CONCEPTUAL_LAYERS: Record<string, ConceptualLayer[]> = {
+  'level-0': ['Geometry', 'Modern', 'Annotations'],
+  shafts: ['Geometry', 'Evidence'],
+  'level-1': ['Geometry', 'Evidence'],
+  'level-2': ['Geometry', 'Evidence'],
+  'level-3': ['Geometry', 'Evidence', 'Water'],
+  monument: ['Geometry', 'Annotations'],
+  exterior: ['Geometry'],
+  passages: ['Geometry'],
+  subterranean: ['Geometry', 'Geology'],
+  gallery: ['Geometry'],
+  'kings-complex': ['Geometry'],
+  'queens-complex': ['Geometry'],
+  relieving: ['Geometry', 'Theory'],
+};
+
+export function getConceptualLayersForLayer(layer: string): ConceptualLayer[] {
+  return LAYER_TO_CONCEPTUAL_LAYERS[layer] ?? ['Geometry'];
+}
+
 export interface AppState {
   mode: AppMode;
   activeMonument: Monument;
@@ -71,6 +112,7 @@ export interface AppState {
   cameraTarget: Vector3;
   hiddenLayers: SceneLayer[];
   lod: LODLevel;
+  microDetailEnabled: boolean;
   setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
@@ -78,6 +120,7 @@ export interface AppState {
   setCameraTarget: (target: Vector3) => void;
   toggleLayer: (layer: SceneLayer) => void;
   setHiddenLayers: (layers: SceneLayer[]) => void;
+  setMicroDetailEnabled: (enabled: boolean) => void;
   setActiveHypothesisIds: (ids: string[]) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedObjectId: (id: string | null) => void;
@@ -104,6 +147,7 @@ const PERSISTED_KEYS: (keyof AppState)[] = [
   'cameraTarget',
   'hiddenLayers',
   'lod',
+  'microDetailEnabled',
 ];
 
 export const useAppStore = create<AppState>()(
@@ -128,6 +172,7 @@ export const useAppStore = create<AppState>()(
         cameraTarget: { x: 0, y: 70, z: 0 },
         hiddenLayers: [],
         lod: 'LOD0',
+        microDetailEnabled: false,
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
@@ -141,6 +186,7 @@ export const useAppStore = create<AppState>()(
               : [...state.hiddenLayers, layer],
           })),
         setHiddenLayers: (hiddenLayers) => set({ hiddenLayers }),
+        setMicroDetailEnabled: (microDetailEnabled) => set({ microDetailEnabled }),
         setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
         setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),

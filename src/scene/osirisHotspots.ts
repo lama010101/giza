@@ -47,7 +47,7 @@ export function generateOsirisHotspots(): OsirisHotspot[] {
       description: '',
       imageIds: [],
       publicationIds: [],
-      confidence: 80,
+      confidence: node.confidence ?? 80,
       objectId: node.objectId,
       label: node.name,
       layer: node.layer,
