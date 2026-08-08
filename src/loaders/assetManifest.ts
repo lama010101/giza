@@ -23,6 +23,8 @@ export type AssetStatus = 'pending' | 'in_production' | 'published' | 'failed';
 
 export interface ManifestAsset {
   assetId: string;
+  baseAssetId?: string;
+  lod?: string;
   name: string;
   format: string;
   status: AssetStatus;
@@ -78,12 +80,19 @@ function baseAssetId(assetId: string): string {
 }
 
 /**
+ * Returns the base asset ID for a manifest entry, preferring the explicit
+ * `baseAssetId` field when present.
+ */
+export function getManifestBaseAssetId(asset: ManifestAsset): string {
+  return asset.baseAssetId ?? baseAssetId(asset.assetId);
+}
+
+/**
  * Returns all manifest entries that belong to the same base asset (all LODs).
  */
 export function getManifestLODAssets(baseId: string): ManifestAsset[] {
-  const base = baseAssetId(baseId);
   return getAllManifestAssets()
-    .filter((a) => baseAssetId(a.assetId) === base)
+    .filter((a) => getManifestBaseAssetId(a) === baseAssetId(baseId))
     .sort((a, b) => a.assetId.localeCompare(b.assetId));
 }
 

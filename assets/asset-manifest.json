@@ -1,6 +1,6 @@
 {
   "version": "1.3.0",
-  "generatedAt": "2026-08-08T01:14:58.020Z",
+  "generatedAt": "2026-08-08T01:58:52.756Z",
   "description": "M06B asset manifest — produced GLB assets generated from surveyed blockout dimensions",
   "categories": {
     "rubble": {
@@ -199,6 +199,8 @@
       "assets": [
         {
           "assetId": "OS-Level1-ChamberA-LOD0",
+          "baseAssetId": "OS-Level1-ChamberA",
+          "lod": "LOD0",
           "name": "Chamber A (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -206,6 +208,8 @@
         },
         {
           "assetId": "OS-Level1-ChamberA-LOD1",
+          "baseAssetId": "OS-Level1-ChamberA",
+          "lod": "LOD1",
           "name": "Chamber A (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -213,6 +217,8 @@
         },
         {
           "assetId": "OS-Level1-ChamberA-LOD2",
+          "baseAssetId": "OS-Level1-ChamberA",
+          "lod": "LOD2",
           "name": "Chamber A (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -220,6 +226,8 @@
         },
         {
           "assetId": "OS-Level2-ChamberB-LOD0",
+          "baseAssetId": "OS-Level2-ChamberB",
+          "lod": "LOD0",
           "name": "Chamber B (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -227,6 +235,8 @@
         },
         {
           "assetId": "OS-Level2-ChamberB-LOD1",
+          "baseAssetId": "OS-Level2-ChamberB",
+          "lod": "LOD1",
           "name": "Chamber B (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -234,6 +244,8 @@
         },
         {
           "assetId": "OS-Level2-ChamberB-LOD2",
+          "baseAssetId": "OS-Level2-ChamberB",
+          "lod": "LOD2",
           "name": "Chamber B (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -241,6 +253,8 @@
         },
         {
           "assetId": "OS-Level3-CentralIsland-LOD0",
+          "baseAssetId": "OS-Level3-CentralIsland",
+          "lod": "LOD0",
           "name": "Central Island (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -248,6 +262,8 @@
         },
         {
           "assetId": "OS-Level3-CentralIsland-LOD1",
+          "baseAssetId": "OS-Level3-CentralIsland",
+          "lod": "LOD1",
           "name": "Central Island (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -255,6 +271,8 @@
         },
         {
           "assetId": "OS-Level3-CentralIsland-LOD2",
+          "baseAssetId": "OS-Level3-CentralIsland",
+          "lod": "LOD2",
           "name": "Central Island (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -262,6 +280,8 @@
         },
         {
           "assetId": "OS-Level3-CentralIsland-LOD3",
+          "baseAssetId": "OS-Level3-CentralIsland",
+          "lod": "LOD3",
           "name": "Central Island (LOD3)",
           "format": "GLB",
           "status": "published",
@@ -269,6 +289,8 @@
         },
         {
           "assetId": "OS-Level3-ChamberI-LOD0",
+          "baseAssetId": "OS-Level3-ChamberI",
+          "lod": "LOD0",
           "name": "Chamber I (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -276,6 +298,8 @@
         },
         {
           "assetId": "OS-Level3-ChamberI-LOD1",
+          "baseAssetId": "OS-Level3-ChamberI",
+          "lod": "LOD1",
           "name": "Chamber I (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -283,6 +307,8 @@
         },
         {
           "assetId": "OS-Level3-ChamberI-LOD2",
+          "baseAssetId": "OS-Level3-ChamberI",
+          "lod": "LOD2",
           "name": "Chamber I (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -290,6 +316,8 @@
         },
         {
           "assetId": "OS-Level3-ChamberI-LOD3",
+          "baseAssetId": "OS-Level3-ChamberI",
+          "lod": "LOD3",
           "name": "Chamber I (LOD3)",
           "format": "GLB",
           "status": "published",
@@ -297,6 +325,8 @@
         },
         {
           "assetId": "OS-Level3-NorthernConduit-LOD0",
+          "baseAssetId": "OS-Level3-NorthernConduit",
+          "lod": "LOD0",
           "name": "Northern Conduit (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -304,6 +334,8 @@
         },
         {
           "assetId": "OS-Level3-NorthernConduit-LOD1",
+          "baseAssetId": "OS-Level3-NorthernConduit",
+          "lod": "LOD1",
           "name": "Northern Conduit (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -311,6 +343,8 @@
         },
         {
           "assetId": "OS-Level3-Sarcophagus-LOD0",
+          "baseAssetId": "OS-Level3-Sarcophagus",
+          "lod": "LOD0",
           "name": "Basalt Sarcophagus (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -318,6 +352,8 @@
         },
         {
           "assetId": "OS-Level3-Sarcophagus-LOD1",
+          "baseAssetId": "OS-Level3-Sarcophagus",
+          "lod": "LOD1",
           "name": "Basalt Sarcophagus (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -325,6 +361,8 @@
         },
         {
           "assetId": "OS-Level3-Sarcophagus-LOD2",
+          "baseAssetId": "OS-Level3-Sarcophagus",
+          "lod": "LOD2",
           "name": "Basalt Sarcophagus (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -332,6 +370,8 @@
         },
         {
           "assetId": "OS-Level3-Sarcophagus-LOD3",
+          "baseAssetId": "OS-Level3-Sarcophagus",
+          "lod": "LOD3",
           "name": "Basalt Sarcophagus (LOD3)",
           "format": "GLB",
           "status": "published",
@@ -339,6 +379,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftA-LOD0",
+          "baseAssetId": "OS-Shafts-ShaftA",
+          "lod": "LOD0",
           "name": "Shaft A (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -346,6 +388,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftA-LOD1",
+          "baseAssetId": "OS-Shafts-ShaftA",
+          "lod": "LOD1",
           "name": "Shaft A (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -353,6 +397,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftA-LOD2",
+          "baseAssetId": "OS-Shafts-ShaftA",
+          "lod": "LOD2",
           "name": "Shaft A (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -360,6 +406,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftB-LOD0",
+          "baseAssetId": "OS-Shafts-ShaftB",
+          "lod": "LOD0",
           "name": "Shaft B (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -367,6 +415,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftB-LOD1",
+          "baseAssetId": "OS-Shafts-ShaftB",
+          "lod": "LOD1",
           "name": "Shaft B (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -374,6 +424,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftB-LOD2",
+          "baseAssetId": "OS-Shafts-ShaftB",
+          "lod": "LOD2",
           "name": "Shaft B (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -381,6 +433,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftC-LOD0",
+          "baseAssetId": "OS-Shafts-ShaftC",
+          "lod": "LOD0",
           "name": "Shaft C (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -388,6 +442,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftC-LOD1",
+          "baseAssetId": "OS-Shafts-ShaftC",
+          "lod": "LOD1",
           "name": "Shaft C (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -395,6 +451,8 @@
         },
         {
           "assetId": "OS-Shafts-ShaftC-LOD2",
+          "baseAssetId": "OS-Shafts-ShaftC",
+          "lod": "LOD2",
           "name": "Shaft C (LOD2)",
           "format": "GLB",
           "status": "published",
@@ -402,6 +460,8 @@
         },
         {
           "assetId": "GP-OBJ-0101-LOD0",
+          "baseAssetId": "GP-OBJ-0101",
+          "lod": "LOD0",
           "name": "Pyramid Exterior (core masonry) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -409,6 +469,8 @@
         },
         {
           "assetId": "GP-OBJ-0101-LOD1",
+          "baseAssetId": "GP-OBJ-0101",
+          "lod": "LOD1",
           "name": "Pyramid Exterior (core masonry) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -416,6 +478,8 @@
         },
         {
           "assetId": "GP-OBJ-0102-LOD0",
+          "baseAssetId": "GP-OBJ-0102",
+          "lod": "LOD0",
           "name": "Casing Stones (north face, lower courses) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -423,6 +487,8 @@
         },
         {
           "assetId": "GP-OBJ-0102-LOD1",
+          "baseAssetId": "GP-OBJ-0102",
+          "lod": "LOD1",
           "name": "Casing Stones (north face, lower courses) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -430,6 +496,8 @@
         },
         {
           "assetId": "GP-OBJ-0103-LOD0",
+          "baseAssetId": "GP-OBJ-0103",
+          "lod": "LOD0",
           "name": "Original Entrance (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -437,6 +505,8 @@
         },
         {
           "assetId": "GP-OBJ-0103-LOD1",
+          "baseAssetId": "GP-OBJ-0103",
+          "lod": "LOD1",
           "name": "Original Entrance (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -444,6 +514,8 @@
         },
         {
           "assetId": "GP-OBJ-0104-LOD0",
+          "baseAssetId": "GP-OBJ-0104",
+          "lod": "LOD0",
           "name": "Modern Entrance (Al-Mamun Tunnel) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -451,6 +523,8 @@
         },
         {
           "assetId": "GP-OBJ-0104-LOD1",
+          "baseAssetId": "GP-OBJ-0104",
+          "lod": "LOD1",
           "name": "Modern Entrance (Al-Mamun Tunnel) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -458,6 +532,8 @@
         },
         {
           "assetId": "GP-OBJ-0105-LOD0",
+          "baseAssetId": "GP-OBJ-0105",
+          "lod": "LOD0",
           "name": "Descending Passage (sloped) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -465,6 +541,8 @@
         },
         {
           "assetId": "GP-OBJ-0105-LOD1",
+          "baseAssetId": "GP-OBJ-0105",
+          "lod": "LOD1",
           "name": "Descending Passage (sloped) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -472,6 +550,8 @@
         },
         {
           "assetId": "GP-OBJ-0106-LOD0",
+          "baseAssetId": "GP-OBJ-0106",
+          "lod": "LOD0",
           "name": "Subterranean Chamber (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -479,6 +559,8 @@
         },
         {
           "assetId": "GP-OBJ-0106-LOD1",
+          "baseAssetId": "GP-OBJ-0106",
+          "lod": "LOD1",
           "name": "Subterranean Chamber (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -486,6 +568,8 @@
         },
         {
           "assetId": "GP-OBJ-0107-LOD0",
+          "baseAssetId": "GP-OBJ-0107",
+          "lod": "LOD0",
           "name": "Central Pit (Subterranean) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -493,6 +577,8 @@
         },
         {
           "assetId": "GP-OBJ-0107-LOD1",
+          "baseAssetId": "GP-OBJ-0107",
+          "lod": "LOD1",
           "name": "Central Pit (Subterranean) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -500,6 +586,8 @@
         },
         {
           "assetId": "GP-OBJ-0108-LOD0",
+          "baseAssetId": "GP-OBJ-0108",
+          "lod": "LOD0",
           "name": "Ascending Passage (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -507,6 +595,8 @@
         },
         {
           "assetId": "GP-OBJ-0108-LOD1",
+          "baseAssetId": "GP-OBJ-0108",
+          "lod": "LOD1",
           "name": "Ascending Passage (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -514,6 +604,8 @@
         },
         {
           "assetId": "GP-OBJ-0109-LOD0",
+          "baseAssetId": "GP-OBJ-0109",
+          "lod": "LOD0",
           "name": "Grand Gallery (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -521,6 +613,8 @@
         },
         {
           "assetId": "GP-OBJ-0109-LOD1",
+          "baseAssetId": "GP-OBJ-0109",
+          "lod": "LOD1",
           "name": "Grand Gallery (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -528,6 +622,8 @@
         },
         {
           "assetId": "GP-OBJ-0110-LOD0",
+          "baseAssetId": "GP-OBJ-0110",
+          "lod": "LOD0",
           "name": "Antechamber (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -535,6 +631,8 @@
         },
         {
           "assetId": "GP-OBJ-0110-LOD1",
+          "baseAssetId": "GP-OBJ-0110",
+          "lod": "LOD1",
           "name": "Antechamber (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -542,6 +640,8 @@
         },
         {
           "assetId": "GP-OBJ-0111-LOD0",
+          "baseAssetId": "GP-OBJ-0111",
+          "lod": "LOD0",
           "name": "King's Chamber (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -549,6 +649,8 @@
         },
         {
           "assetId": "GP-OBJ-0111-LOD1",
+          "baseAssetId": "GP-OBJ-0111",
+          "lod": "LOD1",
           "name": "King's Chamber (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -556,6 +658,8 @@
         },
         {
           "assetId": "GP-OBJ-0112-LOD0",
+          "baseAssetId": "GP-OBJ-0112",
+          "lod": "LOD0",
           "name": "King's Chamber Sarcophagus (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -563,6 +667,8 @@
         },
         {
           "assetId": "GP-OBJ-0112-LOD1",
+          "baseAssetId": "GP-OBJ-0112",
+          "lod": "LOD1",
           "name": "King's Chamber Sarcophagus (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -570,6 +676,8 @@
         },
         {
           "assetId": "GP-OBJ-0113-LOD0",
+          "baseAssetId": "GP-OBJ-0113",
+          "lod": "LOD0",
           "name": "Davison's Chamber (Relieving 1) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -577,6 +685,8 @@
         },
         {
           "assetId": "GP-OBJ-0113-LOD1",
+          "baseAssetId": "GP-OBJ-0113",
+          "lod": "LOD1",
           "name": "Davison's Chamber (Relieving 1) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -584,6 +694,8 @@
         },
         {
           "assetId": "GP-OBJ-0114-LOD0",
+          "baseAssetId": "GP-OBJ-0114",
+          "lod": "LOD0",
           "name": "Wellington's Chamber (Relieving 2) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -591,6 +703,8 @@
         },
         {
           "assetId": "GP-OBJ-0114-LOD1",
+          "baseAssetId": "GP-OBJ-0114",
+          "lod": "LOD1",
           "name": "Wellington's Chamber (Relieving 2) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -598,6 +712,8 @@
         },
         {
           "assetId": "GP-OBJ-0115-LOD0",
+          "baseAssetId": "GP-OBJ-0115",
+          "lod": "LOD0",
           "name": "Nelson's Chamber (Relieving 3) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -605,6 +721,8 @@
         },
         {
           "assetId": "GP-OBJ-0115-LOD1",
+          "baseAssetId": "GP-OBJ-0115",
+          "lod": "LOD1",
           "name": "Nelson's Chamber (Relieving 3) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -612,6 +730,8 @@
         },
         {
           "assetId": "GP-OBJ-0116-LOD0",
+          "baseAssetId": "GP-OBJ-0116",
+          "lod": "LOD0",
           "name": "Lady Arbuthnot's Chamber (Relieving 4) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -619,6 +739,8 @@
         },
         {
           "assetId": "GP-OBJ-0116-LOD1",
+          "baseAssetId": "GP-OBJ-0116",
+          "lod": "LOD1",
           "name": "Lady Arbuthnot's Chamber (Relieving 4) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -626,6 +748,8 @@
         },
         {
           "assetId": "GP-OBJ-0117-LOD0",
+          "baseAssetId": "GP-OBJ-0117",
+          "lod": "LOD0",
           "name": "Campbell's Chamber (Relieving 5, with cartouches) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -633,6 +757,8 @@
         },
         {
           "assetId": "GP-OBJ-0117-LOD1",
+          "baseAssetId": "GP-OBJ-0117",
+          "lod": "LOD1",
           "name": "Campbell's Chamber (Relieving 5, with cartouches) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -640,6 +766,8 @@
         },
         {
           "assetId": "GP-OBJ-0118-LOD0",
+          "baseAssetId": "GP-OBJ-0118",
+          "lod": "LOD0",
           "name": "Queen's Chamber (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -647,6 +775,8 @@
         },
         {
           "assetId": "GP-OBJ-0118-LOD1",
+          "baseAssetId": "GP-OBJ-0118",
+          "lod": "LOD1",
           "name": "Queen's Chamber (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -654,6 +784,8 @@
         },
         {
           "assetId": "GP-OBJ-0119-LOD0",
+          "baseAssetId": "GP-OBJ-0119",
+          "lod": "LOD0",
           "name": "Queen's Chamber Niche (East Wall) (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -661,6 +793,8 @@
         },
         {
           "assetId": "GP-OBJ-0119-LOD1",
+          "baseAssetId": "GP-OBJ-0119",
+          "lod": "LOD1",
           "name": "Queen's Chamber Niche (East Wall) (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -668,6 +802,8 @@
         },
         {
           "assetId": "GP-OBJ-0120-LOD0",
+          "baseAssetId": "GP-OBJ-0120",
+          "lod": "LOD0",
           "name": "Queen's Chamber Passage (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -675,6 +811,8 @@
         },
         {
           "assetId": "GP-OBJ-0120-LOD1",
+          "baseAssetId": "GP-OBJ-0120",
+          "lod": "LOD1",
           "name": "Queen's Chamber Passage (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -682,6 +820,8 @@
         },
         {
           "assetId": "GP-OBJ-0121-LOD0",
+          "baseAssetId": "GP-OBJ-0121",
+          "lod": "LOD0",
           "name": "KC North Shaft (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -689,6 +829,8 @@
         },
         {
           "assetId": "GP-OBJ-0121-LOD1",
+          "baseAssetId": "GP-OBJ-0121",
+          "lod": "LOD1",
           "name": "KC North Shaft (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -696,6 +838,8 @@
         },
         {
           "assetId": "GP-OBJ-0122-LOD0",
+          "baseAssetId": "GP-OBJ-0122",
+          "lod": "LOD0",
           "name": "KC South Shaft (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -703,6 +847,8 @@
         },
         {
           "assetId": "GP-OBJ-0122-LOD1",
+          "baseAssetId": "GP-OBJ-0122",
+          "lod": "LOD1",
           "name": "KC South Shaft (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -710,6 +856,8 @@
         },
         {
           "assetId": "GP-OBJ-0123-LOD0",
+          "baseAssetId": "GP-OBJ-0123",
+          "lod": "LOD0",
           "name": "QC North Shaft (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -717,6 +865,8 @@
         },
         {
           "assetId": "GP-OBJ-0123-LOD1",
+          "baseAssetId": "GP-OBJ-0123",
+          "lod": "LOD1",
           "name": "QC North Shaft (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -724,6 +874,8 @@
         },
         {
           "assetId": "GP-OBJ-0124-LOD0",
+          "baseAssetId": "GP-OBJ-0124",
+          "lod": "LOD0",
           "name": "QC South Shaft (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -731,6 +883,8 @@
         },
         {
           "assetId": "GP-OBJ-0124-LOD1",
+          "baseAssetId": "GP-OBJ-0124",
+          "lod": "LOD1",
           "name": "QC South Shaft (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -738,6 +892,8 @@
         },
         {
           "assetId": "GP-OBJ-0125-LOD0",
+          "baseAssetId": "GP-OBJ-0125",
+          "lod": "LOD0",
           "name": "Well Shaft (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -745,6 +901,8 @@
         },
         {
           "assetId": "GP-OBJ-0125-LOD1",
+          "baseAssetId": "GP-OBJ-0125",
+          "lod": "LOD1",
           "name": "Well Shaft (LOD1)",
           "format": "GLB",
           "status": "published",
@@ -752,6 +910,8 @@
         },
         {
           "assetId": "GP-OBJ-0126-LOD0",
+          "baseAssetId": "GP-OBJ-0126",
+          "lod": "LOD0",
           "name": "Grotto (LOD0)",
           "format": "GLB",
           "status": "published",
@@ -759,6 +919,8 @@
         },
         {
           "assetId": "GP-OBJ-0126-LOD1",
+          "baseAssetId": "GP-OBJ-0126",
+          "lod": "LOD1",
           "name": "Grotto (LOD1)",
           "format": "GLB",
           "status": "published",

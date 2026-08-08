@@ -220,6 +220,8 @@ function makeMaterialSample(id: string, name: string, color: string): BlockoutNo
 
 const generatedObjectManifestEntries: {
   assetId: string;
+  baseAssetId: string;
+  lod: string;
   name: string;
   format: 'GLB';
   status: 'published';
@@ -290,7 +292,7 @@ async function generatePerObjectAsset(
 
   for (const lod of asset.lods) {
     const lodId = `${baseId}-${lod}`;
-    const extras = buildGizaExtras(asset, lod, lodId, asset.id);
+    const extras = buildGizaExtras(asset, lod, lodId, baseId);
     const outPath = join(objectDir, `${lodId}.glb`);
 
     let scene: THREE.Scene;
@@ -306,6 +308,8 @@ async function generatePerObjectAsset(
 
     generatedObjectManifestEntries.push({
       assetId: lodId,
+      baseAssetId: baseId,
+      lod,
       name: `${asset.name} (${lod})`,
       format: 'GLB',
       status: 'published',
