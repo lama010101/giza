@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { Vector3 } from '@/schemas/location';
 import type { LODLevel } from '@/loaders/validators';
+import { createBookmark, type Bookmark } from '@/evidence/bookmark';
 
 export type AppMode =
   | 'Explore'
@@ -79,8 +80,10 @@ export interface AppState {
   measurementStart: Vector3 | null;
   measurementEnd: Vector3 | null;
   bookmarkedObjectIds: string[];
+  bookmarks: Bookmark[];
   cameraMode: CameraMode;
   cameraTarget: Vector3;
+  cameraPosition: Vector3;
   hiddenLayers: SceneLayer[];
   hiddenVisibilityLayers: VisibilityLayer[];
   lod: LODLevel;
@@ -90,6 +93,10 @@ export interface AppState {
   setActiveMonument: (monument: Monument) => void;
   setCameraMode: (mode: CameraMode) => void;
   setCameraTarget: (target: Vector3) => void;
+  setCameraPosition: (position: Vector3) => void;
+  addBookmark: (name: string, notes?: string) => void;
+  deleteBookmark: (id: string) => void;
+  restoreBookmark: (id: string) => void;
   toggleLayer: (layer: SceneLayer) => void;
   setHiddenLayers: (layers: SceneLayer[]) => void;
   toggleVisibilityLayer: (layer: VisibilityLayer) => void;
@@ -118,6 +125,7 @@ const PERSISTED_KEYS: (keyof AppState)[] = [
   'evidencePanelOpen',
   'sidePanelTab',
   'bookmarkedObjectIds',
+  'bookmarks',
   'cameraMode',
   'cameraTarget',
   'hiddenLayers',
@@ -143,8 +151,10 @@ export const useAppStore = create<AppState>()(
         measurementStart: null,
         measurementEnd: null,
         bookmarkedObjectIds: [],
+        bookmarks: [],
         cameraMode: 'orbit',
         cameraTarget: { x: 0, y: 70, z: 0 },
+        cameraPosition: { x: 0, y: 70, z: 100 },
         hiddenLayers: [],
         hiddenVisibilityLayers: [],
         lod: 'LOD0',
@@ -155,6 +165,47 @@ export const useAppStore = create<AppState>()(
           set({ activeMonument, cameraTarget: DEFAULT_CAMERA_TARGET[activeMonument] }),
         setCameraMode: (cameraMode) => set({ cameraMode }),
         setCameraTarget: (cameraTarget) => set({ cameraTarget }),
+        setCameraPosition: (cameraPosition) => set({ cameraPosition }),
+        addBookmark: (name, notes = '') =>
+          set((state) => {
+            const visibleLayers = SCENE_LAYERS.filter((l) => !state.hiddenLayers.includes(l));
+            const hiddenLayers = state.hiddenLayers.slice();
+            const bookmark = createBookmark({
+              id: `bm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+              name,
+              camera: {
+                position: state.cameraPosition,
+                target: state.cameraTarget,
+                mode: state.cameraMode,
+              },
+              visibleLayers,
+              hiddenLayers,
+              activeHypothesisIds: state.activeHypothesisIds,
+              hiddenVisibilityLayers: state.hiddenVisibilityLayers,
+              selectedObjectId: state.selectedObjectId,
+              selectedEvidenceId: state.selectedEvidenceId,
+              notes,
+            });
+            return { bookmarks: [...state.bookmarks, bookmark] };
+          }),
+        deleteBookmark: (id) =>
+          set((state) => ({ bookmarks: state.bookmarks.filter((bm) => bm.id !== id) })),
+        restoreBookmark: (id) =>
+          set((state) => {
+            const bm = state.bookmarks.find((b) => b.id === id);
+            if (!bm) return {};
+            return {
+              cameraPosition: bm.camera.position,
+              cameraTarget: bm.camera.target,
+              cameraMode: bm.camera.mode as CameraMode,
+              hiddenLayers: bm.hiddenLayers.slice() as SceneLayer[],
+              hiddenVisibilityLayers:
+                (bm.hiddenVisibilityLayers.slice() as VisibilityLayer[]) ?? [],
+              activeHypothesisIds: bm.activeHypothesisIds.slice(),
+              selectedObjectId: bm.selectedObjectId ?? null,
+              selectedEvidenceId: bm.selectedEvidenceId ?? null,
+            };
+          }),
         toggleLayer: (layer) =>
           set((state) => ({
             hiddenLayers: state.hiddenLayers.includes(layer)

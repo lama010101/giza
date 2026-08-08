@@ -48,6 +48,72 @@ describe('useAppStore measurement', () => {
   });
 });
 
+describe('useAppStore bookmarks', () => {
+  beforeEach(() => {
+    useAppStore.setState({
+      bookmarks: [],
+      cameraPosition: { x: 1, y: 2, z: 3 },
+      cameraTarget: { x: 0, y: 0, z: 0 },
+      cameraMode: 'orbit',
+      hiddenLayers: ['exterior'],
+      hiddenVisibilityLayers: ['Modern'],
+      activeHypothesisIds: ['hydraulic'],
+      selectedObjectId: 'OBJ-0001',
+      selectedEvidenceId: 'EV-0001',
+    });
+  });
+
+  it('adds a bookmark from current state', () => {
+    const { addBookmark } = useAppStore.getState();
+
+    addBookmark('Test view', 'A note');
+    const bms = useAppStore.getState().bookmarks;
+    expect(bms).toHaveLength(1);
+    expect(bms[0].name).toBe('Test view');
+    expect(bms[0].notes).toBe('A note');
+    expect(bms[0].camera.position).toEqual({ x: 1, y: 2, z: 3 });
+    expect(bms[0].camera.mode).toBe('orbit');
+    expect(bms[0].activeHypothesisIds).toEqual(['hydraulic']);
+    expect(bms[0].selectedObjectId).toBe('OBJ-0001');
+    expect(bms[0].selectedEvidenceId).toBe('EV-0001');
+  });
+
+  it('deletes a bookmark', () => {
+    const { addBookmark, deleteBookmark } = useAppStore.getState();
+    addBookmark('One');
+    const id = useAppStore.getState().bookmarks[0].id;
+    addBookmark('Two');
+    deleteBookmark(id);
+    expect(useAppStore.getState().bookmarks.map((b) => b.name)).toEqual(['Two']);
+  });
+
+  it('restores a bookmark into store state', () => {
+    const { addBookmark, restoreBookmark } = useAppStore.getState();
+    addBookmark('Saved');
+    const bm = useAppStore.getState().bookmarks[0];
+
+    useAppStore.setState({
+      cameraPosition: { x: 0, y: 0, z: 0 },
+      cameraTarget: { x: 0, y: 0, z: 0 },
+      cameraMode: 'walk',
+      hiddenLayers: [],
+      hiddenVisibilityLayers: [],
+      activeHypothesisIds: [],
+      selectedObjectId: null,
+      selectedEvidenceId: null,
+    });
+
+    restoreBookmark(bm.id);
+    const state = useAppStore.getState();
+    expect(state.cameraPosition).toEqual(bm.camera.position);
+    expect(state.cameraTarget).toEqual(bm.camera.target);
+    expect(state.cameraMode).toBe(bm.camera.mode);
+    expect(state.hiddenLayers).toEqual(bm.hiddenLayers);
+    expect(state.activeHypothesisIds).toEqual(bm.activeHypothesisIds);
+    expect(state.selectedObjectId).toBe(bm.selectedObjectId);
+  });
+});
+
 describe('useAppStore camera mode', () => {
   beforeEach(() => {
     useAppStore.setState({ cameraMode: 'orbit' });

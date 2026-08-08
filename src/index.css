@@ -1097,3 +1097,69 @@ body,
   font-size: 0.8rem;
   color: #9a9a9a;
 }
+
+.bookmark-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.bookmark-input {
+  padding: 0.35rem 0.5rem;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 0.25rem;
+  color: #e0e0e0;
+  font-size: 0.8rem;
+}
+
+.bookmark-add-btn {
+  padding: 0.4rem 0.6rem;
+  background: #1e293b;
+  color: #60a5fa;
+  border: 1px solid #2a3a52;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.bookmark-add-btn:hover {
+  background: #2a3a52;
+}
+
+.bookmark-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bookmark-item .left-panel-list-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0.5rem;
+}
+
+.bookmark-date {
+  font-size: 0.7rem;
+  color: #9a9a9a;
+  margin-left: 0.5rem;
+}
+
+.bookmark-delete-btn {
+  padding: 0.25rem 0.4rem;
+  background: transparent;
+  border: 1px solid #333333;
+  border-radius: 0.25rem;
+  color: #9a9a9a;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.bookmark-delete-btn:hover {
+  color: #ef4444;
+  border-color: #5a3a3a;
+}

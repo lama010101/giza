@@ -8,6 +8,7 @@ describe('LeftPanel (M07-T01)', () => {
     useAppStore.setState({
       activeMonument: 'osiris',
       lod: 'LOD0',
+      bookmarks: [],
       bookmarkedObjectIds: ['OBJ-0001'],
       activeLocationId: null,
       selectedObjectId: null,
@@ -31,12 +32,31 @@ describe('LeftPanel (M07-T01)', () => {
     expect(within(hierarchy).getByText('Shaft A')).toBeInTheDocument();
   });
 
-  it('lists the bookmarked object by name', () => {
+  it('lists saved bookmarks and restores a bookmark', () => {
+    useAppStore.setState({
+      bookmarks: [
+        {
+          id: 'bm-001',
+          name: 'Shaft A View',
+          createdAt: '2026-08-08T12:00:00.000Z',
+          camera: {
+            position: { x: 0, y: 0, z: 10 },
+            target: { x: 0, y: 0, z: 0 },
+            mode: 'orbit',
+          },
+          visibleLayers: ['shafts'],
+          hiddenLayers: [],
+          activeHypothesisIds: [],
+          hiddenVisibilityLayers: [],
+          notes: '',
+        },
+      ],
+    });
     render(<LeftPanel />);
     const bookmarks = screen.getByText('Bookmarks').closest('section');
     expect(bookmarks).toBeTruthy();
     if (!bookmarks) throw new Error('Missing bookmarks section');
-    expect(within(bookmarks).getByText('Shaft A')).toBeInTheDocument();
+    expect(within(bookmarks).getByText('Shaft A View')).toBeInTheDocument();
   });
 
   it('lists navigation locations', () => {

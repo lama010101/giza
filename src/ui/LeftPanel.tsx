@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useAppStore } from '@/store/app';
 import { buildOsirisSceneGraph } from '@/scene/osirisSceneGraph';
 import { buildGreatPyramidSceneGraph } from '@/scene/greatPyramidSceneGraph';
 import type { SceneGraph, SceneNode, SceneNodeWithWorld } from '@/scene/sceneGraph';
-import { getAllObjects, getAllLocations, getObjectById } from '@/evidence/repository';
+import { getAllLocations } from '@/evidence/repository';
+import type { Bookmark } from '@/evidence/bookmark';
 
 interface TreeNodeProps {
   graph: SceneGraph;
@@ -49,11 +50,92 @@ function TreeNode({ graph, node, depth, onSelect }: TreeNodeProps): JSX.Element 
   );
 }
 
+interface BookmarksSectionProps {
+  bookmarks: Bookmark[];
+  addBookmark: (name: string, notes?: string) => void;
+  deleteBookmark: (id: string) => void;
+  restoreBookmark: (id: string) => void;
+}
+
+function BookmarksSection({
+  bookmarks,
+  addBookmark,
+  deleteBookmark,
+  restoreBookmark,
+}: BookmarksSectionProps): JSX.Element {
+  const [name, setName] = useState('');
+  const [notes, setNotes] = useState('');
+
+  const handleAdd = (): void => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    addBookmark(trimmed, notes.trim());
+    setName('');
+    setNotes('');
+  };
+
+  return (
+    <section className="left-panel-section">
+      <h3>Bookmarks</h3>
+      <div className="bookmark-form">
+        <input
+          type="text"
+          className="bookmark-input"
+          placeholder="Bookmark name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          aria-label="Bookmark name"
+        />
+        <input
+          type="text"
+          className="bookmark-input"
+          placeholder="Notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          aria-label="Bookmark notes"
+        />
+        <button type="button" className="bookmark-add-btn" onClick={handleAdd}>
+          Save current view
+        </button>
+      </div>
+      {bookmarks.length === 0 ? (
+        <p className="left-panel-empty">No bookmarks yet.</p>
+      ) : (
+        <ul className="left-panel-list">
+          {bookmarks.map((bm) => (
+            <li key={bm.id} className="bookmark-item">
+              <button
+                type="button"
+                className="left-panel-list-btn"
+                onClick={() => restoreBookmark(bm.id)}
+                title={bm.notes || undefined}
+              >
+                {bm.name}
+                <span className="bookmark-date">{new Date(bm.createdAt).toLocaleDateString()}</span>
+              </button>
+              <button
+                type="button"
+                className="bookmark-delete-btn"
+                aria-label={`Delete ${bm.name}`}
+                onClick={() => deleteBookmark(bm.id)}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function LeftPanel(): JSX.Element {
   const activeMonument = useAppStore((s) => s.activeMonument);
   const lod = useAppStore((s) => s.lod);
-  const bookmarkedObjectIds = useAppStore((s) => s.bookmarkedObjectIds);
-  const selectedObjectId = useAppStore((s) => s.selectedObjectId);
+  const bookmarks = useAppStore((s) => s.bookmarks);
+  const addBookmark = useAppStore((s) => s.addBookmark);
+  const deleteBookmark = useAppStore((s) => s.deleteBookmark);
+  const restoreBookmark = useAppStore((s) => s.restoreBookmark);
   const setSelectedObjectId = useAppStore((s) => s.setSelectedObjectId);
   const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
   const setCameraTarget = useAppStore((s) => s.setCameraTarget);
@@ -71,7 +153,6 @@ export function LeftPanel(): JSX.Element {
   );
   const rootNodes = useMemo(() => graph.getRootNodes(), [graph]);
 
-  const objectsById = useMemo(() => new Map(getAllObjects().map((o) => [o.id, o])), []);
   const locations = useMemo(() => getAllLocations(), []);
 
   const focusNode = (node: SceneNodeWithWorld): void => {
@@ -88,25 +169,6 @@ export function LeftPanel(): JSX.Element {
       }
       setEvidencePanelOpen(true);
     }
-  };
-
-  const focusObject = (objectId: string): void => {
-    const obj = getObjectById(objectId);
-    if (!obj) return;
-    const matches = graph.findByObjectId(objectId);
-    if (matches.length > 0) {
-      const pos = matches[0].worldTransform.position;
-      setCameraTarget({ x: pos.x, y: pos.y, z: pos.z });
-    }
-    setSelectedObjectId(objectId);
-    if (obj.evidence && obj.evidence.length > 0) {
-      setSelectedEvidenceId(obj.evidence[0]);
-      setSidePanelTab('evidence');
-    } else {
-      setSelectedEvidenceId(null);
-      setSidePanelTab('hypothesis');
-    }
-    setEvidencePanelOpen(true);
   };
 
   const navigateToLocation = (locationId: string, location: { name: string }): void => {
@@ -137,29 +199,12 @@ export function LeftPanel(): JSX.Element {
         </ul>
       </section>
 
-      <section className="left-panel-section">
-        <h3>Bookmarks</h3>
-        {bookmarkedObjectIds.length === 0 ? (
-          <p className="left-panel-empty">No bookmarks yet.</p>
-        ) : (
-          <ul className="left-panel-list">
-            {bookmarkedObjectIds.map((id) => {
-              const obj = objectsById.get(id);
-              return (
-                <li key={id}>
-                  <button
-                    type="button"
-                    className={`left-panel-list-btn ${selectedObjectId === id ? 'active' : ''}`}
-                    onClick={() => focusObject(id)}
-                  >
-                    {obj?.name ?? id}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+      <BookmarksSection
+        bookmarks={bookmarks}
+        addBookmark={addBookmark}
+        deleteBookmark={deleteBookmark}
+        restoreBookmark={restoreBookmark}
+      />
 
       <section className="left-panel-section">
         <h3>Navigation</h3>

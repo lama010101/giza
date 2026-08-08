@@ -24,6 +24,7 @@ export const BookmarkSchema = z.object({
   visibleLayers: z.array(z.string()),
   hiddenLayers: z.array(z.string()),
   activeHypothesisIds: z.array(z.string()),
+  hiddenVisibilityLayers: z.array(z.string()).default([]),
   lighting: z
     .object({
       ambient: z.number().optional(),
@@ -49,6 +50,7 @@ export interface BookmarkInput {
   visibleLayers: readonly SceneLayer[];
   hiddenLayers: readonly SceneLayer[];
   activeHypothesisIds: string[];
+  hiddenVisibilityLayers?: readonly string[];
   lighting?: {
     ambient?: number;
     directional?: number;
@@ -68,6 +70,7 @@ export function createBookmark(input: BookmarkInput): Bookmark {
     visibleLayers: input.visibleLayers,
     hiddenLayers: input.hiddenLayers,
     activeHypothesisIds: input.activeHypothesisIds,
+    hiddenVisibilityLayers: input.hiddenVisibilityLayers ?? [],
     lighting: input.lighting,
     selectedObjectId: input.selectedObjectId ?? null,
     selectedEvidenceId: input.selectedEvidenceId ?? null,

@@ -293,6 +293,34 @@ function TeleportControls(): JSX.Element {
   return <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />;
 }
 
+function CameraPositionSync(): null {
+  const { camera } = useThree();
+  const cameraPosition = useAppStore((s) => s.cameraPosition);
+  const setCameraPosition = useAppStore((s) => s.setCameraPosition);
+
+  useEffect(() => {
+    if (typeof camera.position.set === 'function') {
+      camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    } else {
+      camera.position.x = cameraPosition.x;
+      camera.position.y = cameraPosition.y;
+      camera.position.z = cameraPosition.z;
+    }
+  }, [camera, cameraPosition]);
+
+  useFrame(() => {
+    const { x, y, z } = camera.position;
+    const dx = x - cameraPosition.x;
+    const dy = y - cameraPosition.y;
+    const dz = z - cameraPosition.z;
+    if (Math.sqrt(dx * dx + dy * dy + dz * dz) > 0.001) {
+      setCameraPosition({ x, y, z });
+    }
+  });
+
+  return null;
+}
+
 export function CameraRig(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const cameraTarget = useAppStore((s) => s.cameraTarget);
@@ -300,9 +328,15 @@ export function CameraRig(): JSX.Element {
 
   useTouchLook(cameraMode, gl.domElement);
 
-  if (cameraMode === 'walk') return <WalkControls />;
-  if (cameraMode === 'fly') return <FlyControls />;
-  if (cameraMode === 'teleport') return <TeleportControls />;
-
-  return <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />;
+  return (
+    <>
+      <CameraPositionSync />
+      {cameraMode === 'walk' && <WalkControls />}
+      {cameraMode === 'fly' && <FlyControls />}
+      {cameraMode === 'teleport' && <TeleportControls />}
+      {cameraMode === 'orbit' && (
+        <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />
+      )}
+    </>
+  );
 }
