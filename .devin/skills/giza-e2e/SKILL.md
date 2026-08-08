@@ -300,3 +300,9 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
 - The **Share** button next to a bookmark copies `bookmarkToURL(bookmark, baseUrl)` to `navigator.clipboard`. In Playwright, grant both `clipboard-read` and `clipboard-write` permissions on `http://localhost:5173` and read `navigator.clipboard.readText()` after the click.
 - When a new hypothesis plugin is added to `pluginDiscovery.ts`, also verify it is registered in `src/theories/engineInstance.ts` (or wherever the runtime engine is initialized). `HypothesisSelector` reads from `hypothesisEngine.getPluginIds()`, not from the discovery module alone.
 - The `Navigation` list in the left panel matches `location.name` against scene-node names; if location names are prefixed (e.g. `Great Pyramid — ...`) and node names are not, the click may not update the camera target.
+
+## Testing Great Pyramid hypothesis overlays
+
+- `GreatPyramidScene.tsx` separates `activeHighlightRules` (`overlay === 'highlight'`) from `activeOverlayRules` (all other supported types). `annotation` overlays must not be excluded from `activeOverlayRules` or they will be silently dropped.
+- To activate a hypothesis checkbox from Playwright, use `locator.evaluate((el) => (el as HTMLInputElement).click())` on the checkbox input. The R3F canvas can intercept normal `locator.click()` and `dispatchEvent('change')` does not always update React controlled inputs.
+- After activating `THEORY-GP-004` (Internal Ramp Construction Hypothesis), select an affected object from the left Explorer hierarchy (e.g. `Original Entrance` or `Descending Passage (sloped)`) and zoom in with `page.mouse.wheel` so the annotation overlay geometry is visible. Open the **Theory** tab to confirm the predictions list for the active hypothesis.

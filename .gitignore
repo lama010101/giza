@@ -10,6 +10,7 @@ docs/mkdocs-temp/
 .venv-docs/
 *.log
 .DS_Store
+test-report.md
 
 # Environment files (keep .env.example tracked)
 .env
