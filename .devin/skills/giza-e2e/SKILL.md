@@ -287,3 +287,12 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
   ```bash
   npx vitest run --cache=false src/loaders/lodSelection.test.ts src/loaders/assetManifest.test.ts src/loaders/gltfLoader.test.ts src/materials/assetDefinitions.test.ts src/loaders/assetPipelineE2E.test.ts
   ```
+
+## Testing Bookmarks, Search, and Measurement
+
+- The **Bookmarks** section is in the left panel under `Scene Hierarchy`. Enter a name and optional notes, then click `Save current view`.
+- Verify restoration by changing camera mode, hiding a layer, activating a hypothesis, then clicking the saved bookmark. `localStorage` key `giza-session` persists `bookmarks`, `cameraMode`, `hiddenLayers`, and `activeHypothesisIds`.
+- The **Search** secondary tab accepts a query and type filters; clicking a result routes to `evidence`, `scene`, or `theory` and updates `selectedEvidenceId`/`selectedObjectId`/`activeHypothesisIds`.
+- **Measurement** is in the right `Scene` tab. Toggle `Measure`, then click two points in the viewport. A numeric distance appears once two hits are recorded. The `Annotations` visibility layer must be on for the red `MeasurementMarker` spheres to render.
+- In Playwright, the R3F `<canvas>` can intercept normal `locator.click()` actions on UI panels. Use `locator.dispatchEvent('click')` for UI controls and `page.mouse.click()` / `page.mouse.wheel()` for canvas interaction.
+- The `pyramid-exterior` `BlockoutMesh` is only rendered within the scene streamer's `loadDistance`. If measurement clicks do not register, orbit/zoom toward the target or switch to `orbit` and un-hide the `Exterior` layer so the mesh is in the camera frustum.
