@@ -526,6 +526,28 @@ body,
   border-color: #3b82f6;
 }
 
+.measurement-type-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.measurement-type-group button {
+  padding: 0.25rem 0.5rem;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #333333;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.measurement-type-group button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
 .side-hint {
   margin: 0.5rem 0 0;
   font-size: 0.8rem;

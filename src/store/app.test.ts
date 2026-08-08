@@ -5,13 +5,15 @@ describe('useAppStore measurement', () => {
   beforeEach(() => {
     useAppStore.setState({
       measurementMode: false,
+      measurementType: 'distance',
       measurementStart: null,
       measurementEnd: null,
+      measurementThird: null,
       bookmarkedObjectIds: [],
     });
   });
 
-  it('records start then end point, then restarts on the third click', () => {
+  it('records start, end, and third points, then restarts on the fourth click', () => {
     const { addMeasurementPoint } = useAppStore.getState();
 
     addMeasurementPoint({ x: 0, y: 0, z: 0 });
@@ -22,19 +24,32 @@ describe('useAppStore measurement', () => {
     expect(useAppStore.getState().measurementEnd).toEqual({ x: 3, y: 4, z: 0 });
 
     addMeasurementPoint({ x: 1, y: 1, z: 1 });
-    expect(useAppStore.getState().measurementStart).toEqual({ x: 1, y: 1, z: 1 });
+    expect(useAppStore.getState().measurementThird).toEqual({ x: 1, y: 1, z: 1 });
+
+    addMeasurementPoint({ x: 2, y: 2, z: 2 });
+    expect(useAppStore.getState().measurementStart).toEqual({ x: 2, y: 2, z: 2 });
     expect(useAppStore.getState().measurementEnd).toBeNull();
+    expect(useAppStore.getState().measurementThird).toBeNull();
   });
 
-  it('clears points when measurement mode is disabled', () => {
-    const { setMeasurementMode, addMeasurementPoint } = useAppStore.getState();
+  it('switches measurement type', () => {
+    const { setMeasurementType } = useAppStore.getState();
+    setMeasurementType('volume');
+    expect(useAppStore.getState().measurementType).toBe('volume');
+  });
+
+  it('clears points and resets type when measurement mode is disabled', () => {
+    const { setMeasurementMode, addMeasurementPoint, setMeasurementType } = useAppStore.getState();
 
     setMeasurementMode(true);
+    setMeasurementType('area');
     addMeasurementPoint({ x: 0, y: 0, z: 0 });
     setMeasurementMode(false);
 
     expect(useAppStore.getState().measurementStart).toBeNull();
     expect(useAppStore.getState().measurementEnd).toBeNull();
+    expect(useAppStore.getState().measurementThird).toBeNull();
+    expect(useAppStore.getState().measurementType).toBe('distance');
   });
 
   it('toggles bookmarked objects on and off', () => {

@@ -14,8 +14,10 @@ describe('Viewport', () => {
       cameraMode: 'orbit',
       mode: 'Explore',
       activeMonument: 'osiris',
+      measurementType: 'distance',
       measurementStart: null,
       measurementEnd: null,
+      measurementThird: null,
     });
   });
 

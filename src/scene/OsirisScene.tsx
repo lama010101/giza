@@ -61,6 +61,7 @@ export function OsirisScene(): JSX.Element {
   const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
+  const measurementThird = useAppStore((s) => s.measurementThird);
 
   const ambientIntensity = useLightingStore((s) => s.ambientIntensity);
   const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
@@ -213,6 +214,9 @@ export function OsirisScene(): JSX.Element {
       )}
       {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
         <MeasurementMarker point={measurementEnd} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
+        <MeasurementMarker point={measurementThird} />
       )}
       <EvidenceHotspots
         hotspots={osirisHotspots}

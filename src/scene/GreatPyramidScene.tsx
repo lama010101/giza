@@ -235,6 +235,7 @@ export function GreatPyramidScene(): JSX.Element {
   const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
+  const measurementThird = useAppStore((s) => s.measurementThird);
 
   const background = useLightingStore((s) => s.background);
 
@@ -385,6 +386,9 @@ export function GreatPyramidScene(): JSX.Element {
       )}
       {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
         <MeasurementMarker point={measurementEnd} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
+        <MeasurementMarker point={measurementThird} />
       )}
     </Canvas>
   );

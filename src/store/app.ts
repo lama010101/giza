@@ -3,6 +3,7 @@ import { devtools, persist } from 'zustand/middleware';
 import type { Vector3 } from '@/schemas/location';
 import type { LODLevel } from '@/loaders/validators';
 import { createBookmark, type Bookmark } from '@/evidence/bookmark';
+import type { MeasurementType } from '@/evidence/measurement';
 
 export type AppMode =
   | 'Explore'
@@ -77,8 +78,10 @@ export interface AppState {
   sidePanelTab: SidePanelTab;
   hoveredNodeId: string | null;
   measurementMode: boolean;
+  measurementType: MeasurementType;
   measurementStart: Vector3 | null;
   measurementEnd: Vector3 | null;
+  measurementThird: Vector3 | null;
   bookmarkedObjectIds: string[];
   bookmarks: Bookmark[];
   cameraMode: CameraMode;
@@ -112,6 +115,7 @@ export interface AppState {
   setSidePanelTab: (tab: SidePanelTab) => void;
   setHoveredNodeId: (id: string | null) => void;
   setMeasurementMode: (on: boolean) => void;
+  setMeasurementType: (type: MeasurementType) => void;
   addMeasurementPoint: (point: Vector3) => void;
   clearMeasurement: () => void;
   toggleBookmarkedObject: (id: string) => void;
@@ -148,8 +152,10 @@ export const useAppStore = create<AppState>()(
         sidePanelTab: 'scene',
         hoveredNodeId: null,
         measurementMode: false,
+        measurementType: 'distance',
         measurementStart: null,
         measurementEnd: null,
+        measurementThird: null,
         bookmarkedObjectIds: [],
         bookmarks: [],
         cameraMode: 'orbit',
@@ -234,15 +240,24 @@ export const useAppStore = create<AppState>()(
           set(
             measurementMode
               ? { measurementMode }
-              : { measurementMode, measurementStart: null, measurementEnd: null },
+              : {
+                  measurementMode,
+                  measurementType: 'distance',
+                  measurementStart: null,
+                  measurementEnd: null,
+                  measurementThird: null,
+                },
           ),
+        setMeasurementType: (measurementType) => set({ measurementType }),
         addMeasurementPoint: (point) =>
-          set((state) =>
-            state.measurementStart === null || state.measurementEnd !== null
-              ? { measurementStart: point, measurementEnd: null }
-              : { measurementEnd: point },
-          ),
-        clearMeasurement: () => set({ measurementStart: null, measurementEnd: null }),
+          set((state) => {
+            if (state.measurementStart === null) return { measurementStart: point };
+            if (state.measurementEnd === null) return { measurementEnd: point };
+            if (state.measurementThird === null) return { measurementThird: point };
+            return { measurementStart: point, measurementEnd: null, measurementThird: null };
+          }),
+        clearMeasurement: () =>
+          set({ measurementStart: null, measurementEnd: null, measurementThird: null }),
         toggleBookmarkedObject: (id) =>
           set((state) => ({
             bookmarkedObjectIds: state.bookmarkedObjectIds.includes(id)
