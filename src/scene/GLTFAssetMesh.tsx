@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ThreeEvent } from '@react-three/fiber';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { VisualizationRule } from '@/schemas/hypothesis';
+import { selectManifestLOD } from '@/loaders/lodSelection';
 import { useSceneObjectClick } from './useSceneObjectClick';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { BlockoutMesh, type BlockoutLike } from './BlockoutMesh';
@@ -14,7 +15,48 @@ interface GLTFAssetMeshProps {
   rule?: VisualizationRule;
   pbr: { metalness: number; roughness: number };
   isPyramid?: boolean;
-  url: string;
+  assetId: string;
+}
+
+function toManifestUrl(filePath: string | undefined): string | undefined {
+  if (!filePath) return undefined;
+  return filePath.startsWith('/') ? filePath : `/${filePath}`;
+}
+
+function useManifestLODUrl(
+  assetId: string | undefined,
+  position: { x: number; y: number; z: number },
+): string | undefined {
+  const { camera, size } = useThree();
+  const screenSize = size?.height ?? 1080;
+  const lastUrlRef = useRef<string | undefined>();
+  const [url, setUrl] = useState<string | undefined>(() => {
+    if (!assetId) return undefined;
+    const cameraPos = camera?.position
+      ? new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
+      : new THREE.Vector3();
+    const dist = cameraPos.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
+    const selected = selectManifestLOD(assetId, dist, screenSize);
+    const initial = toManifestUrl(selected?.filePath);
+    lastUrlRef.current = initial;
+    return initial;
+  });
+
+  useFrame(() => {
+    if (!assetId) return;
+    const cameraPos = camera?.position
+      ? new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
+      : new THREE.Vector3();
+    const dist = cameraPos.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
+    const selected = selectManifestLOD(assetId, dist, screenSize);
+    const next = toManifestUrl(selected?.filePath);
+    if (next && next !== lastUrlRef.current) {
+      lastUrlRef.current = next;
+      setUrl(next);
+    }
+  });
+
+  return url;
 }
 
 function applyMaterialProps(
@@ -44,18 +86,19 @@ export function GLTFAssetMesh({
   rule,
   pbr,
   isPyramid = false,
-  url,
+  assetId,
 }: GLTFAssetMeshProps): JSX.Element {
+  const url = useManifestLODUrl(assetId, node.worldTransform.position);
   const { hovered, handleClick, handlePointerOver, handlePointerOut } = useSceneObjectClick(node);
   const [gltf, setGltf] = useState<GLTF | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
-    if (isTest || typeof window === 'undefined' || typeof document === 'undefined') {
-      setError(true);
+    if (isTest || typeof window === 'undefined' || typeof document === 'undefined' || !url) {
       return;
     }
+    setError(false);
     let active = true;
     const loader = new GLTFLoader();
     loader.load(

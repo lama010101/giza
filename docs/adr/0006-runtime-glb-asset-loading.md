@@ -23,6 +23,10 @@ To avoid duplicate geometry when multiple scene nodes share the same `objectId` 
 
 `GLTFAssetMesh` clones the loaded scene so each instance is independent, applies `BlockoutLike` color, opacity, roughness, metalness, and hover emissive state to all `MeshStandardMaterial` instances, and re-uses the existing `useSceneObjectClick` handlers so evidence/theory interactions continue unchanged.
 
+## Runtime LOD selection
+
+`GLTFAssetMesh` is driven by an `assetId` rather than a static URL. A dedicated `useManifestLODUrl` hook reads the camera position and viewport height from React Three Fiber's `useThree` on every frame, computes the distance to the object's world position, and calls `selectManifestLOD` to choose the closest published LOD from `assets/asset-manifest.json`. When the camera moves across a LOD threshold, the hook updates its URL state and `GLTFAssetMesh` loads the higher or lower detail GLB. The previous GLB remains visible until the replacement finishes, avoiding gaps, and the invisible hit mesh is recomputed from the new geometry so interactions stay accurate.
+
 ## Consequences
 
 - The production GLB assets are now rendered in the running application, not only validated by scripts.
@@ -30,6 +34,7 @@ To avoid duplicate geometry when multiple scene nodes share the same `objectId` 
 - Great Pyramid object IDs that map to multiple scene nodes render the aggregate GLB exactly once, avoiding overlap and z-fighting.
 - The loader falls back to `BlockoutMesh` on load failure, preserving scene usability if a production asset is missing or network is unavailable.
 - Unit tests continue to render the fallback blockout meshes because `GLTFLoader` is disabled in test mode.
+- Camera distance now selects the appropriate LOD automatically, matching the streaming and performance budgets defined in M05-T07 and M12.
 
 ## Alternatives Considered
 

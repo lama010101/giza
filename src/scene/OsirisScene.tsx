@@ -8,7 +8,8 @@ import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { getPbrForMaterial } from '@/materials/masterMaterials';
-import { resolveAssetUrlForNode } from '@/materials/assetDefinitions';
+import { resolveAssetForNode } from '@/materials/assetDefinitions';
+import type { AssetDefinition } from '@/materials/assetDefinitions';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { CameraRig } from './CameraRig';
@@ -124,16 +125,21 @@ export function OsirisScene(): JSX.Element {
   const assetNodes = useMemo(() => {
     const map = new Map<
       string,
-      { node: SceneNodeWithWorld; block: OsirisBlock; rule?: VisualizationRule; url: string }
+      {
+        node: SceneNodeWithWorld;
+        block: OsirisBlock;
+        rule?: VisualizationRule;
+        asset: AssetDefinition;
+      }
     >();
     const seen = new Set<string>();
     for (const { node, block, rule } of visibleNodes) {
       const objectId = block.objectId ?? node.metadata.objectId;
       if (!objectId || seen.has(objectId)) continue;
-      const url = resolveAssetUrlForNode({ name: node.name, objectId });
-      if (!url) continue;
+      const asset = resolveAssetForNode({ name: node.name, objectId });
+      if (!asset?.filePath) continue;
       seen.add(objectId);
-      map.set(objectId, { node, block, rule, url });
+      map.set(objectId, { node, block, rule, asset });
     }
     return map;
   }, [visibleNodes]);
@@ -182,7 +188,7 @@ export function OsirisScene(): JSX.Element {
                 block={asset.block}
                 rule={asset.rule}
                 pbr={getPbr(asset.block)}
-                url={asset.url}
+                assetId={asset.asset.id}
               />
             );
           }

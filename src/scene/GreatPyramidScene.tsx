@@ -24,7 +24,8 @@ import { QueensChamberMesh } from './QueensChamberMesh';
 import { BlockoutMesh } from './BlockoutMesh';
 import { GLTFAssetMesh } from './GLTFAssetMesh';
 import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
-import { resolveAssetUrlForNode } from '@/materials/assetDefinitions';
+import { resolveAssetForNode } from '@/materials/assetDefinitions';
+import type { AssetDefinition } from '@/materials/assetDefinitions';
 import { GreatPyramidLighting } from './GreatPyramidLighting';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
@@ -297,17 +298,22 @@ export function GreatPyramidScene(): JSX.Element {
   const assetNodes = useMemo(() => {
     const map = new Map<
       string,
-      { node: SceneNodeWithWorld; block: UnifiedBlock; rule?: VisualizationRule; url: string }
+      {
+        node: SceneNodeWithWorld;
+        block: UnifiedBlock;
+        rule?: VisualizationRule;
+        asset: AssetDefinition;
+      }
     >();
     const seen = new Set<string>();
     for (const { node, block, rule } of visibleNodes) {
       if (ASSET_EXCLUDED_IDS.has(node.id)) continue;
       const objectId = block.objectId ?? node.metadata.objectId;
       if (!objectId || seen.has(objectId)) continue;
-      const url = resolveAssetUrlForNode({ name: node.name, objectId });
-      if (!url) continue;
+      const asset = resolveAssetForNode({ name: node.name, objectId });
+      if (!asset?.filePath) continue;
       seen.add(objectId);
-      map.set(objectId, { node, block, rule, url });
+      map.set(objectId, { node, block, rule, asset });
     }
     return map;
   }, [visibleNodes]);
@@ -351,7 +357,7 @@ export function GreatPyramidScene(): JSX.Element {
                 block={asset.block}
                 rule={asset.rule}
                 pbr={getPbr(asset.block)}
-                url={asset.url}
+                assetId={asset.asset.id}
               />
             );
           }
