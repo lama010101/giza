@@ -7,6 +7,7 @@ import {
   getAssetsByStatus,
   getManifestStats,
   getManifestTaskIds,
+  getManifestLODAssets,
 } from './assetManifest';
 
 describe('Asset Manifest (M06B-T01 through T07)', () => {
@@ -109,6 +110,23 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
       expect(ids).toContain('M06B-T07');
       expect(ids).toContain('M06B-T08');
       expect(ids.length).toBe(7);
+    });
+  });
+
+  describe('getManifestLODAssets', () => {
+    it('returns all LODs for an object asset', () => {
+      const lods = getManifestLODAssets('OS-Level3-ChamberI-LOD0');
+      expect(lods.length).toBe(4);
+      expect(lods.map((a) => a.assetId)).toEqual([
+        'OS-Level3-ChamberI-LOD0',
+        'OS-Level3-ChamberI-LOD1',
+        'OS-Level3-ChamberI-LOD2',
+        'OS-Level3-ChamberI-LOD3',
+      ]);
+    });
+
+    it('returns empty for unknown asset', () => {
+      expect(getManifestLODAssets('UNKNOWN-LOD0')).toEqual([]);
     });
   });
 });

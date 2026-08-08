@@ -73,6 +73,20 @@ export function findManifestAsset(assetId: string): ManifestAsset | undefined {
   return getAllManifestAssets().find((a) => a.assetId === assetId);
 }
 
+function baseAssetId(assetId: string): string {
+  return assetId.replace(/-LOD\d+$/, '') || assetId;
+}
+
+/**
+ * Returns all manifest entries that belong to the same base asset (all LODs).
+ */
+export function getManifestLODAssets(baseId: string): ManifestAsset[] {
+  const base = baseAssetId(baseId);
+  return getAllManifestAssets()
+    .filter((a) => baseAssetId(a.assetId) === base)
+    .sort((a, b) => a.assetId.localeCompare(b.assetId));
+}
+
 /**
  * Returns all assets with a given status.
  */
