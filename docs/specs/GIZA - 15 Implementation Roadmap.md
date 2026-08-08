@@ -1,8 +1,8 @@
 # GIZA — Implementation Roadmap
 
-**Version:** 0.7 Draft
+**Version:** 0.8 Draft
 **Status:** Working Specification
-**Last update:** 2026-08-06
+**Last update:** 2026-08-08
 
 This document bridges the GIZA specification set (00–11, 16, 17) to executable work. It decomposes the project into 20 implementation milestones, a dependency graph, per-milestone AI-coder estimates, AI-coder prompts per milestone, a GitHub milestone structure, a Definition of Done (DoD) for every task, a Definition of Scientific Done (DoSD) for every scientifically traceable task, a risk register, and a staged release strategy. The Hypothesis Framework (*GIZA - 11*) is the architectural centerpiece: it elevates GIZA from a digital reconstruction to a scientific hypothesis exploration platform. The Hydraulic-Acoustic System Hypothesis (*GIZA - 16*) is the first hypothesis plugin to be implemented and tested. The AI Development Governance & Engineering Standards (*GIZA - 17*) define the governance framework, quality gates, and definition of done that bind this roadmap to the specification set and the development playbook.
 
@@ -1600,3 +1600,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | 2026-07-28 | 0.5 Draft | Added reference to *GIZA - 17 AI Development Governance & Engineering Standards* in M-1 Repository Governance (spec ref and AI prompt). Updated intro to reference spec 17. |
 | 2026-08-06 | 0.6 Draft | Closed M06B Asset Production: generated actual `.glb` production assets (rubble, bedrock, granite, stairs/shafts, material samples, Osiris/Great Pyramid LODs) linked through `assets/asset-manifest.json`; asset definitions satisfy DoSD with evidence/source/confidence validation. Added `npm run generate-assets` and `npm run verify-assets`. Prepared M-1-T09 and M00-T12 CI workflow files; blocked pending `workflow` OAuth scope (risk R15 added). |
 | 2026-08-06 | 0.7 Draft | Extended M06B per-object asset production: generated individual GLB files for every Osiris Shaft and Great Pyramid asset definition, embedding DoSD metadata (assetId, evidenceIds, sourceIds, confidence, materialId, lods) as glTF extras; linked through `assets/asset-manifest.json` and validated by `assetDefinitions.test.ts`. Switched Vitest to fork pool for CI stability. |
+|| 2026-08-08 | 0.8 Draft | Added per-LOD object GLB generation: `scripts/generateExportAssets.ts` now emits a `.glb` for every declared LOD (LOD0 full detail, LOD1 without overlays, LOD2+ merged bounding-box proxies) and updates `assets/asset-manifest.json` to v1.3.0 with 81 object entries. All generated GLBs are load-verified by `npm run verify-assets` and metadata-verified by `assetDefinitions.test.ts`. |
