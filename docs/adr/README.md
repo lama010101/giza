@@ -29,6 +29,7 @@ Each ADR file is named `NNNN-<kebab-case-title>.md`, zero-padded, monotonically 
 | 0003 | Lean MVP Split — Phase 1a / Phase 1b | Accepted |
 | 0004 | Geometry Pipeline — LOD Architecture | Accepted |
 | 0005 | Per-Object Asset Export with Embedded DoSD Metadata | Accepted |
+| 0006 | Runtime GLB Asset Loading for Per-Object Scene Geometry | Accepted |
 
 ## Relation to the Specifications
 

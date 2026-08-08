@@ -10,7 +10,7 @@ import { useLightingStore } from '@/store/lighting';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
-import type { SceneGraph } from './sceneGraph';
+import type { SceneGraph, SceneNodeWithWorld } from './sceneGraph';
 import { sceneStreamer } from './sceneStreaming';
 import { CameraRig } from './CameraRig';
 import { ScreenshotTaker } from './ScreenshotTaker';
@@ -22,7 +22,9 @@ import { GreatPyramidExteriorMesh } from './GreatPyramidExteriorMesh';
 import { KingsChamberMesh } from './KingsChamberMesh';
 import { QueensChamberMesh } from './QueensChamberMesh';
 import { BlockoutMesh } from './BlockoutMesh';
+import { GLTFAssetMesh } from './GLTFAssetMesh';
 import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
+import { resolveAssetUrlForNode } from '@/materials/assetDefinitions';
 import { GreatPyramidLighting } from './GreatPyramidLighting';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
@@ -37,6 +39,16 @@ const GP_LAYER_MATERIAL: Record<string, string> = {
   relieving: 'MAT_AswanGranite',
   shafts: 'MAT_TuraLimestone',
 };
+
+const ASSET_EXCLUDED_IDS = new Set([
+  'pyramid-exterior',
+  'grand-gallery',
+  'antechamber',
+  'subterranean-chamber',
+  'exterior-detail',
+  'kings-chamber',
+  'queens-chamber',
+]);
 
 function getPbr(block: UnifiedBlock): { metalness: number; roughness: number } {
   const materialId = block.materialId ?? GP_LAYER_MATERIAL[block.layer];
@@ -282,6 +294,26 @@ export function GreatPyramidScene(): JSX.Element {
     })
     .filter(({ block, visibilityRule }) => !block.overlay || visibilityRule !== undefined);
 
+  const assetNodes = useMemo(() => {
+    const map = new Map<
+      string,
+      { node: SceneNodeWithWorld; block: UnifiedBlock; rule?: VisualizationRule; url: string }
+    >();
+    const seen = new Set<string>();
+    for (const { node, block, rule } of visibleNodes) {
+      if (ASSET_EXCLUDED_IDS.has(node.id)) continue;
+      const objectId = block.objectId ?? node.metadata.objectId;
+      if (!objectId || seen.has(objectId)) continue;
+      const url = resolveAssetUrlForNode({ name: node.name, objectId });
+      if (!url) continue;
+      seen.add(objectId);
+      map.set(objectId, { node, block, rule, url });
+    }
+    return map;
+  }, [visibleNodes]);
+
+  const assetObjectIds = useMemo(() => new Set(assetNodes.keys()), [assetNodes]);
+
   return (
     <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
       <CameraRig />
@@ -307,6 +339,23 @@ export function GreatPyramidScene(): JSX.Element {
         }
         if (node.id === 'queens-chamber') {
           return <QueensChamberMesh key={node.id} node={node} block={block} rule={rule} />;
+        }
+        const objectId = block.objectId ?? node.metadata.objectId;
+        if (objectId && assetObjectIds.has(objectId)) {
+          const asset = assetNodes.get(objectId);
+          if (asset && asset.node.id === node.id) {
+            return (
+              <GLTFAssetMesh
+                key={`asset-${objectId}`}
+                node={asset.node}
+                block={asset.block}
+                rule={asset.rule}
+                pbr={getPbr(asset.block)}
+                url={asset.url}
+              />
+            );
+          }
+          return null;
         }
         const isPyramid = node.id === 'pyramid-exterior';
         return (

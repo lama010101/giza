@@ -288,6 +288,35 @@ export function getAllAssets(): AssetDefinition[] {
   return [...ALL_ASSETS];
 }
 
+export interface AssetNodeLike {
+  name: string;
+  objectId?: string;
+}
+
+/**
+ * Resolves an AssetDefinition for a scene node by Great Pyramid objectId
+ * (GP-OBJ-NNNN-LOD0) or by node name (Osiris).
+ */
+export function resolveAssetForNode(node: AssetNodeLike): AssetDefinition | undefined {
+  if (node.objectId) {
+    const gpAssetId = `GP-${node.objectId}-LOD0`;
+    const gpAsset = ALL_ASSETS.find((a) => a.id === gpAssetId);
+    if (gpAsset) return gpAsset;
+  }
+  return ALL_ASSETS.find((a) => a.name === node.name);
+}
+
+/**
+ * Returns the published GLB URL for a scene node, or undefined when no
+ * per-object asset exists.
+ */
+export function resolveAssetUrlForNode(node: AssetNodeLike): string | undefined {
+  const asset = resolveAssetForNode(node);
+  if (!asset?.filePath) return undefined;
+  const path = asset.filePath.startsWith('/') ? asset.filePath : `/${asset.filePath}`;
+  return path;
+}
+
 export function validateAssetDefinition(asset: AssetDefinition): {
   valid: boolean;
   errors: string[];

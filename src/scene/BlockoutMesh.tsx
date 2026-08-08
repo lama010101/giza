@@ -16,7 +16,7 @@ import { useSceneObjectClick } from './useSceneObjectClick';
 
 const MIN_HIT_SIZE = 0.8;
 
-interface BlockoutLike {
+export interface BlockoutLike {
   color: string;
   opacity?: number;
   size: Vector3;
