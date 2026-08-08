@@ -7,7 +7,14 @@
  * Camera animates to selected result.
  */
 
-import { getAllSources, getAllLocations, getAllObjects, searchEvidence } from './repository';
+import {
+  getAllSources,
+  getAllLocations,
+  getAllObjects,
+  searchEvidence,
+  getLocationById,
+} from './repository';
+import { hypothesisEngine } from '@/theories/engineInstance';
 
 export type SearchResultType =
   | 'evidence'
@@ -33,11 +40,25 @@ export interface SearchOptions {
 
 const DEFAULT_LIMIT = 50;
 
+function getLocationPosition(
+  locationId: string | undefined,
+): { x: number; y: number; z: number } | undefined {
+  if (!locationId) return undefined;
+  const loc = getLocationById(locationId);
+  return loc?.center;
+}
+
 export function unifiedSearch(options: SearchOptions): SearchResult[] {
   const { query, types, limit = DEFAULT_LIMIT } = options;
   if (!query.trim()) return [];
 
-  const allTypes: SearchResultType[] = types ?? ['evidence', 'location', 'source', 'object'];
+  const allTypes: SearchResultType[] = types ?? [
+    'evidence',
+    'location',
+    'source',
+    'object',
+    'theory',
+  ];
 
   const q = query.toLowerCase();
   const results: SearchResult[] = [];
@@ -65,6 +86,7 @@ export function unifiedSearch(options: SearchOptions): SearchResult[] {
           type: 'location',
           title: loc.name,
           subtitle: 'Location',
+          position: loc.center,
         });
       }
     }
@@ -97,6 +119,24 @@ export function unifiedSearch(options: SearchOptions): SearchResult[] {
           type: 'object',
           title: obj.name,
           subtitle: obj.type,
+          position: getLocationPosition(obj.location),
+        });
+      }
+    }
+  }
+
+  // Theory / hypothesis search
+  if (allTypes.includes('theory')) {
+    for (const id of hypothesisEngine.getPluginIds()) {
+      const plugin = hypothesisEngine.getPlugin(id);
+      if (!plugin) continue;
+      const haystack = `${plugin.name} ${plugin.description} ${plugin.id}`.toLowerCase();
+      if (haystack.includes(q)) {
+        results.push({
+          id: plugin.id,
+          type: 'theory',
+          title: plugin.name,
+          subtitle: plugin.description,
         });
       }
     }

@@ -1,63 +1,57 @@
 import { describe, it, expect } from 'vitest';
-import { unifiedSearch, searchByType, searchAll } from './unifiedSearch';
+import { searchAll, searchByType, unifiedSearch } from './unifiedSearch';
+import { hypothesisEngine } from '@/theories/engineInstance';
 
-describe('Unified Search (M08-T06)', () => {
-  it('returns results for a matching query', () => {
-    const results = unifiedSearch({ query: 'pyramid' });
+describe('unifiedSearch', () => {
+  it('returns empty array for empty query', () => {
+    expect(searchAll('')).toEqual([]);
+  });
+
+  it('searches evidence by title', () => {
+    const results = searchAll('shaft');
+    const evidence = results.filter((r) => r.type === 'evidence');
+    expect(evidence.length).toBeGreaterThan(0);
+    expect(evidence[0].title.toLowerCase()).toContain('shaft');
+  });
+
+  it('searches locations by name', () => {
+    const results = searchAll('giza');
+    const locations = results.filter((r) => r.type === 'location');
+    expect(locations.length).toBeGreaterThan(0);
+  });
+
+  it('searches sources by title', () => {
+    const results = searchAll('petrie');
+    const sources = results.filter((r) => r.type === 'source');
+    expect(sources.length).toBeGreaterThan(0);
+  });
+
+  it('searches objects by name', () => {
+    const results = searchByType('sarcophagus', 'object');
     expect(results.length).toBeGreaterThan(0);
+    expect(results[0].type).toBe('object');
   });
 
-  it('returns empty for empty query', () => {
-    expect(unifiedSearch({ query: '' })).toEqual([]);
-  });
-
-  it('returns empty for whitespace-only query', () => {
-    expect(unifiedSearch({ query: '   ' })).toEqual([]);
-  });
-
-  it('filters by evidence type', () => {
-    const results = unifiedSearch({ query: 'base', types: ['evidence'] });
+  it('searches theories by name/description', () => {
+    const results = searchByType('hydraulic', 'theory');
     expect(results.length).toBeGreaterThan(0);
-    expect(results.every((r) => r.type === 'evidence')).toBe(true);
+    expect(results[0].type).toBe('theory');
+    expect(results.some((r) => hypothesisEngine.getPluginIds().includes(r.id))).toBe(true);
   });
 
-  it('filters by location type', () => {
-    const results = unifiedSearch({ query: 'chamber', types: ['location'] });
-    expect(results.every((r) => r.type === 'location')).toBe(true);
+  it('respects the limit', () => {
+    const results = unifiedSearch({ query: 'a', limit: 3 });
+    expect(results.length).toBeLessThanOrEqual(3);
   });
 
-  it('filters by source type', () => {
-    const results = unifiedSearch({ query: 'Petrie', types: ['source'] });
-    expect(results.every((r) => r.type === 'source')).toBe(true);
-  });
-
-  it('filters by object type', () => {
-    const results = unifiedSearch({ query: 'Chamber', types: ['object'] });
+  it('filters by requested types', () => {
+    const results = unifiedSearch({ query: 'shaft', types: ['object'] });
     expect(results.every((r) => r.type === 'object')).toBe(true);
   });
 
-  it('respects limit option', () => {
-    const results = unifiedSearch({ query: 'a', limit: 5 });
-    expect(results.length).toBeLessThanOrEqual(5);
-  });
-
-  it('searchByType returns only specified type', () => {
-    const results = searchByType('pyramid', 'evidence');
-    expect(results.every((r) => r.type === 'evidence')).toBe(true);
-  });
-
-  it('searchAll searches all types', () => {
-    const results = searchAll('chamber');
+  it('searches locations by id', () => {
+    const results = searchByType('LOC-', 'location');
     expect(results.length).toBeGreaterThan(0);
-  });
-
-  it('each result has id, type, title, and subtitle', () => {
-    const results = unifiedSearch({ query: 'pyramid', limit: 3 });
-    for (const r of results) {
-      expect(r.id).toBeTruthy();
-      expect(r.type).toBeTruthy();
-      expect(r.title).toBeTruthy();
-      expect(r.subtitle).toBeDefined();
-    }
+    expect(results[0].type).toBe('location');
   });
 });

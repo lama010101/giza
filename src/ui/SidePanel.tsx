@@ -10,6 +10,7 @@ import { HypothesisPanel } from './HypothesisPanel';
 import { LayerPanel } from './LayerPanel';
 import { VisibilityLayerPanel } from './VisibilityLayerPanel';
 import { SimulationPanel } from './SimulationPanel';
+import { SearchPanel } from './SearchPanel';
 
 const PRIMARY_TABS: { id: Monument; label: string }[] = [
   { id: 'osiris', label: 'Osiris' },
@@ -21,6 +22,7 @@ const SECONDARY_TABS: { id: SidePanelTab; label: string }[] = [
   { id: 'evidence', label: 'Evidence' },
   { id: 'simulation', label: 'Simulation' },
   { id: 'hypothesis', label: 'Theory' },
+  { id: 'search', label: 'Search' },
 ];
 
 const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
@@ -416,6 +418,7 @@ export function SidePanel(): JSX.Element {
         {sidePanelTab === 'hypothesis' && (
           <HypothesisPanel objectId={selectedObjectId ?? undefined} />
         )}
+        {sidePanelTab === 'search' && <SearchPanel />}
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export const DEFAULT_CAMERA_TARGET: Record<Monument, Vector3> = {
   osiris: { x: -1.4, y: -15, z: -7 },
   'great-pyramid': { x: 0, y: 70, z: 0 },
 };
-export type SidePanelTab = 'scene' | 'evidence' | 'simulation' | 'hypothesis';
+export type SidePanelTab = 'scene' | 'evidence' | 'simulation' | 'hypothesis' | 'search';
 
 export const SCENE_LAYERS = [
   'shafts',

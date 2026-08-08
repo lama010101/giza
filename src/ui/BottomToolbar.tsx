@@ -27,6 +27,11 @@ export function BottomToolbar(): JSX.Element {
       setMeasurementMode(!measurementMode);
       return;
     }
+    if (item.id === 'search') {
+      setSidePanelTab('search');
+      setEvidencePanelOpen(true);
+      return;
+    }
     if (
       item.id === 'scene' ||
       item.id === 'evidence' ||
@@ -40,6 +45,7 @@ export function BottomToolbar(): JSX.Element {
 
   const isActive = (id: string): boolean => {
     if (id === 'measure') return measurementMode;
+    if (id === 'search') return sidePanelTab === 'search';
     if (id === 'scene' || id === 'evidence' || id === 'simulation' || id === 'hypothesis')
       return sidePanelTab === id;
     return false;
