@@ -12,15 +12,22 @@ function badge(status: boolean): string {
   return status ? 'Yes' : 'No';
 }
 
+function lodFileLinks(asset: (typeof ALL_ASSETS)[number]): string {
+  const baseId = asset.id.replace(/-LOD0$/, '');
+  return asset.lods
+    .map((lod) => `${lod}: [${baseId}-${lod}.glb](assets/export/glB/objects/${baseId}-${lod}.glb)`)
+    .join('<br>');
+}
+
 function assetTable(assets: typeof ALL_ASSETS): string {
   const rows = assets
     .sort((a, b) => a.id.localeCompare(b.id))
     .map(
       (a) =>
-        `| ${a.id} | ${a.name} | ${a.monument} | ${a.location} | ${a.objectClass} | ${a.materialId} | ${a.evidenceIds.join(', ')} | ${a.sourceIds.join(', ')} | ${a.confidence} | ${a.lods.join(', ')} | ${a.filePath ? `[${a.filePath}](${a.filePath})` : '—'} |`,
+        `| ${a.id} | ${a.name} | ${a.monument} | ${a.location} | ${a.objectClass} | ${a.materialId} | ${a.evidenceIds.join(', ')} | ${a.sourceIds.join(', ')} | ${a.confidence} | ${a.lods.join(', ')} | ${lodFileLinks(a)} |`,
     )
     .join('\n');
-  return `| ID | Name | Monument | Location | Class | Material | Evidence | Sources | Confidence | LODs | File |\n| -- | ---- | -------- | -------- | ----- | -------- | -------- | ------- | ----------:| ---- | ---- |\n${rows}`;
+  return `| ID | Name | Monument | Location | Class | Material | Evidence | Sources | Confidence | LODs | LOD Files |\n| -- | ---- | -------- | -------- | ----- | -------- | -------- | ------- | ----------:| ---- | --------- |\n${rows}`;
 }
 
 const byMonument = new Map<string, typeof ALL_ASSETS>();
@@ -77,6 +84,7 @@ Every asset above satisfies the project DoSD:
 - At least one \`SRC-\` source record.
 - A confidence value in [0, 100].
 - A declared LOD list.
+- A published GLB file for every declared LOD, derived from the base asset ID and stored under \`assets/export/glB/objects/\`.
 - A published GLB file path when marked as production-ready.
 `;
 
