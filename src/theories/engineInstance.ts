@@ -5,23 +5,11 @@ import {
   getAllSources,
 } from '@/evidence/repository';
 import { HypothesisEngine } from './engine';
-import {
-  osirisHydraulicPlugin,
-  osirisMainstreamPlugin,
-  gpHydraulicPlugin,
-  gpMainstreamPlugin,
-  gpHydraulicAcousticPlugin,
-  gpScanPyramidsPlugin,
-} from './plugins';
+import { discoverAndRegister } from './pluginDiscovery';
 import type { HypothesisContext } from './types';
 
 export const hypothesisEngine = new HypothesisEngine();
-hypothesisEngine.register(osirisHydraulicPlugin);
-hypothesisEngine.register(osirisMainstreamPlugin);
-hypothesisEngine.register(gpHydraulicPlugin);
-hypothesisEngine.register(gpMainstreamPlugin);
-hypothesisEngine.register(gpHydraulicAcousticPlugin);
-hypothesisEngine.register(gpScanPyramidsPlugin);
+discoverAndRegister(hypothesisEngine);
 
 export function getDefaultHypothesisContext(): HypothesisContext {
   return {
@@ -32,3 +20,5 @@ export function getDefaultHypothesisContext(): HypothesisContext {
     simulations: [],
   };
 }
+
+export { discoverAndRegister };

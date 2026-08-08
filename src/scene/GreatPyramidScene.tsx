@@ -270,10 +270,7 @@ export function GreatPyramidScene(): JSX.Element {
   const activeHighlightRules = activeRules.filter((r) => r.overlay === 'highlight');
   const activeOverlayRules = activeRules.filter(
     (r) =>
-      r.overlay !== 'highlight' &&
-      r.overlay !== 'label' &&
-      r.overlay !== 'annotation' &&
-      r.overlay !== 'interpretive-object',
+      r.overlay !== 'highlight' && r.overlay !== 'label' && r.overlay !== 'interpretive-object',
   );
 
   const visibleNodes = graph

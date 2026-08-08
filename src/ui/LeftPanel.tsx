@@ -196,7 +196,7 @@ export function LeftPanel(): JSX.Element {
     // Center camera on the first node whose name matches the location, if any.
     const nodes = graph.getAllVisibleNodes();
     const match = nodes.find(
-      (n) => location.name && n.name.toLowerCase().includes(location.name.toLowerCase()),
+      (n) => location.name && n.name && location.name.toLowerCase().includes(n.name.toLowerCase()),
     );
     if (match) {
       const pos = match.worldTransform.position;
