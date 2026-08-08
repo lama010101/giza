@@ -4,6 +4,7 @@ import { buildOsirisSceneGraph } from '@/scene/osirisSceneGraph';
 import { buildGreatPyramidSceneGraph } from '@/scene/greatPyramidSceneGraph';
 import type { SceneGraph, SceneNode, SceneNodeWithWorld } from '@/scene/sceneGraph';
 import { getAllLocations } from '@/evidence/repository';
+import { bookmarkToURL } from '@/evidence/bookmark';
 import type { Bookmark } from '@/evidence/bookmark';
 
 interface TreeNodeProps {
@@ -57,6 +58,12 @@ interface BookmarksSectionProps {
   restoreBookmark: (id: string) => void;
 }
 
+function copyToClipboard(text: string): void {
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    void navigator.clipboard.writeText(text);
+  }
+}
+
 function BookmarksSection({
   bookmarks,
   addBookmark,
@@ -72,6 +79,11 @@ function BookmarksSection({
     addBookmark(trimmed, notes.trim());
     setName('');
     setNotes('');
+  };
+
+  const handleShare = (bm: Bookmark): void => {
+    const baseUrl = window.location.href.split('?')[0];
+    copyToClipboard(bookmarkToURL(bm, baseUrl));
   };
 
   return (
@@ -112,6 +124,14 @@ function BookmarksSection({
               >
                 {bm.name}
                 <span className="bookmark-date">{new Date(bm.createdAt).toLocaleDateString()}</span>
+              </button>
+              <button
+                type="button"
+                className="bookmark-share-btn"
+                aria-label={`Share ${bm.name}`}
+                onClick={() => handleShare(bm)}
+              >
+                ⧉
               </button>
               <button
                 type="button"

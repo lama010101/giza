@@ -1148,6 +1148,22 @@ body,
   margin-left: 0.5rem;
 }
 
+.bookmark-share-btn {
+  padding: 0.25rem 0.4rem;
+  background: transparent;
+  border: 1px solid #333333;
+  border-radius: 0.25rem;
+  color: #9a9a9a;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.bookmark-share-btn:hover {
+  color: #60a5fa;
+  border-color: #2a3a52;
+}
+
 .bookmark-delete-btn {
   padding: 0.25rem 0.4rem;
   background: transparent;
