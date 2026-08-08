@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -78,6 +79,39 @@ export function GLTFAssetMesh({
     return gltf.scene.clone(true);
   }, [gltf]);
 
+  const hitBox = useMemo(() => {
+    if (!renderedScene) return null;
+    const box = new THREE.Box3().setFromObject(renderedScene);
+    if (box.isEmpty()) return null;
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    return {
+      size: size.toArray() as [number, number, number],
+      center: center.toArray() as [number, number, number],
+    };
+  }, [renderedScene]);
+
+  const handleClickWithRealPoint = useCallback(
+    (event: ThreeEvent<MouseEvent>) => {
+      if (!renderedScene) {
+        handleClick(event);
+        return;
+      }
+      const intersections = new THREE.Raycaster(
+        event.ray.origin,
+        event.ray.direction,
+      ).intersectObject(renderedScene, true);
+      const first = intersections[0];
+      if (first) {
+        (event as unknown as { point: THREE.Vector3 }).point = first.point;
+      }
+      handleClick(event);
+    },
+    [handleClick, renderedScene],
+  );
+
   useEffect(() => {
     if (!renderedScene) return;
 
@@ -99,11 +133,19 @@ export function GLTFAssetMesh({
   }
 
   return (
-    <primitive
-      object={renderedScene}
-      onClick={handleClick}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-    />
+    <group>
+      <primitive object={renderedScene} />
+      {hitBox && (
+        <mesh
+          position={hitBox.center}
+          onClick={handleClickWithRealPoint}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+        >
+          <boxGeometry args={hitBox.size} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+        </mesh>
+      )}
+    </group>
   );
 }
