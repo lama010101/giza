@@ -268,3 +268,22 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
 - `orbit` and `teleport` hide the overlay.
 - On a non-touch device the joystick and buttons may not drive camera movement because `touchControls.ts` attaches only to `pointerType === 'touch'`. The buttons and joystick still render and the Vitest `VirtualControls`/`touchControls` suites verify the logic.
 - To force a mobile viewport, use Chrome DevTools Device Toolbar or resize the window to a narrow width; the overlay visibility is governed by `cameraMode`, not viewport size.
+
+## Testing runtime per-object GLB loading
+
+- `GLTFAssetMesh` (`src/scene/GLTFAssetMesh.tsx`) loads per-object GLBs at runtime via `three/examples/jsm/loaders/GLTFLoader.js` and returns an R3F `<primitive>`.
+- Verify GLB files are actually fetched from `assets/export/glB/objects/` with `performance.getEntriesByType('resource')` and filtering for `.glb`.
+- To check that GLBs render in the correct world positions, hide occluding `Geometry` / `Geology` / `Modern` visibility layers and focus a known object from the **Evidence** tab or left Explorer hierarchy.
+- **Pointer-event verification is critical:** the `<primitive>` may not propagate `onClick`/`onPointerOver` to the GLB meshes in all R3F versions. A positive hover signal is:
+  1. Cursor changes to `pointer`.
+  2. `viewport-overlay` at the bottom-left shows the object name.
+  3. Clicking changes the side panel to the matching evidence or theory record.
+- If hover/click works for `BlockoutMesh` but not for `GLTFAssetMesh`, the issue is in how events are wired to the GLB scene, not in `useSceneObjectClick`.
+- For deep inspection, hide surface/terrain layers and focus the object (e.g. `Basalt Sarcophagus` with `cameraTarget: {x:-1.4, y:-28.425, z:-6.5}` or `Original Entrance` with `{x:7.29, y:16.97, z:-101.85}`).
+
+## Vitest cache permission workaround
+
+- If Vitest fails after all tests pass with `EACCES: permission denied, open '/.../node_modules/.vite/vitest/results.json'`, re-run with `--cache=false`:
+  ```bash
+  npx vitest run --cache=false src/loaders/lodSelection.test.ts src/loaders/assetManifest.test.ts src/loaders/gltfLoader.test.ts src/materials/assetDefinitions.test.ts src/loaders/assetPipelineE2E.test.ts
+  ```
