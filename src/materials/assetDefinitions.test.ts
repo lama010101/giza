@@ -15,6 +15,8 @@ import {
   getAllAssets,
   validateAssetDefinition,
   validateAllAssets,
+  getLODFilePath,
+  getAllLODFilePaths,
 } from './assetDefinitions';
 
 describe('Material Variants', () => {
@@ -133,6 +135,30 @@ describe('Osiris Asset Definitions', () => {
     for (const asset of heroAssets) {
       expect(asset.lods).toContain('LOD0');
       expect(asset.lods).toContain('LOD3');
+    }
+  });
+});
+
+describe('LOD file paths', () => {
+  it('returns the LOD0 path matching asset.filePath', () => {
+    for (const asset of getAllAssets()) {
+      expect(getLODFilePath(asset, 'LOD0')).toBe(asset.filePath);
+    }
+  });
+
+  it('returns undefined for undeclared LODs', () => {
+    const asset = getAssetById('OS-Level3-NorthernConduit-LOD0');
+    expect(asset).toBeDefined();
+    expect(getLODFilePath(asset!, 'LOD2')).toBeUndefined();
+  });
+
+  it('generates a path for every declared LOD', () => {
+    for (const asset of getAllAssets()) {
+      const paths = getAllLODFilePaths(asset);
+      expect(Object.keys(paths)).toEqual(asset.lods);
+      for (const lod of asset.lods) {
+        expect(paths[lod]).toMatch(/^assets\/export\/glB\/objects\/.*\.glb$/);
+      }
     }
   });
 });

@@ -255,6 +255,25 @@ export function getAssetById(id: string): AssetDefinition | undefined {
   return ALL_ASSETS.find((a) => a.id === id);
 }
 
+function baseIdFromAssetId(id: string): string {
+  return id.replace(/-LOD0$/, '') || id;
+}
+
+export function getLODFilePath(asset: AssetDefinition, lod: string): string | undefined {
+  if (!asset.lods.includes(lod)) return undefined;
+  const baseId = baseIdFromAssetId(asset.id);
+  return `assets/export/glB/objects/${baseId}-${lod}.glb`;
+}
+
+export function getAllLODFilePaths(asset: AssetDefinition): Record<string, string> {
+  const paths: Record<string, string> = {};
+  const baseId = baseIdFromAssetId(asset.id);
+  for (const lod of asset.lods) {
+    paths[lod] = `assets/export/glB/objects/${baseId}-${lod}.glb`;
+  }
+  return paths;
+}
+
 export function getAssetsByMonument(monument: string): AssetDefinition[] {
   return ALL_ASSETS.filter((a) => a.monument === monument);
 }
