@@ -1,6 +1,6 @@
 # GIZA — Implementation Roadmap
 
-**Version:** 0.8 Draft
+**Version:** 0.12 Draft
 **Status:** Working Specification
 **Last update:** 2026-08-08
 
@@ -1604,3 +1604,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 || 2026-08-08 | 0.9 Draft | Closed M08-T06 Unified Search: added `SearchPanel` UI with type filters, wired the Search toolbar button and side-panel tab, and extended `unifiedSearch` to query evidence, locations, sources, objects, and hypothesis plugins with position metadata where available. Added `HypothesisEngine.getPlugin()` for safe plugin metadata access and tests for `unifiedSearch`, `SearchPanel`, and `BottomToolbar`. |
 || 2026-08-08 | 0.10 Draft | Closed M08-T07 Bookmarks: extended `Bookmark` schema with `hiddenVisibilityLayers`, added `bookmarks`, `cameraPosition`, and add/delete/restore actions to the app store, synced camera position from `CameraRig`, and replaced the object-id bookmark list with a full `BookmarksSection` in `LeftPanel` for capture/restore. |
 || 2026-08-08 | 0.11 Draft | Added Great Pyramid Internal Ramp construction hypothesis plugin (`THEORY-GP-004`) with predictions, visualization rules, and `gp-ramp.test.ts` validation. Hardened CI test runner (`vitest.config.ts` cache/fileParallelism, `package.json` `prepare` skips Husky in CI). M-1/M00 workflow files prepared in local `devin/m1-m00-workflows` branch; push blocked by `repo`+`workflow` token scope (risk R15). |
+||| 2026-08-08 | 0.12 Draft | Fixed `THEORY-GP-004` runtime integration: `engineInstance.ts` now registers all discovered plugins via `discoverAndRegister`, `pluginDiscovery.ts` includes the missing `gpHydraulicPlugin` (`THEORY-GP-001`), `GreatPyramidScene.tsx` renders `annotation` overlays, and `LeftPanel.tsx` fixes `Navigation` camera matching. Added `tests/e2e/pr17-final.spec.ts` for ramp hypothesis, overlays, navigation, measurement, bookmarks, search, and runtime GLB loading. All 2049 Vitest tests and the clean `node:20` container pipeline pass; Playwright E2E verification passes. |
