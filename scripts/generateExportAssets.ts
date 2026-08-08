@@ -11,8 +11,8 @@
 
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { osirisBlockout } from '../database/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '../database/blockouts/great-pyramid';
@@ -218,9 +218,18 @@ function makeMaterialSample(id: string, name: string, color: string): BlockoutNo
   return makeNode(id, name, new THREE.Vector3(0, 0.5, 0), new THREE.Vector3(1, 1, 1), color);
 }
 
-function buildGizaExtras(asset: AssetDefinition) {
+const generatedObjectManifestEntries: {
+  assetId: string;
+  name: string;
+  format: 'GLB';
+  status: 'published';
+  filePath: string;
+}[] = [];
+
+function buildGizaExtras(asset: AssetDefinition, lod: string, lodId: string, baseAssetId: string) {
   return {
-    assetId: asset.id,
+    assetId: lodId,
+    baseAssetId,
     monument: asset.monument,
     location: asset.location,
     objectClass: asset.objectClass,
@@ -228,15 +237,84 @@ function buildGizaExtras(asset: AssetDefinition) {
     evidenceIds: asset.evidenceIds,
     sourceIds: asset.sourceIds,
     confidence: asset.confidence,
+    lod,
     lods: asset.lods,
     generator: 'generateExportAssets.ts',
     generatedAt: new Date().toISOString(),
   };
 }
 
+function mergeNodes(nodes: BlockoutNodeLike[]): BlockoutNodeLike {
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let minZ = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
+  let maxZ = Number.NEGATIVE_INFINITY;
+
+  for (const node of nodes) {
+    const hx = node.size.x / 2;
+    const hy = node.size.y / 2;
+    const hz = node.size.z / 2;
+    minX = Math.min(minX, node.position.x - hx);
+    minY = Math.min(minY, node.position.y - hy);
+    minZ = Math.min(minZ, node.position.z - hz);
+    maxX = Math.max(maxX, node.position.x + hx);
+    maxY = Math.max(maxY, node.position.y + hy);
+    maxZ = Math.max(maxZ, node.position.z + hz);
+  }
+
+  return {
+    id: 'merged',
+    name: 'merged',
+    position: { x: (minX + maxX) / 2, y: (minY + maxY) / 2, z: (minZ + maxZ) / 2 },
+    size: { x: maxX - minX, y: maxY - minY, z: maxZ - minZ },
+    color: nodes[0].color,
+  };
+}
+
 function objectIdFromAssetId(assetId: string): string | null {
   const match = /^GP-(OBJ-\d+)-LOD0$/.exec(assetId);
   return match?.[1] ?? null;
+}
+
+async function generatePerObjectAsset(
+  asset: AssetDefinition,
+  matches: BlockoutNodeLike[],
+  objectDir: string,
+) {
+  if (matches.length === 0) return;
+
+  const baseIdMatch = /^(.*)-LOD0$/.exec(asset.id);
+  const baseId = baseIdMatch ? baseIdMatch[1] : asset.id;
+
+  for (const lod of asset.lods) {
+    const lodId = `${baseId}-${lod}`;
+    const extras = buildGizaExtras(asset, lod, lodId, asset.id);
+    const outPath = join(objectDir, `${lodId}.glb`);
+
+    let scene: THREE.Scene;
+    if (lod === 'LOD0') {
+      scene = buildScene(matches, true, extras);
+    } else if (lod === 'LOD1') {
+      scene = buildScene(matches, false, extras);
+    } else {
+      scene = buildScene([mergeNodes(matches)], false, extras);
+    }
+    scene.name = `${asset.name} (${lod})`;
+    await exportGLB(scene, outPath);
+
+    generatedObjectManifestEntries.push({
+      assetId: lodId,
+      name: `${asset.name} (${lod})`,
+      format: 'GLB',
+      status: 'published',
+      filePath: relative(process.cwd(), outPath),
+    });
+
+    // eslint-disable-next-line no-console
+    console.log(`Generated ${outPath} (${scene.children.length} nodes)`);
+  }
 }
 
 async function generateGreatPyramidPerObjectAssets(gpNodes: BlockoutNodeLike[]) {
@@ -254,13 +332,7 @@ async function generateGreatPyramidPerObjectAssets(gpNodes: BlockoutNodeLike[]) 
       continue;
     }
 
-    const extras = buildGizaExtras(asset);
-    const outPath = join(objectDir, `${asset.id}.glb`);
-    const scene = buildScene(matches, true, extras);
-    scene.name = asset.name;
-    await exportGLB(scene, outPath);
-    // eslint-disable-next-line no-console
-    console.log(`Generated ${outPath} (${scene.children.length} nodes)`);
+    await generatePerObjectAsset(asset, matches, objectDir);
   }
 }
 
@@ -277,15 +349,38 @@ async function generateOsirisPerObjectAssets(osirisNodes: BlockoutNodeLike[]) {
       continue;
     }
 
-    const extras = buildGizaExtras(asset);
-    const fileName = `${asset.id}.glb`;
-    const outPath = join(objectDir, fileName);
-    const scene = buildScene(matches, true, extras);
-    scene.name = asset.name;
-    await exportGLB(scene, outPath);
-    // eslint-disable-next-line no-console
-    console.log(`Generated ${outPath} (${scene.children.length} nodes)`);
+    await generatePerObjectAsset(asset, matches, objectDir);
   }
+}
+
+function updateManifest() {
+  const manifestPath = join(process.cwd(), 'assets', 'asset-manifest.json');
+  interface AssetManifest {
+    version: string;
+    generatedAt: string;
+    description: string;
+    categories: { objects: { taskId?: string; assets: unknown[] } };
+  }
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as AssetManifest;
+  manifest.version = '1.3.0';
+  manifest.generatedAt = new Date().toISOString();
+  const monumentOrder = (id: string) => (id.startsWith('OS-') ? 0 : 1);
+  const sortedObjects = [...generatedObjectManifestEntries].sort((a, b) => {
+    const orderA = monumentOrder(a.assetId);
+    const orderB = monumentOrder(b.assetId);
+    if (orderA !== orderB) return orderA - orderB;
+    return a.assetId.localeCompare(b.assetId);
+  });
+
+  manifest.categories.objects = {
+    taskId: 'M06B-T08',
+    assets: sortedObjects,
+  };
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  // eslint-disable-next-line no-console
+  console.log(
+    `Updated ${manifestPath} with ${generatedObjectManifestEntries.length} object entries`,
+  );
 }
 
 async function main() {
@@ -387,6 +482,8 @@ async function main() {
 
   // Per-object Great Pyramid assets with DoSD metadata embedded in glTF extras
   await generateGreatPyramidPerObjectAssets(gpNodes);
+
+  updateManifest();
 
   // eslint-disable-next-line no-console
   console.log('All export assets generated.');

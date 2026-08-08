@@ -13,7 +13,7 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
   describe('getAssetManifest', () => {
     it('returns the full manifest', () => {
       const m = getAssetManifest();
-      expect(m.version).toBe('1.2.0');
+      expect(m.version).toBe('1.3.0');
       expect(m.categories).toBeDefined();
     });
   });
