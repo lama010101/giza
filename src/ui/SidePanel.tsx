@@ -4,6 +4,8 @@ import { EvidencePanel } from './EvidencePanel';
 import { HypothesisPanel } from './HypothesisPanel';
 import { LayerPanel } from './LayerPanel';
 import { SimulationPanel } from './SimulationPanel';
+import { MeasurementPanel } from './MeasurementPanel';
+import { ResearchTools } from './ResearchTools';
 
 const PRIMARY_TABS: { id: Monument; label: string }[] = [
   { id: 'osiris', label: 'Osiris' },
@@ -22,21 +24,11 @@ const CAMERA_MODES: CameraMode[] = ['orbit', 'walk', 'fly', 'teleport'];
 function SceneTab(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const setCameraMode = useAppStore((s) => s.setCameraMode);
+  const cameraFov = useAppStore((s) => s.cameraFov);
+  const setCameraFov = useAppStore((s) => s.setCameraFov);
+  const cameraNear = useAppStore((s) => s.cameraNear);
+  const setCameraNear = useAppStore((s) => s.setCameraNear);
   const mode = useAppStore((s) => s.mode);
-  const measurementMode = useAppStore((s) => s.measurementMode);
-  const setMeasurementMode = useAppStore((s) => s.setMeasurementMode);
-  const measurementStart = useAppStore((s) => s.measurementStart);
-  const measurementEnd = useAppStore((s) => s.measurementEnd);
-  const clearMeasurement = useAppStore((s) => s.clearMeasurement);
-
-  const distance =
-    measurementStart && measurementEnd
-      ? Math.hypot(
-          measurementEnd.x - measurementStart.x,
-          measurementEnd.y - measurementStart.y,
-          measurementEnd.z - measurementStart.z,
-        )
-      : null;
 
   const showCameraControls = mode === 'Research' || cameraMode !== 'orbit';
 
@@ -62,36 +54,42 @@ function SceneTab(): JSX.Element {
           {(cameraMode === 'walk' || cameraMode === 'fly') && (
             <p className="side-hint">Click to lock pointer · WASD to move</p>
           )}
+          <label className="camera-slider">
+            FOV
+            <input
+              type="range"
+              min={20}
+              max={120}
+              step={1}
+              value={cameraFov}
+              onChange={(e) => setCameraFov(parseInt(e.target.value, 10))}
+              aria-label="Field of view"
+            />
+            <span className="camera-value">{cameraFov}°</span>
+          </label>
+          <label className="camera-slider">
+            Near Clip
+            <input
+              type="range"
+              min={10}
+              max={100}
+              step={1}
+              value={Math.round(cameraNear * 100)}
+              onChange={(e) => setCameraNear(parseInt(e.target.value, 10) / 100)}
+              aria-label="Near clipping distance"
+            />
+            <span className="camera-value">{cameraNear.toFixed(2)} m</span>
+          </label>
         </section>
       )}
 
-      <section className="side-section">
-        <h3>Measurement</h3>
-        <div className="side-btn-group">
-          <button
-            type="button"
-            className={measurementMode ? 'active' : ''}
-            aria-pressed={measurementMode}
-            onClick={() => setMeasurementMode(!measurementMode)}
-          >
-            Measure
-          </button>
-          {measurementStart && (
-            <button type="button" onClick={clearMeasurement}>
-              Reset
-            </button>
-          )}
-        </div>
-        {measurementStart && (
-          <p className="side-hint">
-            {distance !== null ? `${distance.toFixed(2)} m` : 'Pick a second point'}
-          </p>
-        )}
-      </section>
+      <MeasurementPanel />
 
       <section className="side-section">
         <LayerPanel />
       </section>
+
+      {mode === 'Research' && <ResearchTools />}
     </div>
   );
 }

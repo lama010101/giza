@@ -3,6 +3,7 @@ import { SidePanel } from '@/ui/SidePanel';
 import { LeftPanel } from '@/ui/LeftPanel';
 import { LightingPanel } from '@/ui/LightingPanel';
 import { BottomToolbar } from '@/ui/BottomToolbar';
+import { ExploreActions } from '@/ui/ExploreActions';
 import { Viewport } from '@/scene/Viewport';
 import { useAppStore } from '@/store/app';
 
@@ -36,6 +37,7 @@ export function AppLayout(): JSX.Element {
       <main className="app-main">
         <LeftPanel />
         <Viewport />
+        <ExploreActions />
         <SidePanel />
       </main>
       <BottomToolbar />

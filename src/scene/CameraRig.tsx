@@ -1,12 +1,20 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, PointerLockControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useAppStore } from '@/store/app';
 import type { Vector3 } from '@/schemas/location';
+import { applyAcceleration, applyDeceleration } from './cameraConstraints';
+import {
+  buildCameraObstacles,
+  getMovementConstraints,
+  applyCameraMovement,
+  rejectSteepVelocity,
+  getWorldMovementDirection,
+} from './cameraRigLogic';
+import { TouchControls } from './TouchControls';
+import { GamepadControls } from './GamepadControls';
 
-const WALK_SPEED = 5;
-const FLY_SPEED = 12;
 const KEY_MAP: Record<string, string> = {
   KeyW: 'forward',
   KeyA: 'left',
@@ -39,70 +47,62 @@ function useKeyboardMovement(): Record<string, boolean> {
   return keys.current;
 }
 
-function WalkControls(): JSX.Element {
-  const { camera } = useThree();
-  const keys = useKeyboardMovement();
-  const direction = useRef(new THREE.Vector3());
-  const velocity = useRef(new THREE.Vector3());
+function useCameraSettings(): void {
+  const camera = useThree((state) => state.camera);
+  const fov = useAppStore((s) => s.cameraFov);
+  const near = useAppStore((s) => s.cameraNear);
 
-  useFrame((_, delta) => {
-    const speed = WALK_SPEED * delta;
-    direction.current.set(0, 0, 0);
-
-    if (keys.forward) direction.current.z -= 1;
-    if (keys.back) direction.current.z += 1;
-    if (keys.left) direction.current.x -= 1;
-    if (keys.right) direction.current.x += 1;
-
-    direction.current.normalize().multiplyScalar(speed);
-    camera.getWorldDirection(velocity.current);
-    velocity.current.y = 0;
-    velocity.current.normalize();
-
-    const right = new THREE.Vector3();
-    right.crossVectors(velocity.current, camera.up).normalize();
-
-    velocity.current.multiplyScalar(direction.current.z);
-    right.multiplyScalar(direction.current.x);
-
-    camera.position.add(velocity.current);
-    camera.position.add(right);
-    camera.position.y = Math.max(camera.position.y, -30.65);
-  });
-
-  return <PointerLockControls makeDefault />;
+  useEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    if (camera.fov !== fov || camera.near !== near) {
+      camera.fov = fov;
+      camera.near = near;
+      camera.updateProjectionMatrix();
+    }
+  }, [camera, fov, near]);
 }
 
-function FlyControls(): JSX.Element {
+function WalkFlyControls({ mode }: { mode: 'walk' | 'fly' }): JSX.Element {
   const { camera } = useThree();
+  const appMode = useAppStore((s) => s.mode);
+  const activeMonument = useAppStore((s) => s.activeMonument);
+  const lod = useAppStore((s) => s.lod);
+  const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const keys = useKeyboardMovement();
-  const direction = useRef(new THREE.Vector3());
+
   const velocity = useRef(new THREE.Vector3());
+  const constraints = useMemo(() => getMovementConstraints(mode, appMode), [mode, appMode]);
+  const obstacles = useMemo(
+    () => buildCameraObstacles(activeMonument, lod, hiddenLayers),
+    [activeMonument, lod, hiddenLayers],
+  );
 
   useFrame((_, delta) => {
-    const speed = FLY_SPEED * delta;
-    direction.current.set(0, 0, 0);
+    const input = {
+      forward: (keys.forward ? 1 : 0) - (keys.back ? 1 : 0),
+      right: (keys.right ? 1 : 0) - (keys.left ? 1 : 0),
+      up: (keys.up ? 1 : 0) - (keys.down ? 1 : 0),
+    };
 
-    if (keys.forward) direction.current.z -= 1;
-    if (keys.back) direction.current.z += 1;
-    if (keys.left) direction.current.x -= 1;
-    if (keys.right) direction.current.x += 1;
-    if (keys.up) direction.current.y += 1;
-    if (keys.down) direction.current.y -= 1;
+    const targetDir = getWorldMovementDirection(input, camera.quaternion, mode);
+    if (targetDir.lengthSq() > 0) {
+      velocity.current = applyAcceleration(velocity.current, targetDir, constraints, delta);
+    } else {
+      velocity.current = applyDeceleration(velocity.current, constraints, delta);
+    }
 
-    direction.current.normalize().multiplyScalar(speed);
-    camera.getWorldDirection(velocity.current);
-    velocity.current.normalize();
+    const result = applyCameraMovement(
+      camera.position,
+      velocity.current,
+      delta,
+      constraints.collisionRadius,
+      obstacles,
+      constraints,
+      mode,
+    );
 
-    const right = new THREE.Vector3();
-    right.crossVectors(velocity.current, camera.up).normalize();
-
-    velocity.current.multiplyScalar(direction.current.z);
-    right.multiplyScalar(direction.current.x);
-
-    camera.position.add(velocity.current);
-    camera.position.add(right);
-    camera.position.y += direction.current.y;
+    camera.position.copy(result.position);
+    velocity.current = rejectSteepVelocity(result.velocity, result.collisions, constraints);
   });
 
   return <PointerLockControls makeDefault />;
@@ -145,10 +145,18 @@ function TeleportControls(): JSX.Element {
 export function CameraRig(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const cameraTarget = useAppStore((s) => s.cameraTarget);
+  useCameraSettings();
 
-  if (cameraMode === 'walk') return <WalkControls />;
-  if (cameraMode === 'fly') return <FlyControls />;
-  if (cameraMode === 'teleport') return <TeleportControls />;
-
-  return <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />;
+  return (
+    <>
+      {cameraMode === 'walk' && <WalkFlyControls mode="walk" />}
+      {cameraMode === 'fly' && <WalkFlyControls mode="fly" />}
+      {cameraMode === 'teleport' && <TeleportControls />}
+      {cameraMode === 'orbit' && (
+        <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />
+      )}
+      <TouchControls />
+      <GamepadControls />
+    </>
+  );
 }

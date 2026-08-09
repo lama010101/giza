@@ -12,7 +12,9 @@ describe('useAppStore measurement', () => {
   });
 
   it('records start then end point, then restarts on the third click', () => {
-    const { addMeasurementPoint } = useAppStore.getState();
+    const { setMeasurementMode, addMeasurementPoint } = useAppStore.getState();
+
+    setMeasurementMode(true);
 
     addMeasurementPoint({ x: 0, y: 0, z: 0 });
     expect(useAppStore.getState().measurementStart).toEqual({ x: 0, y: 0, z: 0 });
@@ -20,10 +22,12 @@ describe('useAppStore measurement', () => {
 
     addMeasurementPoint({ x: 3, y: 4, z: 0 });
     expect(useAppStore.getState().measurementEnd).toEqual({ x: 3, y: 4, z: 0 });
+    expect(useAppStore.getState().measurementResult).not.toBeNull();
 
     addMeasurementPoint({ x: 1, y: 1, z: 1 });
     expect(useAppStore.getState().measurementStart).toEqual({ x: 1, y: 1, z: 1 });
     expect(useAppStore.getState().measurementEnd).toBeNull();
+    expect(useAppStore.getState().measurementResult).toBeNull();
   });
 
   it('clears points when measurement mode is disabled', () => {
