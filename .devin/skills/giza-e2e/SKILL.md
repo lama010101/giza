@@ -205,3 +205,83 @@ npx vitest run src/scene/gp-lod1.test.ts src/scene/greatPyramid.test.ts
 - No `Something went wrong` error fallback.
 - Browser console has no `console.error`/WebGL errors after load.
 - Hover overlays show expected names: `Pyramid Exterior (core masonry)`, `Grand Gallery`, `King's Chamber`, `Queen's Chamber`, `Subterranean Chamber`, and relieving/shaft nodes.
+
+## M12-T01 accessibility keyboard shortcuts and persisted settings
+
+Default keyboard navigation is controlled by the `giza-accessibility` localStorage key (Zustand persist, `keyboardNavEnabled` defaults to `true`).
+
+### Keyboard shortcuts wired in `AppLayout`
+
+See `src/app/AppLayout.tsx` and `src/accessibility/keyboardNavigation.ts`:
+
+- `1` → Scene tab
+- `2` → Evidence tab
+- `3` → Simulation tab
+- `e` → toggle side (evidence) panel
+- `l` → toggle lighting popover
+- `m` → toggle measurement mode
+- `h` → Theory/Hypothesis tab
+- `Escape` → close panels
+
+### How to verify
+
+1. Open `http://localhost:5173` in a fresh incognito Chrome window to avoid stale `giza-session` state.
+2. The side panel should default to the **Scene** tab (`Measurement` and `Layers` sections).
+3. Press each shortcut and verify the corresponding tab/panel content appears or disappears.
+4. For `3` to render the `Hydraulic Simulation` controls instead of the hypothesis activation prompt, pre-seed `giza-session` with the hydraulic hypothesis active:
+
+```js
+localStorage.setItem(
+  'giza-session',
+  JSON.stringify({
+    state: {
+      mode: 'Explore',
+      activeMonument: 'great-pyramid',
+      activeHypothesisIds: ['THEORY-OSIRIS-001'],
+      evidencePanelOpen: true,
+      sidePanelTab: 'scene',
+      cameraMode: 'orbit',
+      cameraTarget: { x: 0, y: 70, z: 0 },
+      hiddenLayers: [],
+      lod: 'LOD0'
+    },
+    version: 2
+  })
+);
+location.reload();
+```
+
+### Testing persisted accessibility settings
+
+The accessibility store (`src/accessibility/accessibility.ts`) persists to `giza-accessibility` with version `1` and the shape `{ state: { highContrast, colorblindType, reducedMotion, fontSizeMultiplier, screenReaderEnabled, keyboardNavEnabled, focusIndicator }, version: 1 }`. To verify `AccessibilityProvider` syncs to the DOM:
+
+```js
+localStorage.setItem(
+  'giza-accessibility',
+  JSON.stringify({
+    state: {
+      highContrast: true,
+      colorblindType: 'protanopia',
+      reducedMotion: false,
+      fontSizeMultiplier: 1,
+      screenReaderEnabled: true,
+      keyboardNavEnabled: true,
+      focusIndicator: 'default'
+    },
+    version: 1
+  })
+);
+location.reload();
+```
+
+After reload:
+
+- `document.body.classList.contains('a11y-high-contrast')` should be `true`.
+- `document.documentElement.style.getPropertyValue('--a11y-filter')` should equal `hue-rotate(0deg) saturate(0.6) brightness(1.1) contrast(1.4)` when both high-contrast and protanopia are active.
+- `document.getElementById('root').style.filter` should match the same filter string.
+- `AccessibilityProvider` (`src/accessibility/AccessibilityProvider.tsx`) also sets `html` font-size via `--a11y-font-size-multiplier` and focus indicator classes (`a11y-focus-default`, `a11y-focus-enhanced`, `a11y-focus-minimal`) via `src/index.css`.
+
+### Useful diagnostics
+
+- If a key shortcut has no effect, check that focus is not inside an `<input>` (`keyboardNavigation.ts` deliberately ignores typing contexts).
+- If `browser_console`/CDP is unavailable, the same `localStorage` values can be seeded by running the snippets above from a `javascript:` URL or a temporary static page served from the same origin.
