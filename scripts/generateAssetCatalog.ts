@@ -15,7 +15,7 @@ function badge(status: boolean): string {
 function lodFileLinks(asset: (typeof ALL_ASSETS)[number]): string {
   const baseId = asset.id.replace(/-LOD0$/, '');
   return asset.lods
-    .map((lod) => `${lod}: [${baseId}-${lod}.glb](assets/export/glB/objects/${baseId}-${lod}.glb)`)
+    .map((lod) => `${lod}: \`assets/export/glB/objects/${baseId}-${lod}.glb\``)
     .join('<br>');
 }
 

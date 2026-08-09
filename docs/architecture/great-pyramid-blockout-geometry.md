@@ -97,6 +97,7 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | `qc-south-shaft-door` | shafts | (0, 65.619, 55.205) | (-39.6, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
 | `well-shaft` | shafts | (6.175, -0.343, -29.695) | (60.77, 0, 0) | (0.78, 0.78, 58.287) | Petrie |
 | `grotto` | passages | (6.18, 5.7, -30) | — | (2, 2, 2) | Various |
+
 ## 5. Per-Element Calculations
 
 ### 5.1 Pyramid Exterior

@@ -1,0 +1,24 @@
+{
+  "intentionallyNotExported": [
+    "ConflictManager",
+    "DebugOverlayManager",
+    "FramePacer",
+    "SceneStreamer",
+    "DEFAULTS",
+    "PredictionStore",
+    "AccessibilityState",
+    "LocaleState",
+    "OfflineState",
+    "PerformanceState",
+    "SecurityState",
+    "LightingState",
+    "SimulationState",
+    "BlockoutMeshProps",
+    "GLTFAssetMeshProps",
+    "LayeredLightingProps",
+    "LookInput",
+    "HasVisibilityMapping",
+    "ComparisonFrameworkProps",
+    "HypothesisPanelProps"
+  ]
+}
