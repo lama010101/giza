@@ -933,3 +933,53 @@ body,
     max-width: 280px;
   }
 }
+
+/* ─── Accessibility overrides (M12-T01) ─── */
+
+html {
+  font-size: calc(16px * var(--a11y-font-size-multiplier, 1));
+}
+
+#root {
+  filter: var(--a11y-filter, none);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.a11y-reduced-motion *,
+body.a11y-reduced-motion *::before,
+body.a11y-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+body.a11y-focus-default *:focus-visible {
+  outline: 2px solid var(--a11y-accent, #00ffff);
+  outline-offset: 2px;
+}
+
+body.a11y-focus-enhanced *:focus-visible {
+  outline: 3px solid var(--a11y-primary, #ffff00);
+  outline-offset: 3px;
+}
+
+body.a11y-focus-minimal *:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 1px;
+}
+
+body.a11y-keyboard-nav *:focus:not(:focus-visible) {
+  outline: none;
+}
