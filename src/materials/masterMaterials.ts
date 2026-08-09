@@ -1,3 +1,16 @@
+export interface MicroDetailConfig {
+  /** Edge erosion intensity (0-1). Darkens and roughens block edges. */
+  erosion: number;
+  /** Mineral streak intensity (0-1). Adds subtle colored streaks. */
+  mineralStreaks: number;
+  /** Micro-crack density/intensity (0-1). Darkens thin fracture lines. */
+  microCracks: number;
+  /** Dust/deposit accumulation intensity (0-1). Lightens recessed areas. */
+  dust: number;
+  /** Evidence IDs supporting the procedural detail parameters. */
+  evidenceRefs: string[];
+}
+
 export interface MasterMaterial {
   id: string;
   name: string;
@@ -14,6 +27,8 @@ export interface MasterMaterial {
     subsurface: number;
   };
   evidenceRefs: string[];
+  /** Optional procedural micro-detail parameters for stone shaders (M09-T15). */
+  microDetail?: MicroDetailConfig;
 }
 
 /**
@@ -36,7 +51,14 @@ export const MASTER_MATERIALS: MasterMaterial[] = [
       roughnessBase: 0.55,
       subsurface: 0.0,
     },
-    evidenceRefs: [],
+    evidenceRefs: ['EV-000020'],
+    microDetail: {
+      erosion: 0.25,
+      mineralStreaks: 0.15,
+      microCracks: 0.1,
+      dust: 0.05,
+      evidenceRefs: ['EV-000020'],
+    },
   },
   {
     id: 'MAT_LocalLimestone',
@@ -52,7 +74,14 @@ export const MASTER_MATERIALS: MasterMaterial[] = [
       roughnessBase: 0.75,
       subsurface: 0.0,
     },
-    evidenceRefs: [],
+    evidenceRefs: ['EV-000020'],
+    microDetail: {
+      erosion: 0.35,
+      mineralStreaks: 0.25,
+      microCracks: 0.15,
+      dust: 0.1,
+      evidenceRefs: ['EV-000020'],
+    },
   },
   {
     id: 'MAT_AswanGranite',
@@ -69,7 +98,14 @@ export const MASTER_MATERIALS: MasterMaterial[] = [
       roughnessBase: 0.65,
       subsurface: 0.0,
     },
-    evidenceRefs: [],
+    evidenceRefs: ['EV-000012'],
+    microDetail: {
+      erosion: 0.15,
+      mineralStreaks: 0.1,
+      microCracks: 0.05,
+      dust: 0.02,
+      evidenceRefs: ['EV-000012'],
+    },
   },
   {
     id: 'MAT_Basalt',
@@ -85,7 +121,14 @@ export const MASTER_MATERIALS: MasterMaterial[] = [
       roughnessBase: 0.5,
       subsurface: 0.0,
     },
-    evidenceRefs: [],
+    evidenceRefs: ['EV-000008'],
+    microDetail: {
+      erosion: 0.1,
+      mineralStreaks: 0.05,
+      microCracks: 0.05,
+      dust: 0.02,
+      evidenceRefs: ['EV-000008'],
+    },
   },
   {
     id: 'MAT_Water',
@@ -212,4 +255,9 @@ export function getPbrForMaterial(id: string): { metalness: number; roughness: n
         roughness: material.properties.roughnessBase,
       }
     : DEFAULT_PBR;
+}
+
+export function getMicroDetailForMaterial(id: string): MicroDetailConfig | undefined {
+  const material = getMaterialById(id);
+  return material?.microDetail;
 }

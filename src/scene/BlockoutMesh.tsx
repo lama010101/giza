@@ -5,13 +5,20 @@
  * the interaction threshold, an invisible larger hit volume that captures
  * pointer events. This lets users hover and click very thin shafts (≈0.2 m)
  * without requiring pixel-perfect cursor placement.
+ *
+ * When microDetail is enabled and the master material defines a `microDetail`
+ * config, the meshStandardMaterial is extended via `onBeforeCompile` to add
+ * procedural edge erosion, mineral streaks, micro cracks, and dust.
  */
 
 import { DoubleSide } from 'three';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
+import { useAppStore } from '@/store/app';
+import { getMicroDetailForMaterial } from '@/materials/masterMaterials';
 import type { SceneNodeWithWorld } from './sceneGraph';
 import { useSceneObjectClick } from './useSceneObjectClick';
+import { createOsirisStoneOnBeforeCompile } from './osirisStoneMaterial';
 
 const MIN_HIT_SIZE = 0.8;
 
@@ -21,6 +28,7 @@ interface BlockoutLike {
   size: Vector3;
   rotation?: Vector3;
   layer: string;
+  materialId?: string;
 }
 
 interface BlockoutMeshProps {
@@ -38,6 +46,7 @@ export function BlockoutMesh({
   pbr,
   isPyramid = false,
 }: BlockoutMeshProps): JSX.Element {
+  const microDetailEnabled = useAppStore((s) => s.microDetailEnabled);
   const { hovered, handleClick, handlePointerOver, handlePointerOut } = useSceneObjectClick(node);
 
   const { position } = node.worldTransform;
@@ -65,6 +74,12 @@ export function BlockoutMesh({
     onPointerOut: handlePointerOut,
   };
 
+  const microDetail = microDetailEnabled
+    ? getMicroDetailForMaterial(block.materialId ?? '')
+    : undefined;
+  const onBeforeCompile = microDetail ? createOsirisStoneOnBeforeCompile(microDetail) : undefined;
+  const materialKey = `${block.materialId ?? 'default'}-${microDetailEnabled ? 'md' : 'flat'}`;
+
   const visualMesh = isPyramid ? (
     <mesh
       position={[position.x, position.y, position.z]}
@@ -73,6 +88,7 @@ export function BlockoutMesh({
     >
       <coneGeometry args={[baseSide / Math.sqrt(2), block.size.y, 4]} />
       <meshStandardMaterial
+        key={materialKey}
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
@@ -81,6 +97,7 @@ export function BlockoutMesh({
         roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
         emissiveIntensity={hovered ? 0.35 : 0}
+        onBeforeCompile={onBeforeCompile}
       />
     </mesh>
   ) : (
@@ -91,6 +108,7 @@ export function BlockoutMesh({
     >
       <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
       <meshStandardMaterial
+        key={materialKey}
         color={color}
         transparent={opacity < 1}
         opacity={opacity}
@@ -99,6 +117,7 @@ export function BlockoutMesh({
         roughness={pbr.roughness}
         emissive={hovered ? '#3b82f6' : '#000000'}
         emissiveIntensity={hovered ? 0.35 : 0}
+        onBeforeCompile={onBeforeCompile}
       />
     </mesh>
   );

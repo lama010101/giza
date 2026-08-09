@@ -191,6 +191,27 @@
           "format": "GLB",
           "status": "pending",
           "filePath": "assets/export/glB/OS_LOD1.glb"
+        },
+        {
+          "assetId": "OS_LOD2",
+          "name": "Osiris Shaft LOD2",
+          "format": "GLB",
+          "status": "pending",
+          "filePath": "assets/export/glB/OS_LOD2.glb"
+        },
+        {
+          "assetId": "OS_Surface",
+          "name": "Osiris Shaft Surface Context",
+          "format": "GLB",
+          "status": "pending",
+          "filePath": "assets/export/glB/OS_Surface.glb"
+        },
+        {
+          "assetId": "OS_Water",
+          "name": "Osiris Shaft Chamber I Water",
+          "format": "GLB",
+          "status": "pending",
+          "filePath": "assets/export/glB/OS_Water.glb"
         }
       ]
     }

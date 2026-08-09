@@ -1,5 +1,7 @@
 import type { Hypothesis } from '@/schemas/hypothesis';
 import type { Simulation } from '@/schemas/simulation';
+import type { Vector3 } from '@/schemas/location';
+import type { HypothesisGeometryNode } from '@/theories/types';
 import type { HypothesisPlugin } from '../types';
 
 const hypothesis: Hypothesis = {
@@ -28,6 +30,11 @@ const hypothesis: Hypothesis = {
     },
   ],
   affectedStructures: ['OBJ-0006', 'OBJ-0007', 'OBJ-0009'],
+  confidenceByObject: {
+    'OBJ-0006': 35,
+    'OBJ-0007': 30,
+    'OBJ-0009': 35,
+  },
   supports: ['EV-000006', 'EV-000007', 'EV-000011'],
   contradicts: [],
   requiredEvidence: ['EV-000007', 'EV-000011'],
@@ -51,12 +58,28 @@ const hypothesis: Hypothesis = {
     },
   ],
   confidence: 0,
-  confidenceByObject: {},
   references: ['SRC-0001'],
   bibliography: [],
   status: 'published',
   tags: ['hydraulic', 'water', 'osiris-shaft'],
 };
+
+const continuationStart: Vector3 = { x: -9.46, y: -30.3, z: -16.31 };
+
+const geometryNodes: HypothesisGeometryNode[] = [
+  {
+    id: 'osiris-hydraulic-northern-conduit-continuation',
+    name: 'Northern Conduit Inferred Continuation',
+    hypothesisId: 'THEORY-OSIRIS-001',
+    position: continuationStart,
+    rotation: { x: 0, y: (-3 * Math.PI) / 4, z: 0 },
+    size: { x: 0.6, y: 0.7, z: 6.0 },
+    color: '#0a4a6b',
+    opacity: 0.3,
+    evidenceIds: ['EV-000009'],
+    visibilityRules: [{ defaultVisible: true }],
+  },
+];
 
 const simulations: Simulation[] = [
   {
@@ -84,4 +107,5 @@ export const osirisHydraulicPlugin: HypothesisPlugin = {
   getSimulations: () => simulations,
   getVisualizationRules: (objectId) =>
     hypothesis.visualizationRules.filter((rule) => rule.target === objectId),
+  getGeometryNodes: () => geometryNodes,
 };

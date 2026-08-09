@@ -56,6 +56,8 @@ export interface SceneNodeMetadata {
   confidence?: number;
   hypothesisIds?: string[];
   layer?: string;
+  /** Conceptual layer tags used by the layer taxonomy (M05-T05). */
+  conceptualLayers?: string[];
   /** Axis-aligned bounding box in local coordinates (M09-T02) */
   boundingBox?: BoundingBox;
   /** Survey reference for georeferencing (M09-T02) */
