@@ -82,18 +82,18 @@ All sloped elements (passages, gallery, shafts) use **X-axis rotation** (`rotati
 | `kings-chamber` | kings-complex | (7.22, 45.945, 8.428) | — | (5.24, 5.97, 10.47) | Petrie |
 | `kings-sarcophagus` | kings-complex | (4.6, 43.5, 8.44) | — | (0.978, 1.049, 2.276) | Petrie |
 | `relieving-davison` | relieving | (7.22, 49.465, 8.428) | — | (5.21, 1.07, 11.68) | Vyse |
-| `relieving-wellington` | relieving | (7.22, 50.56, 8.428) | — | (5.18, 1.12, 11.73) | Vyse |
-| `relieving-nelson` | relieving | (7.22, 51.855, 8.428) | — | (5.08, 1.47, 11.81) | Vyse |
-| `relieving-arbuthnot` | relieving | (7.22, 53.265, 8.428) | — | (4.98, 1.35, 11.38) | Vyse |
-| `relieving-campbell` | relieving | (7.22, 55.25, 8.428) | — | (6.25, 2.62, 11.53) | Vyse |
+| `relieving-wellington` | relieving | (7.22, 52.44, 8.428) | — | (5.18, 1.12, 11.73) | Vyse |
+| `relieving-nelson` | relieving | (7.22, 55.615, 8.428) | — | (5.08, 1.47, 11.81) | Vyse |
+| `relieving-arbuthnot` | relieving | (7.22, 58.905, 8.428) | — | (4.98, 1.35, 11.38) | Vyse |
+| `relieving-campbell` | relieving | (7.22, 62.77, 8.428) | — | (6.25, 2.62, 11.53) | Vyse |
 | `queens-chamber` | queens-complex | (0, 24.305, 6.32) | — | (5.23, 6.23, 5.75) | Petrie |
 | `queens-niche` | queens-complex | (2.62, 24.1, 6.32) | — | (1.04, 4.69, 1.57) | Petrie |
 | `queens-passage` | passages | (3.645, 21.775, -22.365) | — | (1.05, 1.17, 52.132) | Petrie |
-| `kc-north-shaft` | shafts | (7.22, 66.026, -23.349) | (-32.6, 0, 0) | (0.205, 0.205, 63.142) | Gantenbrink |
+| `kc-north-shaft` | shafts | (7.22, 66.026, -23.349) | (32.6, 0, 0) | (0.205, 0.205, 63.142) | Gantenbrink |
 | `kc-south-shaft` | shafts | (7.22, 66.661, 31.249) | (-45, 0, 0) | (0.205, 0.205, 49.947) | Gantenbrink |
-| `qc-north-shaft` | shafts | (0, 46.381, -19.803) | (-39, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
+| `qc-north-shaft` | shafts | (0, 46.381, -19.803) | (39, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
 | `qc-south-shaft` | shafts | (0, 46.624, 32.243) | (-39.6, 0, 0) | (0.21, 0.21, 60) | Gantenbrink |
-| `qc-north-shaft-door` | shafts | (0, 65.135, -42.962) | (-39, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
+| `qc-north-shaft-door` | shafts | (0, 65.135, -42.962) | (39, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
 | `qc-south-shaft-door` | shafts | (0, 65.619, 55.205) | (-39.6, 0, 0) | (0.21, 0.21, 0.2) | Inferred |
 | `well-shaft` | shafts | (6.175, -0.343, -29.695) | (60.77, 0, 0) | (0.78, 0.78, 58.287) | Petrie |
 | `grotto` | passages | (6.18, 5.7, -30) | — | (2, 2, 2) | Various |
@@ -454,30 +454,31 @@ The existing `queens-niche` blockout node is kept as a separate element on the e
 
 | Field | Value | Derivation |
 |---|---|---|
-| position.x | 0 | Same alignment |
-| position.y | 24.305 | At QC floor level area. Passage height 1.45 m, floor at ~23.575. We use center y=24.3. |
-| position.z | 6.32 | Center of passage. Passage runs from GG area (z≈−39) to QC (z≈5). Center = (−39 + 5) / 2 = −17. |
-| size.x | 5.23 | Petrie/Vyse: ~1.05 m width |
-| size.y | 6.23 | Vyse: ~1.45 m (average of 1.17 m before step, 1.73 m beyond) |
-| size.z | 5.75 | Petrie: 1731 in = 43.96 m total length |
+| position.x | 3.645 | Midpoint between the AP branch (x≈7.29) and the QC center (x=0). The blockout uses a single straight box, so x is averaged. |
+| position.y | 21.775 | QC floor y≈21.19 plus half the passage height (1.17/2). |
+| position.z | −22.365 | Center of the straight box. The box runs from z≈−48.43 to z≈3.70. |
+| rotation.x | 0 | Horizontal passage |
+| size.x | 1.05 | Petrie/Vyse: ~41.4 in = 1.05 m width |
+| size.y | 1.17 | Vyse: 1.17 m height before the step |
+| size.z | 52.132 | Derived from AP/QC branch to QC north wall in the current single-box approximation |
 
-**Z range:** −17 − 43.96/2 = −38.98 to −17 + 43.96/2 = 4.98. Connects GG area (z≈−11) to QC (z=5). ✓
+**Z range:** −22.365 − 52.132/2 = −48.43 to −22.365 + 52.132/2 = 3.70.
+
+**Note:** Petrie records the Queen's Chamber Passage as 43.96 m (1731 in) from the gallery north wall to the chamber. The blockout currently models the straight run from the AP/QC branch to the QC north wall as one 52.132 m box. This is a known approximation documented in the risk register; future work should split it into a short AP connector and the documented 43.96 m horizontal segment.
 
 ### 5.17 King's Chamber North Shaft
 
 | Field | Value | Derivation |
 |---|---|---|
-| position.x | 7.22 | KC center x. Shafts run along Z (N-S), so x is constant. Lateral shift (1.57 m E per Gantenbrink) is at the exit point, not modeled in blockout. |
-| position.y | 45.945 | Shaft center y. Starts at KC ceiling area (~48.93) and exits at ~80.6 m. Center = (48.93 + 80.6) / 2 ≈ 64.8. But we use 70.2 — this is the center of the shaft box, which may be offset. See note below. |
-| position.z | 8.428 | KC north wall area: KC center z − KC size.z/2 = 40.5 − 10.47/2 = 40.5 − 5.235 = 35.265 ≈ 35.5. Shaft starts at KC north wall and goes north (−Z direction). Center = 35.5. |
-| rotation.x | — | Gantenbrink: 32°36' = 32.60° (negative = slopes up toward −Z/north) |
-| size.x | 5.24 | Gantenbrink: mean width 20.5 cm |
-| size.y | 5.97 | Gantenbrink: mean height 21.5 cm |
-| size.z | 10.47 | Gantenbrink: 78.43 m length to exterior exit |
+| position.x | 7.22 | KC center x. Shafts run along Z (N-S), so x is constant. Gantenbrink's lateral shift (1.57 m E at the exit) is not modeled in the straight box. |
+| position.y | 66.026 | Shaft center y. Floor endpoints: start at KC ceiling y≈48.93 and exit at y≈82.95. Center ≈ (48.93 + 82.95)/2 ≈ 65.94. |
+| position.z | −23.349 | Shaft center z. Floor endpoints: start at KC north wall z≈3.19 and exit at z≈−50.0. Center ≈ (3.19 − 50.0)/2 ≈ −23.40. |
+| rotation.x | +32.60° | Gantenbrink: 32°36′ = 32.60°. Positive rotation.x slopes upward toward −Z/north in this coordinate system. |
+| size.x | 0.205 | Gantenbrink: mean width 20.5 cm |
+| size.y | 0.205 | Gantenbrink: mean height 20.5 cm |
+| size.z | 63.142 | Gantenbrink survey: sloped length projected onto the Y-Z plane; blockout uses 63.142 m for the modeled segment. |
 
-**Note on y=70.2:** The shaft center y should be approximately (KC ceiling + exit height) / 2 = (48.93 + 80.6) / 2 = 64.77. The value 70.2 is higher than expected. However, the shaft has a horizontal inlet section (2.63 m) at the KC wall before sloping, and the shaft exit height (~80.6 m) is approximate. The blockout models the shaft as a single straight box, so the center is approximate.
-
-**Note on x=7.22:** The shafts run along the Z-axis (north-south), so x stays constant at the KC center. Gantenbrink's lateral shift (1.57 m E for north, 5.20 m E for south) refers to the exit point offset, which would require a bend in the shaft. The blockout does not model this bend.
+**Note:** The shaft has a short horizontal inlet section at the KC wall and a lateral bend near the exit; the blockout models it as one straight box. The floor endpoints align with the KC ceiling and the extrapolated north exit.
 
 ### 5.17a King's Chamber North Shaft Door
 
@@ -486,38 +487,38 @@ A limestone blocking stone ("door") observed by Pyramid Rover at Block ~21 in th
 | Field | Value | Derivation |
 |---|---|---|
 | position.x | 7.22 | Same as KC north shaft |
-| position.y | ~60.29 | Inferred: ~21.1 m along shaft from KC north wall ceiling |
-| position.z | ~17.49 | Inferred: northward along shaft from z ≈ 35.27 |
-| rotation.x | −32.60° | Same slope as KC north shaft |
+| position.y | 60.384 | Inferred: ~11.5 m along the shaft from the KC ceiling |
+| position.z | −14.528 | Inferred: northward along shaft from z ≈ 3.19 |
+| rotation.x | +32.60° | Same slope as KC north shaft |
 | size.x | 0.205 | Shaft cross-section width |
 | size.y | 0.205 | Shaft cross-section height |
 | size.z | 0.2 | Approximate slab thickness |
 
-**Note:** The exact distance to Block ~21 is not precisely published; the 0.2 m thick slab is placed at ~21.1 m from the start as a visualization placeholder pending a surveyed position. The northern shaft bend/lateral offset near the exit is not modeled.
+**Note:** The exact distance to Block ~21 is not precisely published; the 0.2 m thick slab is placed at ~11.5 m from the start as a visualization placeholder pending a surveyed position. The northern shaft bend/lateral offset near the exit is not modeled.
 
 ### 5.18 King's Chamber South Shaft
 
 | Field | Value | Derivation |
 |---|---|---|
 | position.x | 7.22 | KC center x (same note as north shaft) |
-| position.y | 45.945 | Similar to north shaft, approximate center |
-| position.z | 8.428 | KC south wall: 40.5 + 10.47/2 = 40.5 + 5.235 = 45.735 ≈ 45.5. Shaft goes south (+Z). |
-| rotation.x | — | Gantenbrink: 45° (positive = slopes up toward +Z/south) |
-| size.x | 5.24 | Gantenbrink: 20.5 cm |
-| size.y | 5.97 | Gantenbrink: 21.5 cm |
-| size.z | 10.47 | Gantenbrink: 77.55 m length to exterior exit |
+| position.y | 66.661 | Shaft center y. Floor endpoints: start at KC ceiling y≈48.93 and exit at y≈84.25. Center ≈ 66.59. |
+| position.z | 31.249 | Shaft center z. Floor endpoints: start at KC south wall z≈13.66 and exit at z≈48.98. Center ≈ 31.32. |
+| rotation.x | −45° | Gantenbrink: 45° (negative = slopes up toward +Z/south) |
+| size.x | 0.205 | Gantenbrink: mean width 20.5 cm |
+| size.y | 0.205 | Gantenbrink: mean height 20.5 cm |
+| size.z | 49.947 | Gantenbrink: sloped length to exterior exit |
 
 ### 5.19 Queen's Chamber North Shaft
 
 | Field | Value | Derivation |
 |---|---|---|
 | position.x | 0 | QC center x |
-| position.y | 24.305 | Shaft center y, approximate. QC ceiling at ~27.17 (20.94 + 6.23). Shaft exits at ~80.6 m. Center ≈ (27.17 + 80.6) / 2 ≈ 53.9. We use 44.6 — see note. |
-| position.z | 6.32 | QC north wall: 5 − 5.75/2 = 5 − 2.875 = 2.125 ≈ 2.0. Shaft goes north. |
-| rotation.x | — | Gantenbrink: 39° (negative = slopes up toward −Z/north) |
-| size.x | 5.23 | Gantenbrink: 21 cm |
-| size.y | 6.23 | Gantenbrink: 21 cm |
-| size.z | 5.75 | Gantenbrink: ~65.1 m design length to "door" |
+| position.y | 46.381 | Shaft center y. Floor endpoints: start at QC ceiling y≈27.42 and end at y≈65.18. Center ≈ 46.30. |
+| position.z | −19.803 | Shaft center z. Floor endpoints: start at QC north wall z≈3.45 and end at z≈−43.18. Center ≈ −19.86. |
+| rotation.x | +39° | Gantenbrink: 39° (positive = slopes up toward −Z/north) |
+| size.x | 0.21 | Gantenbrink: 21 cm |
+| size.y | 0.21 | Gantenbrink: 21 cm |
+| size.z | 60 | Gantenbrink: ~60 m design length to "door" |
 
 **Note:** QC shafts do not exit the pyramid exterior. They end at blocking stones ("doors"). The length is to the door, not to the exterior.
 
@@ -526,12 +527,12 @@ A limestone blocking stone ("door") observed by Pyramid Rover at Block ~21 in th
 | Field | Value | Derivation |
 |---|---|---|
 | position.x | 0 | QC center x |
-| position.y | 24.305 | Approximate center |
-| position.z | 6.32 | QC south wall: 5 + 5.75/2 = 5 + 2.875 = 7.875 ≈ 8.0. Shaft goes south. |
-| rotation.x | — | Gantenbrink: 39°36' = 39.6° (positive = slopes up toward +Z/south) |
-| size.x | 5.23 | Gantenbrink: 21 cm |
-| size.y | 6.23 | Gantenbrink: 21 cm |
-| size.z | 5.75 | Gantenbrink: ~59.6 m design length to "door" |
+| position.y | 46.624 | Shaft center y. Floor endpoints: start at QC ceiling y≈27.42 and end at y≈65.67. Center ≈ 46.55. |
+| position.z | 32.243 | Shaft center z. Floor endpoints: start at QC south wall z≈9.19 and end at z≈55.43. Center ≈ 32.31. |
+| rotation.x | −39.6° | Gantenbrink: 39°36′ = 39.6° (negative = slopes up toward +Z/south) |
+| size.x | 0.21 | Gantenbrink: 21 cm |
+| size.y | 0.21 | Gantenbrink: 21 cm |
+| size.z | 60 | Gantenbrink: ~59.6 m design length to "door" |
 
 ### 5.20a Queen's Chamber North Shaft Door
 
@@ -540,7 +541,7 @@ A limestone blocking stone ("door") observed by Pyramid Rover at Block ~21 in th
 | position.x | 0 | QC center x |
 | position.y | 65.135 | Inferred: 0.2 m limestone slab at inner end of north shaft |
 | position.z | -42.962 | 0.1–0.3 m inside the 60 m shaft end (north) |
-| rotation.x | -39° | Same slope as QC north shaft |
+| rotation.x | +39° | Same slope as QC north shaft |
 | size.x | 0.21 | Shaft cross-section width |
 | size.y | 0.21 | Shaft cross-section height |
 | size.z | 0.2 | Approximate slab thickness |
