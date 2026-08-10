@@ -7,20 +7,22 @@
  * without requiring pixel-perfect cursor placement.
  */
 
-import { DoubleSide } from 'three';
+import type { Mesh } from 'three';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import type { SceneNodeWithWorld } from './sceneGraph';
+import { BaseShaderMaterial } from '@/materials/BaseShaderMaterial';
 import { useSceneObjectClick } from './useSceneObjectClick';
 
 const MIN_HIT_SIZE = 0.8;
 
-interface BlockoutLike {
+export interface BlockoutLike {
   color: string;
   opacity?: number;
   size: Vector3;
   rotation?: Vector3;
   layer: string;
+  materialId?: string;
 }
 
 interface BlockoutMeshProps {
@@ -29,6 +31,13 @@ interface BlockoutMeshProps {
   rule?: VisualizationRule;
   pbr: { metalness: number; roughness: number };
   isPyramid?: boolean;
+}
+
+function ensureUv2(mesh: Mesh): void {
+  const geometry = mesh.geometry;
+  if (!geometry.hasAttribute('uv2')) {
+    geometry.setAttribute('uv2', geometry.attributes.uv);
+  }
 }
 
 export function BlockoutMesh({
@@ -69,36 +78,32 @@ export function BlockoutMesh({
     <mesh
       position={[position.x, position.y, position.z]}
       rotation={[rotationX, rotationY, rotationZ]}
+      onUpdate={ensureUv2}
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <coneGeometry args={[baseSide / Math.sqrt(2), block.size.y, 4]} />
-      <meshStandardMaterial
+      <BaseShaderMaterial
         color={color}
-        transparent={opacity < 1}
         opacity={opacity}
-        side={DoubleSide}
-        metalness={pbr.metalness}
-        roughness={pbr.roughness}
-        emissive={hovered ? '#3b82f6' : '#000000'}
-        emissiveIntensity={hovered ? 0.35 : 0}
+        pbr={pbr}
+        materialId={block.materialId}
+        hovered={hovered}
       />
     </mesh>
   ) : (
     <mesh
       position={[position.x, position.y, position.z]}
       rotation={[rotationX, rotationY, rotationZ]}
+      onUpdate={ensureUv2}
       {...(needsHitMesh ? {} : eventHandlers)}
     >
       <boxGeometry args={[block.size.x, block.size.y, block.size.z]} />
-      <meshStandardMaterial
+      <BaseShaderMaterial
         color={color}
-        transparent={opacity < 1}
         opacity={opacity}
-        side={DoubleSide}
-        metalness={pbr.metalness}
-        roughness={pbr.roughness}
-        emissive={hovered ? '#3b82f6' : '#000000'}
-        emissiveIntensity={hovered ? 0.35 : 0}
+        pbr={pbr}
+        materialId={block.materialId}
+        hovered={hovered}
       />
     </mesh>
   );

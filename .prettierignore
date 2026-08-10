@@ -3,6 +3,7 @@ node_modules
 dist
 coverage
 package-lock.json
+test-report.md
 
 # Existing documentation, specifications, and runtime rules
 # Formatting these would create unrelated diffs and may touch protected spec files.

@@ -36,16 +36,20 @@ export interface DiscoveryOptions {
 
 import { osirisHydraulicPlugin } from './plugins/osiris-hydraulic';
 import { osirisMainstreamPlugin } from './plugins/osiris-mainstream';
+import { gpHydraulicPlugin } from './plugins/gp-hydraulic';
 import { gpHydraulicAcousticPlugin } from './plugins/gp-hydraulic-acoustic';
 import { gpMainstreamPlugin } from './plugins/gp-mainstream';
 import { gpScanPyramidsPlugin } from './plugins/gp-scanpyramids';
+import { gpRampPlugin } from './plugins/gp-ramp';
 
 const BUILTIN_PLUGINS: HypothesisPlugin[] = [
   osirisHydraulicPlugin,
   osirisMainstreamPlugin,
+  gpHydraulicPlugin,
   gpHydraulicAcousticPlugin,
   gpMainstreamPlugin,
   gpScanPyramidsPlugin,
+  gpRampPlugin,
 ];
 
 // ─── Discovery ───────────────────────────────────────────────────────────────

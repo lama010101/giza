@@ -1,0 +1,27 @@
+enhancement:
+  - head-branch:
+      - '^feat/'
+      - '^feature/'
+
+bug:
+  - head-branch:
+      - '^fix/'
+      - '^bugfix/'
+
+documentation:
+  - head-branch:
+      - '^docs/'
+      - '^doc/'
+
+refactor:
+  - head-branch:
+      - '^refactor/'
+
+test:
+  - head-branch:
+      - '^test/'
+      - '^tests/'
+
+chore:
+  - head-branch:
+      - '^chore/'

@@ -11,11 +11,20 @@ import assetManifestData from '../../assets/asset-manifest.json';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type AssetCategory = 'rubble' | 'bedrock' | 'granite' | 'stairs' | 'materials' | 'export';
+export type AssetCategory =
+  | 'rubble'
+  | 'bedrock'
+  | 'granite'
+  | 'stairs'
+  | 'materials'
+  | 'export'
+  | 'objects';
 export type AssetStatus = 'pending' | 'in_production' | 'published' | 'failed';
 
 export interface ManifestAsset {
   assetId: string;
+  baseAssetId?: string;
+  lod?: string;
   name: string;
   format: string;
   status: AssetStatus;
@@ -64,6 +73,27 @@ export function getAllManifestAssets(): ManifestAsset[] {
  */
 export function findManifestAsset(assetId: string): ManifestAsset | undefined {
   return getAllManifestAssets().find((a) => a.assetId === assetId);
+}
+
+function baseAssetId(assetId: string): string {
+  return assetId.replace(/-LOD\d+$/, '') || assetId;
+}
+
+/**
+ * Returns the base asset ID for a manifest entry, preferring the explicit
+ * `baseAssetId` field when present.
+ */
+export function getManifestBaseAssetId(asset: ManifestAsset): string {
+  return asset.baseAssetId ?? baseAssetId(asset.assetId);
+}
+
+/**
+ * Returns all manifest entries that belong to the same base asset (all LODs).
+ */
+export function getManifestLODAssets(baseId: string): ManifestAsset[] {
+  return getAllManifestAssets()
+    .filter((a) => getManifestBaseAssetId(a) === baseAssetId(baseId))
+    .sort((a, b) => a.assetId.localeCompare(b.assetId));
 }
 
 /**

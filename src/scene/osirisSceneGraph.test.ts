@@ -74,4 +74,55 @@ describe('Osiris Scene Graph (M09-T02: bounding box + survey ref)', () => {
     expect(chamberA!.metadata.evidenceIds).toEqual(['EV-000002']);
     expect(chamberA!.metadata.sourceIds).toEqual(['SRC-0001']);
   });
+
+  it('all Osiris geometry nodes have a confidence value (M09-T19)', () => {
+    const nodes = graph.getAllNodes().filter((n) => n.id !== OSIRIS_SCENE_ROOT_ID);
+    expect(nodes.length).toBeGreaterThan(0);
+    for (const node of nodes) {
+      expect(typeof node.metadata.confidence).toBe('number');
+      expect(node.metadata.confidence).toBeGreaterThanOrEqual(0);
+      expect(node.metadata.confidence).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('sarcophagus nodes use basalt material and have evidence linkage (M09-T09)', () => {
+    const sarcophagus = graph.getNode('sarcophagus-i');
+    expect(sarcophagus).toBeDefined();
+    expect(sarcophagus!.metadata.objectId).toBe('OBJ-0008');
+
+    const niche2 = graph.getNode('niche-2-sarcophagus');
+    const niche7 = graph.getNode('niche-7-sarcophagus');
+    expect(niche2).toBeDefined();
+    expect(niche7).toBeDefined();
+    expect(niche2!.metadata.objectId).toBe('OBJ-0010');
+    expect(niche7!.metadata.objectId).toBe('OBJ-0011');
+  });
+
+  it('northern conduit has a flow overlay node (M09-T10)', () => {
+    const flow = graph.getNode('northern-conduit-flow');
+    expect(flow).toBeDefined();
+    expect(flow!.metadata.objectId).toBeUndefined();
+  });
+
+  it('every visible object node has evidence, source, and confidence (DoSD)', () => {
+    const nodes = graph.getAllNodes().filter((n) => n.id !== OSIRIS_SCENE_ROOT_ID);
+    for (const node of nodes) {
+      expect(typeof node.metadata.confidence).toBe('number');
+      expect(node.metadata.confidence).toBeGreaterThanOrEqual(0);
+      expect(node.metadata.confidence).toBeLessThanOrEqual(100);
+
+      if (node.metadata.objectId) {
+        const evidenceIds = node.metadata.evidenceIds ?? [];
+        const sourceIds = node.metadata.sourceIds ?? [];
+        expect(evidenceIds.length).toBeGreaterThan(0);
+        expect(sourceIds.length).toBeGreaterThan(0);
+        for (const id of evidenceIds) {
+          expect(id).toMatch(/^EV-\d{6}$/);
+        }
+        for (const id of sourceIds) {
+          expect(id).toMatch(/^SRC-\d{4}$/);
+        }
+      }
+    }
+  });
 });

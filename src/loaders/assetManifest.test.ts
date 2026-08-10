@@ -7,13 +7,14 @@ import {
   getAssetsByStatus,
   getManifestStats,
   getManifestTaskIds,
+  getManifestLODAssets,
 } from './assetManifest';
 
 describe('Asset Manifest (M06B-T01 through T07)', () => {
   describe('getAssetManifest', () => {
     it('returns the full manifest', () => {
       const m = getAssetManifest();
-      expect(m.version).toBe('1.0.0');
+      expect(m.version).toBe('1.3.0');
       expect(m.categories).toBeDefined();
     });
   });
@@ -50,6 +51,12 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
       expect(assets.length).toBeGreaterThanOrEqual(5);
     });
 
+    it('returns object assets', () => {
+      const assets = getAssetsByCategory('objects');
+      expect(assets.length).toBeGreaterThanOrEqual(9);
+      expect(assets[0].assetId).toMatch(/^OS-/);
+    });
+
     it('returns empty for unknown category', () => {
       expect(getAssetsByCategory('unknown' as never)).toEqual([]);
     });
@@ -75,9 +82,14 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
   });
 
   describe('getAssetsByStatus', () => {
-    it('returns pending assets', () => {
+    it('returns published assets', () => {
+      const published = getAssetsByStatus('published');
+      expect(published.length).toBeGreaterThan(0);
+    });
+
+    it('returns no pending assets after generation', () => {
       const pending = getAssetsByStatus('pending');
-      expect(pending.length).toBeGreaterThan(0);
+      expect(pending.length).toBe(0);
     });
   });
 
@@ -85,9 +97,9 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
     it('returns statistics', () => {
       const stats = getManifestStats();
       expect(stats.total).toBeGreaterThanOrEqual(20);
-      expect(stats.pending).toBeGreaterThan(0);
-      expect(stats.published).toBe(0);
-      expect(Object.keys(stats.byCategory).length).toBe(6);
+      expect(stats.pending).toBe(0);
+      expect(stats.published).toBeGreaterThan(0);
+      expect(Object.keys(stats.byCategory).length).toBe(7);
     });
   });
 
@@ -96,7 +108,25 @@ describe('Asset Manifest (M06B-T01 through T07)', () => {
       const ids = getManifestTaskIds();
       expect(ids).toContain('M06B-T01');
       expect(ids).toContain('M06B-T07');
-      expect(ids.length).toBe(6);
+      expect(ids).toContain('M06B-T08');
+      expect(ids.length).toBe(7);
+    });
+  });
+
+  describe('getManifestLODAssets', () => {
+    it('returns all LODs for an object asset', () => {
+      const lods = getManifestLODAssets('OS-Level3-ChamberI-LOD0');
+      expect(lods.length).toBe(4);
+      expect(lods.map((a) => a.assetId)).toEqual([
+        'OS-Level3-ChamberI-LOD0',
+        'OS-Level3-ChamberI-LOD1',
+        'OS-Level3-ChamberI-LOD2',
+        'OS-Level3-ChamberI-LOD3',
+      ]);
+    });
+
+    it('returns empty for unknown asset', () => {
+      expect(getManifestLODAssets('UNKNOWN-LOD0')).toEqual([]);
     });
   });
 });

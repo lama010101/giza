@@ -122,6 +122,17 @@ export const osirisBlockout: Blockout = {
       sourceIds: ['SRC-0001', 'SRC-0002'],
       layer: 'level-3',
       color: '#3a3a3f',
+      materialId: 'MAT_Basalt',
+    },
+    {
+      id: 'sarcophagus-i-highlight',
+      name: 'Sarcophagus Highlight Overlay',
+      position: { x: -1.4, y: -28.425, z: -6.5 },
+      size: { x: 1.12, y: 0.99, z: 2.32 },
+      layer: 'level-3',
+      color: '#f59e0b',
+      opacity: 0.0,
+      overlay: 'highlight',
     },
     {
       id: 'northern-conduit',
@@ -134,6 +145,17 @@ export const osirisBlockout: Blockout = {
       sourceIds: ['SRC-0001'],
       layer: 'level-3',
       color: '#6b5f45',
+    },
+    {
+      id: 'northern-conduit-flow',
+      name: 'Northern Conduit Flow Overlay',
+      position: { x: -7.054, y: -30.3, z: -13.904 },
+      rotation: { x: 0, y: (-3 * Math.PI) / 4, z: 0 },
+      size: { x: 0.48, y: 0.58, z: 6.6 },
+      layer: 'level-3',
+      color: '#3b82f6',
+      opacity: 0.0,
+      overlay: 'flow',
     },
     {
       id: 'chamber-i-water',
@@ -156,6 +178,7 @@ export const osirisBlockout: Blockout = {
       layer: 'level-2',
       color: '#4a4a4f',
       opacity: 0.85,
+      materialId: 'MAT_Basalt',
     },
     {
       id: 'niche-7-sarcophagus',
@@ -168,6 +191,7 @@ export const osirisBlockout: Blockout = {
       layer: 'level-2',
       color: '#4a4a4f',
       opacity: 0.85,
+      materialId: 'MAT_Basalt',
     },
     {
       id: 'chamber-b-east-passage',

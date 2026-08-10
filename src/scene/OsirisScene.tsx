@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { getDefaultHypothesisContext, hypothesisEngine } from '@/theories/engineInstance';
@@ -7,14 +7,21 @@ import { useLightingStore } from '@/store/lighting';
 import { useSimulationStore } from '@/store/simulation';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
+import { getPbrForMaterial } from '@/materials/masterMaterials';
+import { resolveAssetForNode } from '@/materials/assetDefinitions';
+import type { AssetDefinition } from '@/materials/assetDefinitions';
 import { buildOsirisSceneGraph } from './osirisSceneGraph';
+import type { SceneNodeWithWorld } from './sceneGraph';
 import { CameraRig } from './CameraRig';
+import { ScreenshotTaker } from './ScreenshotTaker';
 import { WaterPlane } from './WaterPlane';
 import { WaterMesh } from './WaterMesh';
 import { Level0Surface } from './Level0Surface';
 import { BlockoutMesh } from './BlockoutMesh';
+import { GLTFAssetMesh } from './GLTFAssetMesh';
 import { EvidenceHotspots } from './EvidenceHotspots';
 import { generateOsirisHotspots } from './osirisHotspots';
+import { getVisibilityLayer } from './visibilityLayers';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
   'level-0': { metalness: 0.0, roughness: 0.95 },
@@ -27,8 +34,14 @@ const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
 
 const CHAMBER_LIGHT_NODES = osirisBlockout.nodes.filter((n) => n.layer.startsWith('level-'));
 
-function getPbr(layer: string): { metalness: number; roughness: number } {
-  return LAYER_PBR[layer] ?? { metalness: 0.1, roughness: 0.85 };
+function getPbr(block: (typeof osirisBlockout.nodes)[number]): {
+  metalness: number;
+  roughness: number;
+} {
+  if (block.materialId) {
+    return getPbrForMaterial(block.materialId);
+  }
+  return LAYER_PBR[block.layer] ?? { metalness: 0.1, roughness: 0.85 };
 }
 
 function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
@@ -45,8 +58,10 @@ export function OsirisScene(): JSX.Element {
   const blocks = useMemo(() => new Map(osirisBlockout.nodes.map((n) => [n.id, n])), []);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
+  const measurementThird = useAppStore((s) => s.measurementThird);
 
   const ambientIntensity = useLightingStore((s) => s.ambientIntensity);
   const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
@@ -64,6 +79,15 @@ export function OsirisScene(): JSX.Element {
       ),
     [hiddenLayers],
   );
+
+  const [hypothesisTick, setHypothesisTick] = useState(0);
+  useEffect(() => {
+    hypothesisEngine.setActive(activeHypothesisIds);
+    setHypothesisTick((t) => t + 1);
+  }, [activeHypothesisIds]);
+  // hypothesisTick is incremented after the engine active set is synced; it is
+  // intentionally unused so the overlay geometry re-runs against the latest rules.
+  void hypothesisTick;
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
 
@@ -83,7 +107,10 @@ export function OsirisScene(): JSX.Element {
     .filter((node) => blocks.has(node.id))
     .filter((node) => {
       const block = blocks.get(node.id)!;
-      return !hiddenLayers.includes(block.layer as never);
+      return (
+        !hiddenLayers.includes(block.layer as never) &&
+        !hiddenVisibilityLayers.includes(getVisibilityLayer(block))
+      );
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
@@ -94,9 +121,36 @@ export function OsirisScene(): JSX.Element {
     })
     .filter(({ block, rule }) => !block.overlay || rule !== undefined);
 
+  type OsirisBlock = (typeof osirisBlockout.nodes)[number];
+
+  const assetNodes = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        node: SceneNodeWithWorld;
+        block: OsirisBlock;
+        rule?: VisualizationRule;
+        asset: AssetDefinition;
+      }
+    >();
+    const seen = new Set<string>();
+    for (const { node, block, rule } of visibleNodes) {
+      const objectId = block.objectId ?? node.metadata.objectId;
+      if (!objectId || seen.has(objectId)) continue;
+      const asset = resolveAssetForNode({ name: node.name, objectId });
+      if (!asset?.filePath) continue;
+      seen.add(objectId);
+      map.set(objectId, { node, block, rule, asset });
+    }
+    return map;
+  }, [visibleNodes]);
+
+  const assetObjectIds = useMemo(() => new Set(assetNodes.keys()), [assetNodes]);
+
   return (
     <Canvas camera={{ position: [16, -6, 22], fov: 55 }}>
       <CameraRig />
+      <ScreenshotTaker />
       <color attach="background" args={[background]} />
       <ambientLight intensity={ambientIntensity} />
       <directionalLight
@@ -122,18 +176,31 @@ export function OsirisScene(): JSX.Element {
         />
       ))}
       {/* Level 0 — Surface context (M09-T03) */}
-      <Level0Surface />
-      {visibleNodes.map(({ node, block, rule }) => (
-        <BlockoutMesh
-          key={node.id}
-          node={node}
-          block={block}
-          rule={rule}
-          pbr={getPbr(block.layer)}
-        />
-      ))}
-      {hydraulicActive && <WaterPlane />}
-      {hydraulicActive && (
+      <Level0Surface hiddenVisibilityLayers={hiddenVisibilityLayers} />
+      {visibleNodes.map(({ node, block, rule }) => {
+        const objectId = block.objectId ?? node.metadata.objectId;
+        if (objectId && assetObjectIds.has(objectId)) {
+          const asset = assetNodes.get(objectId);
+          if (asset && asset.node.id === node.id) {
+            return (
+              <GLTFAssetMesh
+                key={`asset-${objectId}`}
+                node={asset.node}
+                block={asset.block}
+                rule={asset.rule}
+                pbr={getPbr(asset.block)}
+                assetId={asset.asset.id}
+              />
+            );
+          }
+          return null;
+        }
+        return (
+          <BlockoutMesh key={node.id} node={node} block={block} rule={rule} pbr={getPbr(block)} />
+        );
+      })}
+      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && <WaterPlane />}
+      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && (
         <WaterMesh
           position={[-1.4, -30.4, -7.0]}
           size={6.5}
@@ -142,9 +209,19 @@ export function OsirisScene(): JSX.Element {
           color="#0a4a6b"
         />
       )}
-      {measurementStart && <MeasurementMarker point={measurementStart} />}
-      {measurementEnd && <MeasurementMarker point={measurementEnd} />}
-      <EvidenceHotspots hotspots={osirisHotspots} />
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementStart && (
+        <MeasurementMarker point={measurementStart} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
+        <MeasurementMarker point={measurementEnd} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
+        <MeasurementMarker point={measurementThird} />
+      )}
+      <EvidenceHotspots
+        hotspots={osirisHotspots}
+        visible={!hiddenVisibilityLayers.includes('Evidence')}
+      />
     </Canvas>
   );
 }

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import { LeftPanel } from './LeftPanel';
 import { useAppStore } from '@/store/app';
 
@@ -8,6 +8,7 @@ describe('LeftPanel (M07-T01)', () => {
     useAppStore.setState({
       activeMonument: 'osiris',
       lod: 'LOD0',
+      bookmarks: [],
       bookmarkedObjectIds: ['OBJ-0001'],
       activeLocationId: null,
       selectedObjectId: null,
@@ -31,12 +32,61 @@ describe('LeftPanel (M07-T01)', () => {
     expect(within(hierarchy).getByText('Shaft A')).toBeInTheDocument();
   });
 
-  it('lists the bookmarked object by name', () => {
+  it('lists saved bookmarks and restores a bookmark', () => {
+    useAppStore.setState({
+      bookmarks: [
+        {
+          id: 'bm-001',
+          name: 'Shaft A View',
+          createdAt: '2026-08-08T12:00:00.000Z',
+          camera: {
+            position: { x: 0, y: 0, z: 10 },
+            target: { x: 0, y: 0, z: 0 },
+            mode: 'orbit',
+          },
+          visibleLayers: ['shafts'],
+          hiddenLayers: [],
+          activeHypothesisIds: [],
+          hiddenVisibilityLayers: [],
+          notes: '',
+        },
+      ],
+    });
     render(<LeftPanel />);
     const bookmarks = screen.getByText('Bookmarks').closest('section');
     expect(bookmarks).toBeTruthy();
     if (!bookmarks) throw new Error('Missing bookmarks section');
-    expect(within(bookmarks).getByText('Shaft A')).toBeInTheDocument();
+    expect(within(bookmarks).getByText('Shaft A View')).toBeInTheDocument();
+  });
+
+  it('shares a bookmark link on click', () => {
+    const writeText = vi.fn();
+    Object.assign(navigator, { clipboard: { writeText } });
+    useAppStore.setState({
+      bookmarks: [
+        {
+          id: 'bm-002',
+          name: 'Shaft A View',
+          createdAt: '2026-08-08T12:00:00.000Z',
+          camera: {
+            position: { x: 0, y: 0, z: 10 },
+            target: { x: 0, y: 0, z: 0 },
+            mode: 'orbit',
+          },
+          visibleLayers: ['shafts'],
+          hiddenLayers: [],
+          activeHypothesisIds: [],
+          hiddenVisibilityLayers: [],
+          notes: '',
+        },
+      ],
+    });
+    render(<LeftPanel />);
+    const shareBtn = screen.getByLabelText('Share Shaft A View');
+    fireEvent.click(shareBtn);
+    expect(writeText).toHaveBeenCalledTimes(1);
+    const written = writeText.mock.calls[0][0] as string;
+    expect(written).toContain('bm=');
   });
 
   it('lists navigation locations', () => {

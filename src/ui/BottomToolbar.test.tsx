@@ -50,4 +50,12 @@ describe('BottomToolbar (M07-T01)', () => {
     fireEvent.click(evidenceBtn);
     expect(evidenceBtn.getAttribute('aria-pressed')).toBe('true');
   });
+
+  it('switches side panel tab to search when Search is clicked', () => {
+    render(<BottomToolbar />);
+    const searchBtn = screen.getByLabelText('Search');
+    fireEvent.click(searchBtn);
+    expect(useAppStore.getState().sidePanelTab).toBe('search');
+    expect(useAppStore.getState().evidencePanelOpen).toBe(true);
+  });
 });

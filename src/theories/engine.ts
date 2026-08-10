@@ -20,6 +20,10 @@ export class HypothesisEngine {
     return Array.from(this.plugins.keys());
   }
 
+  getPlugin(id: string): HypothesisPlugin | undefined {
+    return this.plugins.get(id);
+  }
+
   activate(ids: string[]): void {
     for (const id of ids) {
       if (!this.plugins.has(id)) {

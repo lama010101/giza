@@ -5,13 +5,15 @@ describe('useAppStore measurement', () => {
   beforeEach(() => {
     useAppStore.setState({
       measurementMode: false,
+      measurementType: 'distance',
       measurementStart: null,
       measurementEnd: null,
+      measurementThird: null,
       bookmarkedObjectIds: [],
     });
   });
 
-  it('records start then end point, then restarts on the third click', () => {
+  it('records start, end, and third points, then restarts on the fourth click', () => {
     const { addMeasurementPoint } = useAppStore.getState();
 
     addMeasurementPoint({ x: 0, y: 0, z: 0 });
@@ -22,19 +24,32 @@ describe('useAppStore measurement', () => {
     expect(useAppStore.getState().measurementEnd).toEqual({ x: 3, y: 4, z: 0 });
 
     addMeasurementPoint({ x: 1, y: 1, z: 1 });
-    expect(useAppStore.getState().measurementStart).toEqual({ x: 1, y: 1, z: 1 });
+    expect(useAppStore.getState().measurementThird).toEqual({ x: 1, y: 1, z: 1 });
+
+    addMeasurementPoint({ x: 2, y: 2, z: 2 });
+    expect(useAppStore.getState().measurementStart).toEqual({ x: 2, y: 2, z: 2 });
     expect(useAppStore.getState().measurementEnd).toBeNull();
+    expect(useAppStore.getState().measurementThird).toBeNull();
   });
 
-  it('clears points when measurement mode is disabled', () => {
-    const { setMeasurementMode, addMeasurementPoint } = useAppStore.getState();
+  it('switches measurement type', () => {
+    const { setMeasurementType } = useAppStore.getState();
+    setMeasurementType('volume');
+    expect(useAppStore.getState().measurementType).toBe('volume');
+  });
+
+  it('clears points and resets type when measurement mode is disabled', () => {
+    const { setMeasurementMode, addMeasurementPoint, setMeasurementType } = useAppStore.getState();
 
     setMeasurementMode(true);
+    setMeasurementType('area');
     addMeasurementPoint({ x: 0, y: 0, z: 0 });
     setMeasurementMode(false);
 
     expect(useAppStore.getState().measurementStart).toBeNull();
     expect(useAppStore.getState().measurementEnd).toBeNull();
+    expect(useAppStore.getState().measurementThird).toBeNull();
+    expect(useAppStore.getState().measurementType).toBe('distance');
   });
 
   it('toggles bookmarked objects on and off', () => {
@@ -45,6 +60,72 @@ describe('useAppStore measurement', () => {
 
     toggleBookmarkedObject('OBJ-0008');
     expect(useAppStore.getState().bookmarkedObjectIds).toEqual([]);
+  });
+});
+
+describe('useAppStore bookmarks', () => {
+  beforeEach(() => {
+    useAppStore.setState({
+      bookmarks: [],
+      cameraPosition: { x: 1, y: 2, z: 3 },
+      cameraTarget: { x: 0, y: 0, z: 0 },
+      cameraMode: 'orbit',
+      hiddenLayers: ['exterior'],
+      hiddenVisibilityLayers: ['Modern'],
+      activeHypothesisIds: ['hydraulic'],
+      selectedObjectId: 'OBJ-0001',
+      selectedEvidenceId: 'EV-0001',
+    });
+  });
+
+  it('adds a bookmark from current state', () => {
+    const { addBookmark } = useAppStore.getState();
+
+    addBookmark('Test view', 'A note');
+    const bms = useAppStore.getState().bookmarks;
+    expect(bms).toHaveLength(1);
+    expect(bms[0].name).toBe('Test view');
+    expect(bms[0].notes).toBe('A note');
+    expect(bms[0].camera.position).toEqual({ x: 1, y: 2, z: 3 });
+    expect(bms[0].camera.mode).toBe('orbit');
+    expect(bms[0].activeHypothesisIds).toEqual(['hydraulic']);
+    expect(bms[0].selectedObjectId).toBe('OBJ-0001');
+    expect(bms[0].selectedEvidenceId).toBe('EV-0001');
+  });
+
+  it('deletes a bookmark', () => {
+    const { addBookmark, deleteBookmark } = useAppStore.getState();
+    addBookmark('One');
+    const id = useAppStore.getState().bookmarks[0].id;
+    addBookmark('Two');
+    deleteBookmark(id);
+    expect(useAppStore.getState().bookmarks.map((b) => b.name)).toEqual(['Two']);
+  });
+
+  it('restores a bookmark into store state', () => {
+    const { addBookmark, restoreBookmark } = useAppStore.getState();
+    addBookmark('Saved');
+    const bm = useAppStore.getState().bookmarks[0];
+
+    useAppStore.setState({
+      cameraPosition: { x: 0, y: 0, z: 0 },
+      cameraTarget: { x: 0, y: 0, z: 0 },
+      cameraMode: 'walk',
+      hiddenLayers: [],
+      hiddenVisibilityLayers: [],
+      activeHypothesisIds: [],
+      selectedObjectId: null,
+      selectedEvidenceId: null,
+    });
+
+    restoreBookmark(bm.id);
+    const state = useAppStore.getState();
+    expect(state.cameraPosition).toEqual(bm.camera.position);
+    expect(state.cameraTarget).toEqual(bm.camera.target);
+    expect(state.cameraMode).toBe(bm.camera.mode);
+    expect(state.hiddenLayers).toEqual(bm.hiddenLayers);
+    expect(state.activeHypothesisIds).toEqual(bm.activeHypothesisIds);
+    expect(state.selectedObjectId).toBe(bm.selectedObjectId);
   });
 });
 
@@ -75,11 +156,15 @@ describe('useAppStore camera mode', () => {
 
 describe('useAppStore layer visibility', () => {
   beforeEach(() => {
-    useAppStore.setState({ hiddenLayers: [] });
+    useAppStore.setState({ hiddenLayers: [], hiddenVisibilityLayers: [] });
   });
 
   it('starts with no hidden layers', () => {
     expect(useAppStore.getState().hiddenLayers).toEqual([]);
+  });
+
+  it('starts with no hidden visibility layers', () => {
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual([]);
   });
 
   it('toggles a layer on (hidden)', () => {
@@ -97,5 +182,17 @@ describe('useAppStore layer visibility', () => {
     useAppStore.getState().toggleLayer('shafts');
     useAppStore.getState().toggleLayer('level-1');
     expect(useAppStore.getState().hiddenLayers).toEqual(['shafts', 'level-1']);
+  });
+
+  it('toggles a visibility layer', () => {
+    useAppStore.getState().toggleVisibilityLayer('Evidence');
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual(['Evidence']);
+    useAppStore.getState().toggleVisibilityLayer('Evidence');
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual([]);
+  });
+
+  it('can replace all visibility layers', () => {
+    useAppStore.getState().setHiddenVisibilityLayers(['Theory', 'Water']);
+    expect(useAppStore.getState().hiddenVisibilityLayers).toEqual(['Theory', 'Water']);
   });
 });

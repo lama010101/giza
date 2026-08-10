@@ -1,4 +1,7 @@
 import type { MasterMaterial } from '@/materials/masterMaterials';
+import { GREAT_PYRAMID_ASSETS, getGreatPyramidAssets } from './greatPyramidAssetDefinitions';
+
+export { getGreatPyramidAssets };
 
 export interface MaterialVariant {
   id: string;
@@ -16,8 +19,11 @@ export interface AssetDefinition {
   objectClass: 'Hero' | 'Standard' | 'Background';
   materialId: string;
   evidenceIds: string[];
+  sourceIds: string[];
   confidence: number;
   lods: string[];
+  /** Path to the generated GLB production asset, if published. */
+  filePath?: string;
 }
 
 const RUBBLE_VARIANTS: MaterialVariant[] = [
@@ -130,8 +136,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000002'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Level1-ChamberA-LOD0.glb',
   },
   {
     id: 'OS-Level2-ChamberB-LOD0',
@@ -141,8 +149,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000004'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Level2-ChamberB-LOD0.glb',
   },
   {
     id: 'OS-Level3-ChamberI-LOD0',
@@ -152,8 +162,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000006', 'EV-000011'],
+    sourceIds: ['SRC-0001'],
     confidence: 97,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-ChamberI-LOD0.glb',
   },
   {
     id: 'OS-Level3-CentralIsland-LOD0',
@@ -163,8 +175,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000007'],
+    sourceIds: ['SRC-0001'],
     confidence: 96,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-CentralIsland-LOD0.glb',
   },
   {
     id: 'OS-Level3-Sarcophagus-LOD0',
@@ -174,8 +188,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Hero',
     materialId: 'MAT_Basalt',
     evidenceIds: ['EV-000008'],
+    sourceIds: ['SRC-0001', 'SRC-0002'],
     confidence: 95,
     lods: ['LOD0', 'LOD1', 'LOD2', 'LOD3'],
+    filePath: 'assets/export/glB/objects/OS-Level3-Sarcophagus-LOD0.glb',
   },
   {
     id: 'OS-Level3-NorthernConduit-LOD0',
@@ -185,8 +201,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000009'],
+    sourceIds: ['SRC-0001'],
     confidence: 83,
     lods: ['LOD0', 'LOD1'],
+    filePath: 'assets/export/glB/objects/OS-Level3-NorthernConduit-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftA-LOD0',
@@ -196,8 +214,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000001', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftA-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftB-LOD0',
@@ -207,8 +227,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000003', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftB-LOD0.glb',
   },
   {
     id: 'OS-Shafts-ShaftC-LOD0',
@@ -218,8 +240,10 @@ const OSIRIS_ASSETS: AssetDefinition[] = [
     objectClass: 'Standard',
     materialId: 'MAT_LocalLimestone',
     evidenceIds: ['EV-000005', 'EV-000010'],
+    sourceIds: ['SRC-0001'],
     confidence: 98,
     lods: ['LOD0', 'LOD1', 'LOD2'],
+    filePath: 'assets/export/glB/objects/OS-Shafts-ShaftC-LOD0.glb',
   },
 ];
 
@@ -228,13 +252,97 @@ export function getOsirisAssets(): AssetDefinition[] {
 }
 
 export function getAssetById(id: string): AssetDefinition | undefined {
-  return OSIRIS_ASSETS.find((a) => a.id === id);
+  return ALL_ASSETS.find((a) => a.id === id);
+}
+
+function baseIdFromAssetId(id: string): string {
+  return id.replace(/-LOD0$/, '') || id;
+}
+
+export function getLODFilePath(asset: AssetDefinition, lod: string): string | undefined {
+  if (!asset.lods.includes(lod)) return undefined;
+  const baseId = baseIdFromAssetId(asset.id);
+  return `assets/export/glB/objects/${baseId}-${lod}.glb`;
+}
+
+export function getAllLODFilePaths(asset: AssetDefinition): Record<string, string> {
+  const paths: Record<string, string> = {};
+  const baseId = baseIdFromAssetId(asset.id);
+  for (const lod of asset.lods) {
+    paths[lod] = `assets/export/glB/objects/${baseId}-${lod}.glb`;
+  }
+  return paths;
 }
 
 export function getAssetsByMonument(monument: string): AssetDefinition[] {
-  return OSIRIS_ASSETS.filter((a) => a.monument === monument);
+  return ALL_ASSETS.filter((a) => a.monument === monument);
 }
 
 export function getAssetsByLocation(location: string): AssetDefinition[] {
-  return OSIRIS_ASSETS.filter((a) => a.location === location);
+  return ALL_ASSETS.filter((a) => a.location === location);
+}
+
+export const ALL_ASSETS: AssetDefinition[] = [...OSIRIS_ASSETS, ...GREAT_PYRAMID_ASSETS];
+
+export function getAllAssets(): AssetDefinition[] {
+  return [...ALL_ASSETS];
+}
+
+export interface AssetNodeLike {
+  name: string;
+  objectId?: string;
+}
+
+/**
+ * Resolves an AssetDefinition for a scene node by Great Pyramid objectId
+ * (GP-OBJ-NNNN-LOD0) or by node name (Osiris).
+ */
+export function resolveAssetForNode(node: AssetNodeLike): AssetDefinition | undefined {
+  if (node.objectId) {
+    const gpAssetId = `GP-${node.objectId}-LOD0`;
+    const gpAsset = ALL_ASSETS.find((a) => a.id === gpAssetId);
+    if (gpAsset) return gpAsset;
+  }
+  return ALL_ASSETS.find((a) => a.name === node.name);
+}
+
+/**
+ * Returns the published GLB URL for a scene node, or undefined when no
+ * per-object asset exists.
+ */
+export function resolveAssetUrlForNode(node: AssetNodeLike): string | undefined {
+  const asset = resolveAssetForNode(node);
+  if (!asset?.filePath) return undefined;
+  const path = asset.filePath.startsWith('/') ? asset.filePath : `/${asset.filePath}`;
+  return path;
+}
+
+export function validateAssetDefinition(asset: AssetDefinition): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (!asset.evidenceIds || asset.evidenceIds.length === 0) {
+    errors.push(`Asset ${asset.id} has no evidence linkage (EV-).`);
+  }
+  if (!asset.sourceIds || asset.sourceIds.length === 0) {
+    errors.push(`Asset ${asset.id} has no source linkage (SRC-).`);
+  }
+  if (asset.confidence == null || asset.confidence < 0 || asset.confidence > 100) {
+    errors.push(
+      `Asset ${asset.id} confidence must be between 0 and 100 (got ${asset.confidence}).`,
+    );
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateAllAssets(): { valid: boolean; errors: string[] } {
+  const allErrors: string[] = [];
+  for (const asset of ALL_ASSETS) {
+    const result = validateAssetDefinition(asset);
+    allErrors.push(...result.errors);
+  }
+  return { valid: allErrors.length === 0, errors: allErrors };
 }

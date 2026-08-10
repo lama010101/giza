@@ -205,3 +205,104 @@ npx vitest run src/scene/gp-lod1.test.ts src/scene/greatPyramid.test.ts
 - No `Something went wrong` error fallback.
 - Browser console has no `console.error`/WebGL errors after load.
 - Hover overlays show expected names: `Pyramid Exterior (core masonry)`, `Grand Gallery`, `King's Chamber`, `Queen's Chamber`, `Subterranean Chamber`, and relieving/shaft nodes.
+
+## Testing camera modes and Osiris overlays
+
+- The `orbit` / `walk` / `fly` / `teleport` buttons only appear in the right side panel when the top mode is **Research** or when the current camera mode is not `orbit`.
+- Clicking a mode button updates the active class and `aria-pressed`; `teleport` shows the hint `Double-click to teleport`, and `walk`/`fly` show `Click to lock pointer · WASD to move`.
+- In `walk`/`fly` mode, `W`/`A`/`S`/`D` (and `Space` for fly) move the camera. If the side panel has an `<input>` focused, key presses may also type into that input while still moving the camera; defocus any input before long key-press tests.
+- Walk/fly use acceleration/deceleration helpers from `src/scene/cameraConstraints.ts`; a short key hold followed by release should show a brief coast before stopping.
+- `teleport` reverts the camera mode back to `orbit` after a double-click and sets the target to the raycast point.
+- In the **Osiris** scene, switch to the **Simulation** tab and check `Hydraulic Functionality Hypothesis (Osiris Shaft)` (`THEORY-OSIRIS-001`). The `SimulationPanel` should render the **Hydraulic Simulation** controls (Water Level, Inflow Rate, Outflow Rate, Channel Width), and blue overlays should appear:
+  - Chamber I water plane (`Chamber I Water` overlay)
+  - Northern conduit flow (`Northern Conduit Flow Overlay`)
+- Unchecking the hypothesis removes the overlays (regression check).
+- Clicking `Basalt Sarcophagus` or `Northern Conduit` in the scene hierarchy (or hovering/clicking in the viewport) opens the **Evidence** panel with the corresponding evidence item.
+
+## Explore / Research side-panel tools (PR #17)
+
+- Select an object from the **left Explorer hierarchy** to populate the new right-panel tools. Viewport clicks set `selectedObjectId` only when an active hypothesis is present, so the hierarchy is the most reliable way to test Explore/Research tools in a neutral state.
+- In **Explore** mode the side panel shows `Inspect`, `Switch theory`, and `Reveal layer`.
+  - `Inspect` is disabled until an object is selected.
+  - `Switch theory` rotates `activeHypothesisIds` through the hypotheses for the current monument.
+  - `Reveal layer` is only enabled when the selected object's layer is currently hidden; clicking it removes that layer from `hiddenLayers`.
+- In **Research** mode the side panel shows a **Selected object** metadata card and **Scene stats**.
+  - `Isolate layer` hides every layer except the selected object's layer.
+  - `Reset layers` clears `hiddenLayers`.
+  - `Screenshot` triggers a PNG download (`giza-screenshot-<timestamp>.png` in `~/Downloads`). Verify by checking the file appears and starts with the PNG magic bytes (`8950 4e47`).
+- A **Confidence by theory** card appears in Research only when the selected object's `objectId` is in an active hypothesis's `affectedStructures`. If the card is missing, check whether the object is listed in the hypothesis plugin.
+
+## Screenshot export verification
+
+- Click the `Screenshot` button in either Great Pyramid or Osiris scene.
+- Wait ~1 second, then run in a shell:
+  ```bash
+  ls -la ~/Downloads/giza-screenshot-*.png
+  head -c 4 ~/Downloads/giza-screenshot-<timestamp>.png | xxd
+  ```
+- The file should exist and start with `8950 4e47` (`.PNG`).
+
+## Osiris hydraulic overlay framing
+
+- After checking `Hydraulic Functionality Hypothesis (Osiris Shaft)` (`THEORY-OSIRIS-001`) in the **Simulation** tab, the **Hydraulic Simulation** controls appear.
+- The blue Chamber I water plane and Northern Conduit flow overlay are present in the render graph but may be out of the default camera frame.
+- To see them, orbit/zoom toward Chamber I or use the left **Navigation** → `Level 3 — Chamber I` and rotate the view.
+- The water overlay remains visible at the default `Water Level` (0.50 m). The simulation slider value is controlled by React state; dragging the slider handle is more reliable than setting `.value` from the console.
+
+## Environment permission workarounds
+
+On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `EACCES` errors for Vite's optimizer cache and the build output. If `npm run dev` fails with a permission error or if `npm run build` cannot write to `dist`:
+- Use `cacheDir: '/tmp/vite-cache'` in `vite.config.ts` for the dev server and revert the line before committing.
+- Build to a writable directory: `npx vite build --outDir /tmp/giza-dist`.
+- Vitest may also fail to write `node_modules/.vite/vitest/results.json`; this is an environment artifact and does not indicate failing tests.
+
+## Valid persisted state values
+
+`localStorage.setItem('giza-session', JSON.stringify({ state: { ... }, version: 2 }))` should use known keys. In particular:
+- `activeMonument` must be `'great-pyramid'` or `'osiris'`. Persisting an unknown value now renders an empty layer list (a guard in `LayerPanel` prevents a crash), but the correct monument layers will not appear.
+
+## Testing virtual touch controls
+
+- The `VirtualControls` overlay only renders when `cameraMode` is `walk` or `fly`.
+- `fly` adds `Fly up` / `Fly down` buttons at the bottom-right.
+- `orbit` and `teleport` hide the overlay.
+- On a non-touch device the joystick and buttons may not drive camera movement because `touchControls.ts` attaches only to `pointerType === 'touch'`. The buttons and joystick still render and the Vitest `VirtualControls`/`touchControls` suites verify the logic.
+- To force a mobile viewport, use Chrome DevTools Device Toolbar or resize the window to a narrow width; the overlay visibility is governed by `cameraMode`, not viewport size.
+
+## Testing runtime per-object GLB loading
+
+- `GLTFAssetMesh` (`src/scene/GLTFAssetMesh.tsx`) loads per-object GLBs at runtime via `three/examples/jsm/loaders/GLTFLoader.js` and returns an R3F `<primitive>`.
+- Verify GLB files are actually fetched from `assets/export/glB/objects/` with `performance.getEntriesByType('resource')` and filtering for `.glb`.
+- To check that GLBs render in the correct world positions, hide occluding `Geometry` / `Geology` / `Modern` visibility layers and focus a known object from the **Evidence** tab or left Explorer hierarchy.
+- **Pointer-event verification is critical:** the `<primitive>` may not propagate `onClick`/`onPointerOver` to the GLB meshes in all R3F versions. A positive hover signal is:
+  1. Cursor changes to `pointer`.
+  2. `viewport-overlay` at the bottom-left shows the object name.
+  3. Clicking changes the side panel to the matching evidence or theory record.
+- If hover/click works for `BlockoutMesh` but not for `GLTFAssetMesh`, the issue is in how events are wired to the GLB scene, not in `useSceneObjectClick`.
+- For deep inspection, hide surface/terrain layers and focus the object (e.g. `Basalt Sarcophagus` with `cameraTarget: {x:-1.4, y:-28.425, z:-6.5}` or `Original Entrance` with `{x:7.29, y:16.97, z:-101.85}`).
+
+## Vitest cache permission workaround
+
+- If Vitest fails after all tests pass with `EACCES: permission denied, open '/.../node_modules/.vite/vitest/results.json'`, re-run with `--cache=false`:
+  ```bash
+  npx vitest run --cache=false src/loaders/lodSelection.test.ts src/loaders/assetManifest.test.ts src/loaders/gltfLoader.test.ts src/materials/assetDefinitions.test.ts src/loaders/assetPipelineE2E.test.ts
+  ```
+
+## Testing Bookmarks, Search, and Measurement
+
+- The **Bookmarks** section is in the left panel under `Scene Hierarchy`. Enter a name and optional notes, then click `Save current view`.
+- Verify restoration by changing camera mode, hiding a layer, activating a hypothesis, then clicking the saved bookmark. `localStorage` key `giza-session` persists `bookmarks`, `cameraMode`, `hiddenLayers`, and `activeHypothesisIds`.
+- The **Search** secondary tab accepts a query and type filters; clicking a result routes to `evidence`, `scene`, or `theory` and updates `selectedEvidenceId`/`selectedObjectId`/`activeHypothesisIds`.
+- **Measurement** is in the right `Scene` tab. Toggle `Measure`, then click two points in the viewport. A numeric distance appears once two hits are recorded. The `Annotations` visibility layer must be on for the red `MeasurementMarker` spheres to render.
+- In Playwright, the R3F `<canvas>` can intercept normal `locator.click()` actions on UI panels. Use `locator.dispatchEvent('click')` for UI controls and `page.mouse.click()` / `page.mouse.wheel()` for canvas interaction.
+- The `pyramid-exterior` `BlockoutMesh` is only rendered within the scene streamer's `loadDistance`. If measurement clicks do not register, orbit/zoom toward the target or switch to `orbit` and un-hide the `Exterior` layer so the mesh is in the camera frustum.
+- The `Measure` toggle reveals a type selector with `Distance`, `Height`, `Angle`, `Area`, and `Volume`. Each mode needs the corresponding number of canvas hits before the numeric result appears.
+- The **Share** button next to a bookmark copies `bookmarkToURL(bookmark, baseUrl)` to `navigator.clipboard`. In Playwright, grant both `clipboard-read` and `clipboard-write` permissions on `http://localhost:5173` and read `navigator.clipboard.readText()` after the click.
+- When a new hypothesis plugin is added to `pluginDiscovery.ts`, also verify it is registered in `src/theories/engineInstance.ts` (or wherever the runtime engine is initialized). `HypothesisSelector` reads from `hypothesisEngine.getPluginIds()`, not from the discovery module alone.
+- The `Navigation` list in the left panel matches `location.name` against scene-node names; if location names are prefixed (e.g. `Great Pyramid — ...`) and node names are not, the click may not update the camera target.
+
+## Testing Great Pyramid hypothesis overlays
+
+- `GreatPyramidScene.tsx` separates `activeHighlightRules` (`overlay === 'highlight'`) from `activeOverlayRules` (all other supported types). `annotation` overlays must not be excluded from `activeOverlayRules` or they will be silently dropped.
+- To activate a hypothesis checkbox from Playwright, use `locator.evaluate((el) => (el as HTMLInputElement).click())` on the checkbox input. The R3F canvas can intercept normal `locator.click()` and `dispatchEvent('change')` does not always update React controlled inputs.
+- After activating `THEORY-GP-004` (Internal Ramp Construction Hypothesis), select an affected object from the left Explorer hierarchy (e.g. `Original Entrance` or `Descending Passage (sloped)`) and zoom in with `page.mouse.wheel` so the annotation overlay geometry is visible. Open the **Theory** tab to confirm the predictions list for the active hypothesis.

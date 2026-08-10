@@ -11,10 +11,33 @@ This repository follows the process defined in _GIZA - 99 Development Playbook_ 
 - Every PR must pass typecheck, lint, tests, and the governance smoke test (no spec modifications, ADR index in sync).
 - Every visible/traceable element requires evidence linkage per the **Definition of Scientific Done**.
 
+## Branching Strategy
+
+This repository follows a trunk-based workflow using short-lived feature branches.
+
+```mermaid
+graph LR
+    M[master] -->|branch| F[feat/&lt;task&gt;-&lt;slug&gt;]
+    M -->|branch| X[fix/&lt;issue&gt;-&lt;slug&gt;]
+    M -->|branch| D[docs/&lt;slug&gt;]
+    M -->|branch| R[refactor/&lt;slug&gt;]
+    F -->|pull request| P{Review + CI green}
+    X -->|pull request| P
+    D -->|pull request| P
+    R -->|pull request| P
+    P -->|squash merge| M
+```
+
+- All work branches from `master`.
+- Branch names: `feat/m09-osiris-water`, `fix/hotspot-raycast`, `docs/adr-0004`, `refactor/scene-graph`.
+- Open a single, focused PR and merge with squash after at least one review and a green CI run.
+- Delete branches after merge.
+- `release/*` and `hotfix/*` branches are reserved for maintainers.
+
 ## Workflow
 
 1. Pick or create a GitHub issue from the roadmap milestone.
-2. Open a feature branch.
+2. Open a feature branch from `master`.
 3. Implement the smallest change that satisfies the task and DoD.
 4. Add or update tests.
 5. Update relevant ADRs and documentation.

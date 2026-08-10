@@ -10,9 +10,11 @@ import { useLightingStore } from '@/store/lighting';
 import type { VisualizationRule } from '@/schemas/hypothesis';
 import type { Vector3 } from '@/schemas/location';
 import { buildGreatPyramidSceneGraph } from './greatPyramidSceneGraph';
-import type { SceneGraph } from './sceneGraph';
+import type { SceneGraph, SceneNodeWithWorld } from './sceneGraph';
 import { sceneStreamer } from './sceneStreaming';
 import { CameraRig } from './CameraRig';
+import { ScreenshotTaker } from './ScreenshotTaker';
+import { getVisibilityLayer } from './visibilityLayers';
 import { GrandGalleryMesh } from './GrandGalleryMesh';
 import { AntechamberMesh } from './AntechamberMesh';
 import { SubterraneanChamberMesh } from './SubterraneanChamberMesh';
@@ -20,7 +22,10 @@ import { GreatPyramidExteriorMesh } from './GreatPyramidExteriorMesh';
 import { KingsChamberMesh } from './KingsChamberMesh';
 import { QueensChamberMesh } from './QueensChamberMesh';
 import { BlockoutMesh } from './BlockoutMesh';
+import { GLTFAssetMesh } from './GLTFAssetMesh';
 import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
+import { resolveAssetForNode } from '@/materials/assetDefinitions';
+import type { AssetDefinition } from '@/materials/assetDefinitions';
 import { GreatPyramidLighting } from './GreatPyramidLighting';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
@@ -35,6 +40,16 @@ const GP_LAYER_MATERIAL: Record<string, string> = {
   relieving: 'MAT_AswanGranite',
   shafts: 'MAT_TuraLimestone',
 };
+
+const ASSET_EXCLUDED_IDS = new Set([
+  'pyramid-exterior',
+  'grand-gallery',
+  'antechamber',
+  'subterranean-chamber',
+  'exterior-detail',
+  'kings-chamber',
+  'queens-chamber',
+]);
 
 function getPbr(block: UnifiedBlock): { metalness: number; roughness: number } {
   const materialId = block.materialId ?? GP_LAYER_MATERIAL[block.layer];
@@ -217,8 +232,10 @@ export function GreatPyramidScene(): JSX.Element {
   }, [lod]);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
+  const hiddenVisibilityLayers = useAppStore((s) => s.hiddenVisibilityLayers);
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
+  const measurementThird = useAppStore((s) => s.measurementThird);
 
   const background = useLightingStore((s) => s.background);
 
@@ -253,10 +270,7 @@ export function GreatPyramidScene(): JSX.Element {
   const activeHighlightRules = activeRules.filter((r) => r.overlay === 'highlight');
   const activeOverlayRules = activeRules.filter(
     (r) =>
-      r.overlay !== 'highlight' &&
-      r.overlay !== 'label' &&
-      r.overlay !== 'annotation' &&
-      r.overlay !== 'interpretive-object',
+      r.overlay !== 'highlight' && r.overlay !== 'label' && r.overlay !== 'interpretive-object',
   );
 
   const visibleNodes = graph
@@ -264,7 +278,10 @@ export function GreatPyramidScene(): JSX.Element {
     .filter((node) => blocks.has(node.id))
     .filter((node) => {
       const block = blocks.get(node.id)!;
-      return !hiddenLayers.includes(block.layer as never);
+      return (
+        !hiddenLayers.includes(block.layer as never) &&
+        !hiddenVisibilityLayers.includes(getVisibilityLayer(block))
+      );
     })
     .map((node) => {
       const block = blocks.get(node.id)!;
@@ -276,9 +293,35 @@ export function GreatPyramidScene(): JSX.Element {
     })
     .filter(({ block, visibilityRule }) => !block.overlay || visibilityRule !== undefined);
 
+  const assetNodes = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        node: SceneNodeWithWorld;
+        block: UnifiedBlock;
+        rule?: VisualizationRule;
+        asset: AssetDefinition;
+      }
+    >();
+    const seen = new Set<string>();
+    for (const { node, block, rule } of visibleNodes) {
+      if (ASSET_EXCLUDED_IDS.has(node.id)) continue;
+      const objectId = block.objectId ?? node.metadata.objectId;
+      if (!objectId || seen.has(objectId)) continue;
+      const asset = resolveAssetForNode({ name: node.name, objectId });
+      if (!asset?.filePath) continue;
+      seen.add(objectId);
+      map.set(objectId, { node, block, rule, asset });
+    }
+    return map;
+  }, [visibleNodes]);
+
+  const assetObjectIds = useMemo(() => new Set(assetNodes.keys()), [assetNodes]);
+
   return (
     <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
       <CameraRig />
+      <ScreenshotTaker />
       <StreamingController graph={graph} onLoadedChange={handleStreamUpdate} />
       <color attach="background" args={[background]} />
       <GreatPyramidLighting />
@@ -301,6 +344,23 @@ export function GreatPyramidScene(): JSX.Element {
         if (node.id === 'queens-chamber') {
           return <QueensChamberMesh key={node.id} node={node} block={block} rule={rule} />;
         }
+        const objectId = block.objectId ?? node.metadata.objectId;
+        if (objectId && assetObjectIds.has(objectId)) {
+          const asset = assetNodes.get(objectId);
+          if (asset && asset.node.id === node.id) {
+            return (
+              <GLTFAssetMesh
+                key={`asset-${objectId}`}
+                node={asset.node}
+                block={asset.block}
+                rule={asset.rule}
+                pbr={getPbr(asset.block)}
+                assetId={asset.asset.id}
+              />
+            );
+          }
+          return null;
+        }
         const isPyramid = node.id === 'pyramid-exterior';
         return (
           <BlockoutMesh
@@ -313,12 +373,20 @@ export function GreatPyramidScene(): JSX.Element {
           />
         );
       })}
-      {hypothesisGeometryNodes.map((hnode) => (
-        <HypothesisMesh key={hnode.id} node={hnode} />
-      ))}
-      <HypothesisOverlays rules={activeOverlayRules} blocks={blocks} />
-      {measurementStart && <MeasurementMarker point={measurementStart} />}
-      {measurementEnd && <MeasurementMarker point={measurementEnd} />}
+      {!hiddenVisibilityLayers.includes('Theory') &&
+        hypothesisGeometryNodes.map((hnode) => <HypothesisMesh key={hnode.id} node={hnode} />)}
+      {!hiddenVisibilityLayers.includes('Theory') && (
+        <HypothesisOverlays rules={activeOverlayRules} blocks={blocks} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementStart && (
+        <MeasurementMarker point={measurementStart} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementEnd && (
+        <MeasurementMarker point={measurementEnd} />
+      )}
+      {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
+        <MeasurementMarker point={measurementThird} />
+      )}
     </Canvas>
   );
 }

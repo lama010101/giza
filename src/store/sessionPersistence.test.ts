@@ -18,8 +18,10 @@ describe('useAppStore session persistence', () => {
       lod: 'LOD0',
       hoveredNodeId: null,
       measurementMode: false,
+      measurementType: 'distance',
       measurementStart: null,
       measurementEnd: null,
+      measurementThird: null,
     });
   });
 

@@ -53,6 +53,8 @@ describe('Full Application E2E Test Suite (M12-T08)', () => {
     usePerformanceStore.getState().setTier('unknown');
     // Clear bookmarks from persisted store
     useAppStore.getState().setActiveHypothesisIds([]);
+    useAppStore.getState().clearMeasurement();
+    useAppStore.getState().setMeasurementType('distance');
     // Reset bookmarks by toggling off any that exist
     for (const id of useAppStore.getState().bookmarkedObjectIds) {
       useAppStore.getState().toggleBookmarkedObject(id);

@@ -50,6 +50,8 @@ const ENTITY_SCHEMAS = {
 
 export type EntityKind = keyof typeof ENTITY_SCHEMAS;
 
+export { ENTITY_SCHEMAS };
+
 export interface ValidationSuccess<T> {
   success: true;
   data: T;

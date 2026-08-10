@@ -4,3 +4,4 @@ export { gpHydraulicPlugin } from './gp-hydraulic';
 export { gpMainstreamPlugin } from './gp-mainstream';
 export { gpHydraulicAcousticPlugin } from './gp-hydraulic-acoustic';
 export { gpScanPyramidsPlugin } from './gp-scanpyramids';
+export { gpRampPlugin } from './gp-ramp';
