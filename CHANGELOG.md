@@ -4,7 +4,7 @@ All notable changes to GIZA are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] — 2026-08-10
 
 ### Added — Tier 7 (Polish & Release Readiness)
 
@@ -94,7 +94,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `.env` and `.env.example` files (M00-T08).
 - CHANGELOG.md (M-1-T08).
 
-## [0.1.0] — 2026-07-31
+## [0.0.1] — 2026-07-31
 
 ### Added
 
