@@ -6,7 +6,8 @@ import {
   getObjectById,
   searchEvidence,
 } from '@/evidence/repository';
-import { useAppStore } from '@/store/app';
+import { useAppStore, MONUMENT_KEY } from '@/store/app';
+import { localToWorld } from '@/scene/coordinateSystem';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
 
@@ -30,9 +31,19 @@ function findBlockoutPosition(objectId: string): {
   position: { x: number; y: number; z: number };
 } | null {
   const osirisNode = osirisBlockout.nodes.find((n) => n.objectId === objectId);
-  if (osirisNode) return { monument: 'osiris', position: osirisNode.position };
+  if (osirisNode) {
+    return {
+      monument: 'osiris',
+      position: localToWorld(osirisNode.position, MONUMENT_KEY.osiris),
+    };
+  }
   const gpNode = greatPyramidBlockout.nodes.find((n) => n.objectId === objectId);
-  if (gpNode) return { monument: 'great-pyramid', position: gpNode.position };
+  if (gpNode) {
+    return {
+      monument: 'great-pyramid',
+      position: localToWorld(gpNode.position, MONUMENT_KEY['great-pyramid']),
+    };
+  }
   return null;
 }
 

@@ -31,6 +31,8 @@ Each ADR file is named `NNNN-<kebab-case-title>.md`, zero-padded, monotonically 
 | 0005 | Per-Object Asset Export with Embedded DoSD Metadata | Accepted |
 | 0006 | Runtime GLB Asset Loading for Per-Object Scene Geometry | Accepted |
 | 0007 | Bookmark Capture and Restore in App Store | Accepted |
+| 0008 | GPS-Based Monument Origins and World Coordinate Anchor | Accepted |
+| 0009 | Osiris Shaft → Great Pyramid Hypothesized Conduit Overlay | Accepted |
 
 ## Relation to the Specifications
 

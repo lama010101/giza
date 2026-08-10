@@ -38,6 +38,7 @@ vi.mock('@react-three/fiber', () => ({
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => <div data-testid="orbit-controls" />,
   Text: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Html: ({ children }: { children: React.ReactNode }) => <div data-testid="html">{children}</div>,
 }));
 
 describe('Osiris Shaft E2E Traversal Test (M09-T22)', () => {
