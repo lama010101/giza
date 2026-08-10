@@ -71,22 +71,33 @@ export function slopedBoxFromFloorEndpoints(
   const len = distance3D(start, end);
   const dy = end.y - start.y;
   const dz = end.z - start.z;
-  const absDz = Math.abs(dz);
-  // Use abs(dz) so the angle is always the acute slope angle.
-  // Negate to match Three.js X-rotation convention:
-  // positive rotation → +Z end goes down (descending passage)
-  // negative rotation → +Z end goes up (ascending, grand gallery, north shafts)
-  const angle = -Math.atan2(dy, absDz > 1e-9 ? absDz : 1e-9);
+
+  // Direction of the floor centreline in the Y-Z plane.
+  // For north-going features dz < 0; for south-going dz > 0.
+  // The perpendicular that points upward in world Y is used to offset the box
+  // centre from the floor midpoint.
+  const yDir = len > 1e-9 ? dy / len : 0;
+  const zDir = len > 1e-9 ? dz / len : 0;
+  const upY = Math.abs(zDir);
+  const upZ = -Math.sign(dz || 1) * yDir;
+  const upLen = Math.hypot(upY, upZ);
+  const safeUpLen = upLen > 1e-9 ? upLen : 1;
+
+  // Three.js X-rotation maps local +Z to (0, -sin(rx), cos(rx)).
+  // We choose rx so that local +Y points upward and the box spans the
+  // start/end segment. This makes the floor face (local y = -h/2) sit on
+  // the supplied endpoints.
+  const rx = Math.atan2(-Math.sign(dz || 1) * yDir, Math.abs(zDir));
+
   const floorMid = midpoint(start, end);
-  // Offset from floor midpoint to box center (half height in perpendicular direction)
-  // For +Z passages: offsetZ = (h/2)*sin(angle)
-  // For -Z passages: offsetZ must be flipped to keep ceiling on the correct side
-  const zSign = dz >= 0 ? 1 : -1;
-  const offsetY = (height / 2) * Math.cos(angle);
-  const offsetZ = zSign * (height / 2) * Math.sin(angle);
+  const halfH = height / 2;
   return {
-    position: { x: floorMid.x, y: floorMid.y + offsetY, z: floorMid.z + offsetZ },
-    rotation: { x: angle, y: 0, z: 0 },
+    position: {
+      x: floorMid.x,
+      y: floorMid.y + (upY / safeUpLen) * halfH,
+      z: floorMid.z + (upZ / safeUpLen) * halfH,
+    },
+    rotation: { x: rx, y: 0, z: 0 },
     size: { x: width, y: height, z: len },
   };
 }

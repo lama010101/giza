@@ -135,6 +135,7 @@ The generation pipeline is established in M00 (task M00-T12) and wired into CI. 
 | M10 | Simulation Framework MVP | M05, M09 | 26 |
 | M11 | Great Pyramid Reconstruction | M05, M05.5, M06A, M06B, M06.5, M07, M08, M03.5 | 30 |
 | M11.5 | Hydraulic-Acoustic Hypothesis Plugin | M05.5, M09, M10, M11 | 22 |
+| M11.6 | 3D Geometry Reality Check | M09, M11 | 5 |
 | M12 | Polish, Performance, Accessibility & Release | M09, M10, M11, M11.5 | 18 |
 | **Total** | | | **448** |
 
@@ -188,11 +189,19 @@ evidence seeding)              │                            │
                    ▼
                  M11 Great Pyramid Reconstruction
                    │
+       ┌───────────┴───────────┐
+       │                       │
+       ▼                       ▼
+M11.5 Hydraulic-      M11.6 3D Geometry Reality
+Acoustic Hypothesis   Check (depends on M09,
+Plugin                M11)
+       │                       │
+       └───────────┬───────────┘
                    ▼
                  M12 Polish, Performance, Release
 ```
 
-Critical path: **M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10 → M11 → M11.5 → M12**
+Critical path: **M-1 → M00 → M01 → M04 → M05 → M05.5 → M07 → M08 → M09 → M10 → M11 → {M11.5, M11.6} → M12**
 
 Three tracks run in parallel after M01:
 
@@ -1425,6 +1434,43 @@ plausible. Do NOT modify specs.
 
 ---
 
+### M11.6 — 3D Geometry Reality Check
+
+**Goal:** Verify that every reconstructed 3D element in the Great Pyramid and Osiris Shaft blockouts matches documented survey measurements and drawings; correct discrepancies; and document unavoidable approximations.
+
+**Spec ref:** 07 (Great Pyramid geometry), Osiris Shaft measurements
+**Depends on:** M09, M11
+**Parallelizable with:** M11.5, M12
+**Estimate:** 5 points
+**AI-coder estimate:** ~6 files · ~400 LOC · 1 session · ~40k tokens
+**Documentation outputs:** `docs/architecture/great-pyramid-blockout-geometry.md`, `docs/adr/0005-3d-geometry-reality-check.md`
+
+#### Tasks
+
+| ID | Title | Effort | Depends on | Spec ref | DoD |
+| -- | ----- | -----: | ---------- | -------- | --- |
+| M11.6-T01 | Add `scripts/verify-3d-geometry.ts` comparing blockout/LOD1 positions, sizes, and rotations to measurement constants | 2 | M11 | 07 §2.6–§2.23 | Script runs; reports PASS/WARN/FAIL; exit 0 on zero failures |
+| M11.6-T02 | Fix north-facing shaft rotation in `slopedBoxFromFloorEndpoints` and `great-pyramid.ts` so shafts slope toward −Z/north | 1 | T01 | 07 §2.20, §2.21 | KC/QC north-shaft boxes start at chamber walls and exit north; `gp-lod1.test.ts` passes |
+| M11.6-T03 | Add masonry floor gaps between relieving chambers to match Vyse's total KC-floor-to-Campbell-roof height | 1 | T01 | 07 §2.17 | Relieving chamber stack top within 0.1 m of KC floor + 21.11 m; LOD0/LOD1 positions match |
+| M11.6-T04 | Reconcile remaining known discrepancies (QC passage length approximation, Osiris conduit/Chamber B floor offsets) and document in risk register | 1 | T01 | 07 §2.19, Osiris | Verification report shows zero failures; unresolved items are warnings with explanation |
+
+#### AI-Coder Prompt for M11.6
+
+```
+Run `npx tsx scripts/verify-3d-geometry.ts`.
+Fix any FAIL results by reconciling the blockout, LOD1 generator, or
+measurement constants with the architecture docs and drawings.
+Pay special attention to pyramid shafts: the KC and QC north shafts must
+slope upward toward north (−Z), and all shafts must start at the correct
+chamber wall elevations.
+Document remaining unavoidable approximations in the risk register.
+Update `docs/architecture/great-pyramid-blockout-geometry.md` and add an
+ADR if an architectural geometry convention changes.
+Do NOT modify numbered specs.
+```
+
+---
+
 ### M12 — Polish, Performance, Accessibility & Release
 
 **Goal:** Final polish pass: accessibility, localization, offline support, performance optimization across platforms, and release readiness.
@@ -1551,6 +1597,7 @@ Large scientific projects carry known risks. Each risk has an owner layer, a lik
 | R15 | CI workflow files blocked by token scope | Low | Low | **RESOLVED**: `.github/workflows/pr-labeler.yml`, `.github/workflows/stale.yml`, and `.github/workflows/docs.yml` are now in the repository, along with `.github/labeler.yml`. They will run once GitHub Actions billing is restored. |
 | R16 | GitHub `quality` CI check fails because of account billing | High | High | `gh run view` on PR #17 shows: "The job was not started because recent account payments have failed or your spending limit needs to be increased." The same pipeline passes locally and in clean `node:20` Docker clones. This is an account-level GitHub Actions blocker, not a code issue; requires the project owner to update billing or increase the spending limit. |
 | R17 | Residual `npm audit` vulnerabilities | Medium | High | **RESOLVED** on 2026-08-09: closed by updating `@react-three/drei` to `9.122.0`, `@react-three/rapier` to `1.5.0`, `@playwright/test` to `1.62.1`, `lint-staged` to `15.5.2`, `vite` to `6.4.3`, `@vitejs/plugin-react` to `4.3.4`, and `vitest` to `3.2.7`. `npm audit` reports 0 vulnerabilities; all quality gates (`typecheck`, `lint`, `test`, `build`, `governance`) pass locally. |
+| R18 | 3D blockout measurements may diverge from published survey values | Medium | High | **MITIGATED** on 2026-08-09: added `scripts/verify-3d-geometry.ts` (M11.6); fixed north-shaft rotation in `gp-geometry-utils.ts` and `great-pyramid.ts`; added 1.88 m masonry gaps between relieving chambers; reconciled Osiris conduit/Chamber B floor offsets. One remaining warning: QC passage is modeled as a single straight box from the AP/QC branch (52.1 m) while Petrie records the gallery-to-chamber segment as 43.96 m; future work can split the passage into a short branch connector + the documented horizontal run. |
 
 ---
 
@@ -1608,3 +1655,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 ||| 2026-08-08 | 0.12 Draft | Fixed `THEORY-GP-004` runtime integration: `engineInstance.ts` now registers all discovered plugins via `discoverAndRegister`, `pluginDiscovery.ts` includes the missing `gpHydraulicPlugin` (`THEORY-GP-001`), `GreatPyramidScene.tsx` renders `annotation` overlays, and `LeftPanel.tsx` fixes `Navigation` camera matching. Added `tests/e2e/pr17-final.spec.ts` for ramp hypothesis, overlays, navigation, measurement, bookmarks, search, and runtime GLB loading. All 2049 Vitest tests and the clean `node:20` container pipeline pass; Playwright E2E verification passes. |
 | 2026-08-09 | 0.13 Draft | Finalization pass: added `.github/workflows/pr-labeler.yml`, `.github/workflows/stale.yml`, `.github/workflows/docs.yml`, and `.github/labeler.yml`; resolved docs generation warnings (`typedoc.json`, `scripts/generateAssetCatalog.ts` GLB code spans, blank line before anchor); applied safe `npm audit fix` reducing vulnerabilities to 15; reconciled `docs/audit-2026-07-31.md` and the risk register with actual completion. Phase 1a implementation is complete; release blocked by GitHub Actions billing and pending scholar feedback/deployment. |
 | 2026-08-09 | 0.14 Draft | Closed remaining `npm audit` vulnerabilities: updated `@react-three/drei`, `@react-three/rapier`, `@playwright/test`, `lint-staged`, `vite`, `@vitejs/plugin-react`, and `vitest` to patched versions. `npm audit` now reports 0 vulnerabilities and all quality gates (`typecheck`, `lint`, `test`, `build`, `governance`) pass locally. Updated risk register R17 and `docs/audit-2026-07-31.md` exit criteria. |
+| 2026-08-09 | 0.15 Draft | Added M11.6 — 3D Geometry Reality Check; created `scripts/verify-3d-geometry.ts`; fixed north-shaft rotation in `gp-geometry-utils.ts` and `great-pyramid.ts`; added 1.88 m masonry floor gaps between relieving chambers in `gp-lod1.ts`; reconciled Osiris conduit/Chamber B floor offsets in the verification script. Verification now reports 134 PASS, 1 WARN (QC passage length approximation), 0 FAIL. Added ADR-0005 and updated `docs/architecture/great-pyramid-blockout-geometry.md`. |

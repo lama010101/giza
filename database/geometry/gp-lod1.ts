@@ -39,6 +39,12 @@ import {
 
 export type DerivationType = 'measured' | 'calculated' | 'inferred' | 'placeholder';
 
+/** Masonry floor/beam thickness between relieving chambers (m).
+ *  Derived from Vyse's total KC-floor-to-Campbell-roof height (21.11 m)
+ *  minus the sum of the chamber air spaces.
+ */
+const RELIEVING_MASONRY_GAP = 1.88;
+
 export interface BlockoutNodeLOD1 extends BlockoutNode {
   lod: 'LOD1';
   derivation: DerivationType;
@@ -460,7 +466,9 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
   nodes.push(fromBlockout('kings-sarcophagus', 'measured'));
 
   // --- Relieving Chambers ---
-  // Aligned with corrected KC z, stacked above KC ceiling
+  // Aligned with corrected KC z, stacked above KC ceiling.
+  // Masonry floors/beams between chambers are included so the total stack
+  // reaches Vyse's measured KC-floor-to-Campbell-roof height.
   const kcCeilingY = GP_KINGS_CHAMBER.floorY + GP_KINGS_CHAMBER.height;
   const relievingNames = [
     'relieving-davison',
@@ -485,7 +493,7 @@ export function generateGreatPyramidLOD1(): BlockoutNodeLOD1[] {
         derivation: 'calculated',
       } as BlockoutNodeLOD1),
     );
-    relievingY += h;
+    relievingY += h + RELIEVING_MASONRY_GAP;
   }
 
   // --- Queen's Chamber ---
