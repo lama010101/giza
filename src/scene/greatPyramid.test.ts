@@ -214,7 +214,7 @@ describe('Great Pyramid Scene Graph', () => {
       'gp-shafts',
     ]);
     const meshNodes = all.filter((n) => !layerGroupIds.has(n.id));
-    expect(meshNodes).toHaveLength(35);
+    expect(meshNodes).toHaveLength(37);
   });
 });
 

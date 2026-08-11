@@ -95,16 +95,16 @@ export const GP_GRAND_GALLERY = {
 } as const;
 
 export const GP_KINGS_CHAMBER = {
-  /** Width (m) — Petrie 206.29 in */
-  width: 5.24,
+  /** Width E-W (m) — Petrie 412.53 in */
+  width: 10.47,
   /** Height (m) — Petrie 230.09 in */
-  height: 5.97,
-  /** Depth (m) — Petrie 412.53 in */
-  depth: 10.47,
+  height: 5.84,
+  /** Depth N-S (m) — Petrie 206.29 in */
+  depth: 5.24,
   /** Floor Y (m above pavement) — Petrie 1692.0 B" */
   floorY: 42.96,
   /** Ceiling height above pavement (m) — floorY + height */
-  ceilingHeightAbovePavement: 48.93,
+  ceilingHeightAbovePavement: 48.8,
 } as const;
 
 export const GP_RELIEVING = {
@@ -115,12 +115,12 @@ export const GP_RELIEVING = {
 export const GP_QUEENS_CHAMBER = {
   /** Floor Y (m above pavement) — Petrie 834.4 B" */
   floorY: 21.19,
-  /** Width (m) */
-  width: 5.23,
+  /** Width E-W (m) */
+  width: 5.75,
   /** Height (m) */
   height: 6.23,
-  /** Depth (m) */
-  depth: 5.75,
+  /** Depth N-S (m) */
+  depth: 5.23,
   /** Center X (m) — QC is on the pyramid centre axis, not offset east like KC/GG */
   centerX: 0,
   /** Center Z (m south of centre) — Petrie places QC ~249 B" south of centre */
@@ -179,23 +179,25 @@ export const GP_ANTECHAMBER = {
   /** Floor Y (m above pavement) — same as GG south floor ~42.92 */
   floorY: 42.92,
   /** Gap between GG south wall and antechamber north wall (m) — step + short passage */
-  gapFromGG: 0.6,
+  gapFromGG: 1.5,
   /** Gap between antechamber south wall and KC north wall (m) */
-  gapToKC: 1.0,
+  gapToKC: 5.3,
 } as const;
 
 /** Subterranean Chamber — below pyramid centre */
 export const GP_SUBTERRANEAN = {
-  /** Chamber floor Y (m below pavement) — derived from DP geometry */
-  floorY: -29.8,
-  /** Chamber width E-W (m) — Petrie ~327 B" */
-  width: 8.3,
+  /** Chamber floor Y (m below pavement) — Petrie ~1181 B" below pavement */
+  floorY: -30.0,
+  /** Chamber width E-W (m) — Petrie 553.5" */
+  width: 14.07,
   /** Chamber height (m) — Petrie ~140 B" */
   height: 3.56,
-  /** Chamber depth N-S (m) — Petrie ~205 B" */
-  depth: 5.2,
-  /** Horizontal passage length at bottom of DP (m) */
-  horizontalPassageLength: 9.0,
+  /** Chamber depth N-S (m) — Petrie 326" */
+  depth: 8.28,
+  /** Center X offset east of pyramid centre (m) — Petrie 0.66 m */
+  centerX: 0.66,
+  /** Horizontal passage length at bottom of DP (m) — Petrie 672" */
+  horizontalPassageLength: 17.07,
 } as const;
 
 /** Queen's Chamber Passage — horizontal, connects AP/GG junction to QC */
