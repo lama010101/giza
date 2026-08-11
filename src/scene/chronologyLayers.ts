@@ -164,15 +164,23 @@ export function filterObjectsByChronology(objectIds: string[], period: Chronolog
 
 const PERIOD_TO_EARLIEST_PHASE: Record<string, ChronologyPeriod> = {
   'old kingdom': 'old-kingdom',
+  'old-kingdom': 'old-kingdom',
   eocene: 'old-kingdom',
   geological: 'old-kingdom',
   'middle kingdom': 'late-period',
+  'middle-kingdom': 'late-period',
   'new kingdom': 'late-period',
+  'new-kingdom': 'late-period',
   'late period': 'late-period',
+  'late-period': 'late-period',
+  'late-period-egypt': 'late-period',
   roman: 'roman',
   'roman period': 'roman',
+  'roman-era': 'roman',
   medieval: 'modern',
+  'medieval period': 'modern',
   modern: 'modern',
+  'modern era': 'modern',
   multiple: 'old-kingdom',
 };
 
@@ -200,13 +208,23 @@ export function getTimelinePhasesForPeriod(period: string): ChronologyPeriod[] {
 
 /**
  * Returns the timeline phases relevant to a piece of evidence, based on
- * its chronology tags. The result is the union of each tag's phase range.
+ * its explicit chronology tags and on the chronology of the objects it is
+ * linked to. The result is the union of each tag's and object's phase range.
  */
 export function getEvidenceTimelinePhases(evidence: Evidence): ChronologyPeriod[] {
   const phases = new Set<ChronologyPeriod>();
   for (const tag of evidence.chronologyTags) {
     for (const phase of getTimelinePhasesForPeriod(tag.period)) {
       phases.add(phase);
+    }
+  }
+  for (const objectId of evidence.objectIds) {
+    const explicit = OBJECT_CHRONOLOGY[objectId];
+    if (!explicit) continue;
+    for (const period of explicit) {
+      for (const phase of getTimelinePhasesForPeriod(period)) {
+        phases.add(phase);
+      }
     }
   }
   if (phases.size === 0) return [...TIMELINE_PHASE_ORDER];

@@ -340,3 +340,19 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
 - Known environment quirks:
   - Chrome may show a `Download multiple files` permission prompt after the first screenshot. Allow the site, use a fresh incognito profile, or route the data URL to a temporary local receiver during automated runs.
   - `body.screenshot-mode` hides `.app-header`, `.left-panel`, `.side-panel`, `.bottom-toolbar`, `.virtual-controls`, `.viewport-overlay`, and `.compass-label`, so the Drei `<Html>` `N` label is also hidden during capture.
+
+## Timeline Navigation (M08-T10) end-to-end verification
+
+- The timeline slider is rendered by `src/ui/TimelinePanel.tsx` inside `<header class="app-header">`.
+- It has 5 positions: `0 = All`, `1 = old-kingdom`, `2 = late-period`, `3 = roman`, `4 = modern`.
+- The labels rendered under the slider are: `All`, `Old Kingdom`, `Late Period`, `Roman Period`, `Modern`.
+- `useAppStore.getState().setChronologyPeriod(period)` updates the UI immediately; `chronologyPeriod` is persisted in `giza-session`.
+- In `src/ui/EvidencePanel.tsx`, the evidence list is filtered with `getEvidenceTimelinePhases(ev).includes(chronologyPeriod)`.
+  - In the **Great Pyramid** evidence seed, records like `Al-Mamun tunnel (modern entrance)` have `chronologyTags` with period `Medieval` → maps to the `modern` phase, so they disappear when `chronologyPeriod` is `old-kingdom`.
+  - In the **Osiris** evidence seed, records that have no `chronologyTags` fall back to the `OBJECT_CHRONOLOGY` of their linked objects, so e.g. sarcophagus evidence disappears in `old-kingdom` while architectural evidence remains visible.
+- In `src/scene/GreatPyramidScene.tsx` and `src/scene/OsirisScene.tsx`, visible nodes are filtered with `getObjectTimelinePhases(objectId).includes(chronologyPeriod)`.
+  - `getObjectTimelinePhases` first checks the explicit `OBJECT_CHRONOLOGY` map in `src/scene/chronologyLayers.ts` (Osiris objects). For objects not in the map, it falls back to the chronology tags of linked evidence.
+  - The Basalt Sarcophagus (`OBJ-0008`) is only present in `late-period`, `roman`, and `modern`, so it disappears in `old-kingdom`.
+  - The Modern Entrance / Al-Mamun Tunnel (`OBJ-0104`) is only present in `modern`, so it disappears in `old-kingdom`.
+- For automated Playwright checks, import the store module from `/src/store/app.ts` and use `useAppStore.getState().setActiveMonument(...)`, `setChronologyPeriod(...)`, `setCameraPosition(...)`, `setCameraTarget(...)`, and `requestScreenshot()`.
+- To compare before/after renders, capture the canvas with `page.screenshot()` or read `gl.domElement.toDataURL()` after setting the camera. ImageMagick `compare -metric AE/RMSE` is useful for asserting visible differences between captures.

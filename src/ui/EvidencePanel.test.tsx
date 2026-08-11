@@ -9,6 +9,7 @@ describe('EvidencePanel', () => {
       selectedEvidenceId: null,
       bookmarkedObjectIds: [],
       activeMonument: 'osiris',
+      chronologyPeriod: null,
     });
   });
   it('renders evidence list and search input', () => {
