@@ -28,7 +28,7 @@ This document is the operational execution plan derived from ADR-0002 and ADR-00
 | M06.5 | Survey Acquisition | **Reduced** | Published CAD/drawing ingestion (Hawass 2007); manual reconstruction workflow (primary path for Osiris Shaft); survey coverage map; skip laser scan/photogrammetry ingestion (no data available for Osiris Shaft) |
 | M06B | Asset Production | Reduced | Fewer variants (5 rubble, 3 limestone, 2 granite, minimal architectural); 5 master materials |
 | M07 | UI Shell & Navigation | Reduced | Layout shell + **Explore + Research modes** + basic camera (walk/fly/teleport); skip Guided, Documentary, Presentation, Educational, Museum, Developer modes; skip session persistence, gamepad |
-| M08 | Interaction & Research Tools | Reduced | Raycast + hotspots + measurement + search + bookmarks; skip cross-section, comparison, screenshot, timeline |
+| M08 | Interaction & Research Tools | Reduced | Raycast + hotspots + measurement + search + bookmarks + screenshot; skip cross-section, comparison, timeline |
 | M08.5 | Benchmark Scene | Reduced | Exercise 3 light layers (not 5) and 5 master materials (not 17); water + collision + FPS baseline; still gates rendering |
 | M09 | Osiris Shaft | **Full** | — |
 | M10 | Simulation MVP | Reduced | **Hydraulic only**; skip acoustic solver/visualization/validation, comparison mode, export, async API, performance modes |
@@ -46,7 +46,7 @@ This document is the operational execution plan derived from ADR-0002 and ADR-00
 - Run hydraulic simulation on Osiris Shaft Level 3 (water, pressure, flow)
 - Visualize pressure, flow, water surface elevation
 - See per-object-per-hypothesis confidence
-- Use Research mode: measurement, evidence inspection, search, bookmarks
+- Use Research mode: measurement, evidence inspection, search, bookmarks, screenshot
 
 ### Release Target
 
@@ -96,7 +96,7 @@ M09 (Osiris Shaft) is the convergence point requiring M05, M05.5, M06A, M06.5, M
 | M02 (restore) | Evidence DB (full) | Restore deferred features | Review workflow, import/export, conflict resolution, version history, media attachment |
 | M03 (restore) | Sources (full) | Restore deferred features | DOI/ISBN/ORCID, duplicate detection, bibliography (11 styles), citation engine |
 | M07 (restore) | UI (full) | Restore deferred features | Session persistence, documentary spline, gamepad, error handling, **Presentation + Museum modes** (required for Museum Beta release) |
-| M08 (restore) | Interaction (full) | Restore deferred features | Cross-section, comparison mode, screenshot, timeline |
+| M08 (restore) | Interaction (full) | Restore deferred features | Cross-section, comparison mode, timeline |
 | M05.5 (restore) | Hypothesis (full) | Restore deferred features | Comparison framework (side-by-side), API endpoints, 3rd sample plugin |
 | M04 (restore) | Rendering (full) | Restore deferred features | Volumetric + bounce lighting, frame pacing |
 | M05 (restore) | Scene Graph (full) | Restore deferred features | Scene streaming, LOD manager |

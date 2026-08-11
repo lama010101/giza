@@ -5,6 +5,7 @@ import type { LODLevel } from '@/loaders/validators';
 import { MONUMENT_ORIGINS, localToWorld } from '@/scene/coordinateSystem';
 import { createBookmark, type Bookmark } from '@/evidence/bookmark';
 import type { MeasurementType } from '@/evidence/measurement';
+import { DEFAULT_SCREENSHOT_OPTIONS, type ScreenshotOptions } from '@/scene/screenshot';
 
 export type AppMode =
   | 'Explore'
@@ -118,6 +119,7 @@ export interface AppState {
   hiddenVisibilityLayers: VisibilityLayer[];
   lod: LODLevel;
   screenshotRequest: number | null;
+  screenshotOptions: ScreenshotOptions;
   setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
@@ -134,6 +136,7 @@ export interface AppState {
   setActiveHypothesisIds: (ids: string[]) => void;
   requestScreenshot: () => void;
   clearScreenshotRequest: () => void;
+  setScreenshotOptions: (options: Partial<ScreenshotOptions>) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedObjectId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -192,6 +195,7 @@ export const useAppStore = create<AppState>()(
         hiddenVisibilityLayers: [],
         lod: 'LOD0',
         screenshotRequest: null,
+        screenshotOptions: DEFAULT_SCREENSHOT_OPTIONS,
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
@@ -260,6 +264,8 @@ export const useAppStore = create<AppState>()(
         setActiveHypothesisIds: (activeHypothesisIds) => set({ activeHypothesisIds }),
         requestScreenshot: () => set({ screenshotRequest: Date.now() }),
         clearScreenshotRequest: () => set({ screenshotRequest: null }),
+        setScreenshotOptions: (options) =>
+          set((state) => ({ screenshotOptions: { ...state.screenshotOptions, ...options } })),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
         setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),
         setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),

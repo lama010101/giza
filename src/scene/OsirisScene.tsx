@@ -167,6 +167,7 @@ export function OsirisScene(): JSX.Element {
         position: [16 + osirisOrigin.x, -6, 22 + osirisOrigin.z],
         fov: 55,
       }}
+      gl={{ preserveDrawingBuffer: true }}
     >
       <CameraRig />
       <ScreenshotTaker />
