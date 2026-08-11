@@ -116,6 +116,23 @@ describe('Hydraulic-Acoustic Plugin', () => {
     expect(h.simulations).toContain('SIM-204');
   });
 
+  it('derives SIM-201 parameters from surveyed geometry', () => {
+    const sims = gpHydraulicAcousticPlugin.getSimulations?.() ?? [];
+    const sim = sims.find((s) => s.id === 'SIM-201')!;
+    expect(sim.parameters.conduitLength).toBe(415.99);
+    expect(sim.parameters.conduitSlope).toBe(0.29);
+    expect(sim.parameters.conduitDiameter).toBe(0.6);
+    expect(sim.parameters.chamberVolume).toBe(414.74);
+  });
+
+  it('uses GP_KINGS_CHAMBER.height in SIM-202 and SIM-203', () => {
+    const sims = gpHydraulicAcousticPlugin.getSimulations?.() ?? [];
+    const sim202 = sims.find((s) => s.id === 'SIM-202')!;
+    const sim203 = sims.find((s) => s.id === 'SIM-203')!;
+    expect(sim202.parameters.kingsChamberHeight).toBe(5.84);
+    expect(sim203.parameters.chamberHeight).toBe(5.84);
+  });
+
   it('has 11 visualization rules for 8 structures', () => {
     const engine = new HypothesisEngine();
     engine.register(gpHydraulicAcousticPlugin);
