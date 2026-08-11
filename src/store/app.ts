@@ -122,6 +122,8 @@ export interface AppState {
   screenshotRequest: number | null;
   screenshotOptions: ScreenshotOptions;
   chronologyPeriod: ChronologyPeriod | null;
+  museumPaused: boolean;
+  museumPresetName: string | null;
   setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
@@ -140,6 +142,8 @@ export interface AppState {
   clearScreenshotRequest: () => void;
   setScreenshotOptions: (options: Partial<ScreenshotOptions>) => void;
   setChronologyPeriod: (period: ChronologyPeriod | null) => void;
+  setMuseumPaused: (paused: boolean) => void;
+  setMuseumPresetName: (name: string | null) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedObjectId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -201,6 +205,8 @@ export const useAppStore = create<AppState>()(
         screenshotRequest: null,
         screenshotOptions: DEFAULT_SCREENSHOT_OPTIONS,
         chronologyPeriod: null,
+        museumPaused: false,
+        museumPresetName: null,
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
@@ -272,6 +278,8 @@ export const useAppStore = create<AppState>()(
         setScreenshotOptions: (options) =>
           set((state) => ({ screenshotOptions: { ...state.screenshotOptions, ...options } })),
         setChronologyPeriod: (chronologyPeriod) => set({ chronologyPeriod }),
+        setMuseumPaused: (museumPaused) => set({ museumPaused }),
+        setMuseumPresetName: (museumPresetName) => set({ museumPresetName }),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
         setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),
         setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),
