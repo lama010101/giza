@@ -39,6 +39,7 @@ export function Compass({
       </mesh>
       <Html position={[0, 0, tipZ - coneHeight - 0.8]} center occlude={false} pointerEvents="none">
         <div
+          className="compass-label"
           style={{
             color: '#ef4444',
             fontWeight: 'bold',

@@ -1257,6 +1257,7 @@ body.screenshot-mode .left-panel,
 body.screenshot-mode .side-panel,
 body.screenshot-mode .bottom-toolbar,
 body.screenshot-mode .virtual-controls,
-body.screenshot-mode .viewport-overlay {
+body.screenshot-mode .viewport-overlay,
+body.screenshot-mode .compass-label {
   display: none !important;
 }

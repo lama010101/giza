@@ -321,3 +321,22 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
 - In the Osiris Shaft scene it should leave the far (NW) end of the `Northern Conduit` and head toward the Great Pyramid.
 - Toggling `Theory overlays` off removes the conduit; toggling it back on restores it. Deactivating `THEORY-GP-003` also removes it.
 - After the coordinate change, object selection and the Evidence panel still work: clicking `Basalt Sarcophagus` in Osiris or `Pyramid Exterior (core masonry)` in the Great Pyramid opens the matching evidence record.
+
+## Screenshot mode feature end-to-end verification
+
+- The **Screenshot** panel only renders in `mode === 'Research'`. Switch the top mode selector to **Research**; the panel appears in the right side panel under the Research section.
+- Screenshot options are not persisted, so they reset to defaults on reload:
+  - `hideUi: true`, `transparentBg: false`, `highRes: false`, `orthographic: false`, `scaleBar: true`, `northArrow: true`, `citationWatermark: true`, `format: 'png'`.
+- Toggle options such as **Format** (PNG / WebP) and **Transparent background**; verify the checkbox / `<select>` state updates in the UI.
+- Click **Capture** to trigger `requestScreenshot()`. `ScreenshotTaker.tsx` will:
+  1. Add `screenshot-mode` to `document.body.classList`.
+  2. Call `composeScreenshot(gl, scene, camera, screenshotOptions, target, citation)`.
+  3. Remove `screenshot-mode` after the promise settles.
+  4. Create an `<a download="giza-screenshot-<timestamp>.<ext>">` with the generated data URL and call `click()`.
+- Verify the class toggle with a `MutationObserver` on `document.body` (or read a persisted logger) and confirm a download anchor with the expected filename is appended.
+- The file should land in `~/Downloads` (or the configured Chrome download path) with a non-zero size and the correct extension.
+- With `transparentBg: true`, the output is a PNG/WebP with an alpha channel; the area outside the rendered geometry should be transparent.
+- In the **Osiris** scene, repeat a capture to confirm `preserveDrawingBuffer: true` on the `<Canvas>` lets `gl.domElement.toDataURL()` read pixels after a monument switch.
+- Known environment quirks:
+  - Chrome may show a `Download multiple files` permission prompt after the first screenshot. Allow the site, use a fresh incognito profile, or route the data URL to a temporary local receiver during automated runs.
+  - `body.screenshot-mode` hides `.app-header`, `.left-panel`, `.side-panel`, `.bottom-toolbar`, `.virtual-controls`, `.viewport-overlay`, and `.compass-label`, so the Drei `<Html>` `N` label is also hidden during capture.
