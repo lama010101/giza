@@ -27,6 +27,7 @@ export function MuseumOverlay(): JSX.Element | null {
           type="button"
           className="museum-overlay-btn"
           onClick={() => setMuseumPaused(!museumPaused)}
+          onPointerDown={(e) => e.stopPropagation()}
           aria-label={museumPaused ? 'Resume tour' : 'Pause tour'}
           data-testid="museum-pause-btn"
         >
@@ -36,6 +37,7 @@ export function MuseumOverlay(): JSX.Element | null {
           type="button"
           className="museum-overlay-btn museum-overlay-exit"
           onClick={handleExit}
+          onPointerDown={(e) => e.stopPropagation()}
           aria-label="Exit museum mode"
           data-testid="museum-exit-btn"
         >

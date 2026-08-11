@@ -51,24 +51,17 @@ export function MuseumLoop(): JSX.Element | null {
     presetsRef.current = getMuseumPresets(activeMonument);
     indexRef.current = 0;
     timeRef.current = 0;
-    const first = presetsRef.current[0]?.name ?? null;
-    if (first !== lastPresetNameRef.current) {
-      lastPresetNameRef.current = first;
-      useAppStore.getState().setMuseumPresetName(first);
-    }
-  }, [activeMonument]);
-
-  useEffect(() => {
     if (mode !== 'Museum') {
-      useAppStore.getState().setMuseumPresetName(null);
+      if (lastPresetNameRef.current !== null) {
+        lastPresetNameRef.current = null;
+        useAppStore.getState().setMuseumPresetName(null);
+      }
       return;
     }
     const first = presetsRef.current[0]?.name ?? null;
-    if (first !== lastPresetNameRef.current) {
-      lastPresetNameRef.current = first;
-      useAppStore.getState().setMuseumPresetName(first);
-    }
-  }, [mode]);
+    lastPresetNameRef.current = first;
+    useAppStore.getState().setMuseumPresetName(first);
+  }, [activeMonument, mode]);
 
   useEffect(() => {
     if (mode !== 'Museum') return undefined;
