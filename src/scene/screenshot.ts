@@ -339,29 +339,34 @@ export async function composeScreenshot(
   const originalClearAlpha = gl.getClearAlpha();
   gl.getClearColor(originalClearColor);
 
-  const originalWidth = gl.domElement.width;
-  const originalHeight = gl.domElement.height;
+  const originalSize = new THREE.Vector2();
+  gl.getSize(originalSize);
   const originalPixelRatio = gl.getPixelRatio();
 
   const scale = options.highRes ? 2 : 1;
-  const targetWidth = Math.floor(originalWidth * scale);
-  const targetHeight = Math.floor(originalHeight * scale);
-
-  let screenshotCamera: THREE.Camera;
-  if (options.orthographic) {
-    screenshotCamera = buildOrthographicCamera(camera, target, targetWidth, targetHeight);
-  } else {
-    const clone = camera.clone() as THREE.PerspectiveCamera;
-    if (clone.isPerspectiveCamera) {
-      clone.aspect = targetWidth / targetHeight;
-      clone.updateProjectionMatrix();
-    }
-    screenshotCamera = clone;
-  }
+  const logicalTargetWidth = Math.floor(originalSize.width * scale);
+  const logicalTargetHeight = Math.floor(originalSize.height * scale);
 
   try {
     if (options.highRes) {
-      gl.setDrawingBufferSize(targetWidth, targetHeight, originalPixelRatio);
+      gl.setDrawingBufferSize(logicalTargetWidth, logicalTargetHeight, originalPixelRatio);
+    }
+
+    const bufferSize = new THREE.Vector2();
+    gl.getDrawingBufferSize(bufferSize);
+    const targetWidth = bufferSize.width;
+    const targetHeight = bufferSize.height;
+
+    let screenshotCamera: THREE.Camera;
+    if (options.orthographic) {
+      screenshotCamera = buildOrthographicCamera(camera, target, targetWidth, targetHeight);
+    } else {
+      const clone = camera.clone() as THREE.PerspectiveCamera;
+      if (clone.isPerspectiveCamera) {
+        clone.aspect = targetWidth / targetHeight;
+        clone.updateProjectionMatrix();
+      }
+      screenshotCamera = clone;
     }
 
     if (options.transparentBg) {
@@ -406,11 +411,11 @@ export async function composeScreenshot(
     scene.background = originalBackground;
     gl.setClearColor(originalClearColor, originalClearAlpha);
     gl.setClearAlpha(originalClearAlpha);
-    gl.setDrawingBufferSize(originalWidth, originalHeight, originalPixelRatio);
+    gl.setDrawingBufferSize(originalSize.width, originalSize.height, originalPixelRatio);
 
     if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
       const perspective = camera as THREE.PerspectiveCamera;
-      perspective.aspect = originalWidth / originalHeight;
+      perspective.aspect = originalSize.width / originalSize.height;
       perspective.updateProjectionMatrix();
     }
   }
