@@ -306,3 +306,18 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
 - `GreatPyramidScene.tsx` separates `activeHighlightRules` (`overlay === 'highlight'`) from `activeOverlayRules` (all other supported types). `annotation` overlays must not be excluded from `activeOverlayRules` or they will be silently dropped.
 - To activate a hypothesis checkbox from Playwright, use `locator.evaluate((el) => (el as HTMLInputElement).click())` on the checkbox input. The R3F canvas can intercept normal `locator.click()` and `dispatchEvent('change')` does not always update React controlled inputs.
 - After activating `THEORY-GP-004` (Internal Ramp Construction Hypothesis), select an affected object from the left Explorer hierarchy (e.g. `Original Entrance` or `Descending Passage (sloped)`) and zoom in with `page.mouse.wheel` so the annotation overlay geometry is visible. Open the **Theory** tab to confirm the predictions list for the active hypothesis.
+
+## Verifying the 3D North compass and GPS-based monument origins (PR #30)
+
+- The red compass arrow and `N` label are rendered by `src/scene/Compass.tsx` at the active monument's origin. The arrow geometry points along `-Z` (north).
+- To get a clear view, rotate the camera around the origin with `OrbitControls` and zoom in until the red shaft, cone, and `N` label are legible.
+- The Great Pyramid origin is the world origin `{x:0, y:0, z:0}` (WGS-84 29.9792368 N, 31.1342008 E).
+- The Osiris Shaft origin is computed from WGS-84 29.9752738 N, 31.1345962 E using `latLonToPlateauMeters` in `src/scene/coordinateSystem.ts`. Expected world origin: `{x:38.084..., y:0, z:440.665...}`.
+- Default Osiris camera target (persisted in `giza-session`) is `{x:36.684..., y:-15, z:433.665...}`, i.e. the monument origin plus the local target offset `{-1.4, -15, -7}`.
+- If `browser_console` is attached to the wrong Chrome tab, run `window.location.href = 'http://localhost:5173';` in the console to navigate the attached page to GIZA, or use `xdotool` to focus the correct window.
+- `cameraPosition` is **not** persisted in `giza-session` (only `cameraTarget` is), so query it from the Three.js scene/camera or compute it from `DEFAULT_CAMERA_POSITION` plus the monument origin.
+- `THEORY-GP-003` (Hydraulic-Acoustic System Hypothesis) is activated in the **Simulation** side-panel tab under `Hypotheses`. The `Theory overlays` visibility layer in the **Scene** tab must be on for the amber (`#f59e0b`, opacity 0.25) conduit to render.
+- In the Great Pyramid scene the conduit should extend from the south wall of the Subterranean Chamber toward the Osiris Shaft.
+- In the Osiris Shaft scene it should leave the far (NW) end of the `Northern Conduit` and head toward the Great Pyramid.
+- Toggling `Theory overlays` off removes the conduit; toggling it back on restores it. Deactivating `THEORY-GP-003` also removes it.
+- After the coordinate change, object selection and the Evidence panel still work: clicking `Basalt Sarcophagus` in Osiris or `Pyramid Exterior (core masonry)` in the Great Pyramid opens the matching evidence record.

@@ -2,13 +2,14 @@ import { SceneGraph, IDENTITY_TRANSFORM, type SceneNode } from './sceneGraph';
 import { greatPyramidBlockout, type BlockoutNode } from '@db/blockouts/great-pyramid';
 import { generateGreatPyramidLOD1, type BlockoutNodeLOD1 } from '@db/geometry/gp-lod1';
 import type { LODLevel } from '@/loaders/validators';
+import { MONUMENT_ORIGINS } from './coordinateSystem';
 
 type UnifiedNode = BlockoutNode | BlockoutNodeLOD1;
 
 export function buildGreatPyramidSceneGraph(lod: LODLevel = 'LOD0'): SceneGraph {
   const graph = new SceneGraph();
 
-  graph.setRootOrigin({ x: 0, y: 0, z: 0 });
+  graph.setRootOrigin({ ...MONUMENT_ORIGINS['great-pyramid'] });
 
   const root = graph.addNode({
     id: 'gp-root',

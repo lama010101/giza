@@ -1,3 +1,5 @@
+import type { Vector3 } from '@/schemas/location';
+
 /**
  * Exported coordinate system constants per M05-T02.
  *
@@ -12,7 +14,7 @@ export const COORDINATE_SYSTEM = {
   handedness: 'right' as const,
   /** World units are meters */
   unit: 'meters' as const,
-  /** World origin at the center of the Giza plateau */
+  /** World origin is anchored at the Great Pyramid GPS datum (see ADR-0008) */
   worldOrigin: { x: 0, y: 0, z: 0 },
   /** North is -Z (towards the Nile) */
   northAxis: { x: 0, y: 0, z: -1 },
@@ -32,16 +34,59 @@ export const COORDINATE_LEVELS = ['world', 'plateau', 'monument', 'room', 'objec
 
 export type CoordinateLevel = (typeof COORDINATE_LEVELS)[number];
 
+/** Earth radius for equirectangular GPS conversion, in meters. */
+export const EARTH_RADIUS_METERS = 6_371_000;
+
+/**
+ * GPS datum for the world origin.
+ * The Great Pyramid apex is the current plateau reference because its
+ * published coordinates are the most precisely surveyed anchor available.
+ */
+export const PLATEAU_ORIGIN_GPS = { latitude: 29.9792368, longitude: 31.1342008 };
+
+/**
+ * Published GPS coordinates for each monument (WGS-84).
+ * Sources:
+ *   - Great Pyramid: Google Maps place page (29.9792368 N, 31.1342008 E)
+ *   - Osiris Shaft: Google Maps place page (29.9752738 N, 31.1345962 E)
+ *   - Khafre: Ancient Locations / Google Maps (29.9759186 N, 31.130861 E)
+ *   - Menkaure: Wikipedia (29.97250 N, 31.12833 E)
+ */
+const MONUMENT_GPS = {
+  'great-pyramid': { latitude: 29.9792368, longitude: 31.1342008 },
+  'osiris-shaft': { latitude: 29.9752738, longitude: 31.1345962 },
+  khafre: { latitude: 29.9759186, longitude: 31.130861 },
+  menkaure: { latitude: 29.9725, longitude: 31.12833 },
+} as const;
+
+/**
+ * Converts a WGS-84 lat/lon coordinate to plateau-world meters.
+ * North is -Z, East is +X, Y is 0 (sea-level/ground plane).
+ */
+export function latLonToPlateauMeters(latitude: number, longitude: number): Vector3 {
+  const origin = PLATEAU_ORIGIN_GPS;
+  const cosLat = Math.cos((origin.latitude * Math.PI) / 180);
+  const dLat = latitude - origin.latitude;
+  const dLon = longitude - origin.longitude;
+  const north = (dLat * Math.PI * EARTH_RADIUS_METERS) / 180;
+  const east = (dLon * Math.PI * EARTH_RADIUS_METERS * cosLat) / 180;
+  return { x: east, y: 0, z: -north };
+}
+
 /**
  * Known monument origins in world coordinates (meters).
- * Aligned with the Giza plateau survey grid.
+ * Derived from MONUMENT_GPS using an equirectangular projection at the
+ * Great Pyramid latitude. Values are rounded to millimeter precision.
  */
-export const MONUMENT_ORIGINS = {
+export const MONUMENT_ORIGINS: Record<keyof typeof MONUMENT_GPS, Vector3> = {
   'great-pyramid': { x: 0, y: 0, z: 0 },
-  'osiris-shaft': { x: 0, y: 0, z: 0 }, // Same location, underground
-  khafre: { x: -470, y: 0, z: -160 },
-  menkaure: { x: -730, y: 0, z: -340 },
-} as const;
+  'osiris-shaft': latLonToPlateauMeters(
+    MONUMENT_GPS['osiris-shaft'].latitude,
+    MONUMENT_GPS['osiris-shaft'].longitude,
+  ),
+  khafre: latLonToPlateauMeters(MONUMENT_GPS.khafre.latitude, MONUMENT_GPS.khafre.longitude),
+  menkaure: latLonToPlateauMeters(MONUMENT_GPS.menkaure.latitude, MONUMENT_GPS.menkaure.longitude),
+};
 
 /**
  * Converts local coordinates to world coordinates using a monument origin.

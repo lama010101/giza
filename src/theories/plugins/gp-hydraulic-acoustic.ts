@@ -1,6 +1,9 @@
+import { osirisBlockout } from '@db/blockouts/osiris-shaft';
+import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
 import type { Hypothesis } from '@/schemas/hypothesis';
 import type { Simulation } from '@/schemas/simulation';
-import type { HypothesisPlugin } from '../types';
+import type { HypothesisPlugin, HypothesisGeometryNode } from '../types';
+import { localToWorld } from '@/scene/coordinateSystem';
 
 const hypothesis: Hypothesis = {
   id: 'THEORY-GP-003',
@@ -435,6 +438,73 @@ export const userVariables: UserVariable[] = [
   { name: 'openingSize', defaultValue: 1.2, unit: 'm', min: 0.1, max: 3.0, provenance: 'Measured' },
 ];
 
+function buildOsirisConduitGeometry(): HypothesisGeometryNode[] {
+  const conduitNode = osirisBlockout.nodes.find((n) => n.id === 'northern-conduit');
+  const subterraneanNode = greatPyramidBlockout.nodes.find((n) => n.id === 'subterranean-chamber');
+  if (!conduitNode || !subterraneanNode) return [];
+
+  // Northern conduit exits Chamber I toward the NW. The local +Z axis of the
+  // box is rotated by -135° around Y, so it points along (-1, 0, -1) — NW.
+  const rotationY = conduitNode.rotation?.y ?? 0;
+  const localZDir = {
+    x: Math.sin(rotationY),
+    y: 0,
+    z: Math.cos(rotationY),
+  };
+
+  const startLocal = {
+    x: conduitNode.position.x + localZDir.x * (conduitNode.size.z / 2),
+    y: conduitNode.position.y,
+    z: conduitNode.position.z + localZDir.z * (conduitNode.size.z / 2),
+  };
+
+  // Target the south wall center of the Subterranean Chamber.
+  const endLocal = {
+    x: subterraneanNode.position.x,
+    y: subterraneanNode.position.y,
+    z: subterraneanNode.position.z + subterraneanNode.size.z / 2,
+  };
+
+  const start = localToWorld(startLocal, 'osiris-shaft');
+  const end = localToWorld(endLocal, 'great-pyramid');
+
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const dz = end.z - start.z;
+  const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+  const midpoint = {
+    x: (start.x + end.x) / 2,
+    y: (start.y + end.y) / 2,
+    z: (start.z + end.z) / 2,
+  };
+
+  const rx = Math.atan2(-dy, Math.sqrt(dx * dx + dz * dz));
+  const ry = Math.atan2(dx, dz);
+
+  return [
+    {
+      id: 'hyp-osiris-northern-conduit-to-gp-subterranean',
+      name: 'Osiris Shaft → Subterranean Chamber (hydraulic hypothesis)',
+      position: midpoint,
+      size: { x: 0.6, y: 0.7, z: length },
+      rotation: { x: rx, y: ry, z: 0 },
+      color: '#f59e0b',
+      opacity: 0.25,
+      hypothesisId: 'THEORY-GP-003',
+      evidenceIds: ['EV-000009'],
+      metadata: {
+        interpretation: 'Hydraulic hypothesis overlay',
+        lengthMeters: length,
+        diameterMeters: 0.6,
+        startMonument: 'osiris-shaft',
+        endMonument: 'great-pyramid',
+        sourceIds: ['SRC-0001'],
+      },
+    },
+  ];
+}
+
 export const gpHydraulicAcousticPlugin: HypothesisPlugin = {
   id: 'THEORY-GP-003',
   name: 'Hydraulic-Acoustic System Hypothesis',
@@ -445,4 +515,5 @@ export const gpHydraulicAcousticPlugin: HypothesisPlugin = {
   getSimulations: () => simulations,
   getVisualizationRules: (objectId) =>
     hypothesis.visualizationRules.filter((rule) => rule.target === objectId),
+  getGeometryNodes: () => buildOsirisConduitGeometry(),
 };

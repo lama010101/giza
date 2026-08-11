@@ -27,6 +27,9 @@ import { getPbrForMaterial, DEFAULT_PBR } from '@/materials/masterMaterials';
 import { resolveAssetForNode } from '@/materials/assetDefinitions';
 import type { AssetDefinition } from '@/materials/assetDefinitions';
 import { GreatPyramidLighting } from './GreatPyramidLighting';
+import { Compass } from './Compass';
+import { HypothesisMesh } from './HypothesisMesh';
+import { MONUMENT_ORIGINS } from './coordinateSystem';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
 
@@ -194,26 +197,6 @@ function HypothesisOverlays({ rules, blocks }: HypothesisOverlaysProps): JSX.Ele
         return <GeometryOverlay key={key} rule={rule} block={block} />;
       })}
     </>
-  );
-}
-
-function HypothesisMesh({ node }: { node: HypothesisGeometryNode }): JSX.Element {
-  const pos = node.position;
-  const rot = node.rotation ?? { x: 0, y: 0, z: 0 };
-  const size = node.size;
-  return (
-    <mesh position={[pos.x, pos.y, pos.z]} rotation={[rot.x, rot.y, rot.z]}>
-      <boxGeometry args={[size.x, size.y, size.z]} />
-      <meshStandardMaterial
-        color={node.color}
-        transparent={node.opacity < 1}
-        opacity={node.opacity}
-        metalness={0.1}
-        roughness={0.85}
-        emissive={node.color}
-        emissiveIntensity={0.1}
-      />
-    </mesh>
   );
 }
 
@@ -387,6 +370,7 @@ export function GreatPyramidScene(): JSX.Element {
       {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
         <MeasurementMarker point={measurementThird} />
       )}
+      <Compass origin={MONUMENT_ORIGINS['great-pyramid']} />
     </Canvas>
   );
 }

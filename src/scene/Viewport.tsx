@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
 import { useAppStore } from '@/store/app';
@@ -8,6 +9,14 @@ import { GreatPyramidScene } from './GreatPyramidScene';
 export function Viewport(): JSX.Element {
   const hoveredNodeId = useAppStore((s) => s.hoveredNodeId);
   const activeMonument = useAppStore((s) => s.activeMonument);
+  const setActiveMonument = useAppStore((s) => s.setActiveMonument);
+
+  useEffect(() => {
+    // Re-apply monument defaults so camera coordinates are always in world
+    // space after a coordinate-system or migration change.
+    setActiveMonument(activeMonument);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const hoveredName = hoveredNodeId
     ? activeMonument === 'great-pyramid'

@@ -22,6 +22,10 @@ import { GLTFAssetMesh } from './GLTFAssetMesh';
 import { EvidenceHotspots } from './EvidenceHotspots';
 import { generateOsirisHotspots } from './osirisHotspots';
 import { getVisibilityLayer } from './visibilityLayers';
+import { Compass } from './Compass';
+import { HypothesisMesh } from './HypothesisMesh';
+import { MONUMENT_ORIGINS } from './coordinateSystem';
+import type { HypothesisGeometryNode } from '@/theories/types';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
   'level-0': { metalness: 0.0, roughness: 0.95 },
@@ -54,6 +58,7 @@ function MeasurementMarker({ point }: { point: Vector3 }): JSX.Element {
 }
 
 export function OsirisScene(): JSX.Element {
+  const osirisOrigin = MONUMENT_ORIGINS['osiris-shaft'];
   const graph = useMemo(() => buildOsirisSceneGraph(), []);
   const blocks = useMemo(() => new Map(osirisBlockout.nodes.map((n) => [n.id, n])), []);
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
@@ -85,11 +90,20 @@ export function OsirisScene(): JSX.Element {
     hypothesisEngine.setActive(activeHypothesisIds);
     setHypothesisTick((t) => t + 1);
   }, [activeHypothesisIds]);
-  // hypothesisTick is incremented after the engine active set is synced; it is
-  // intentionally unused so the overlay geometry re-runs against the latest rules.
-  void hypothesisTick;
+  // hypothesisTick is incremented after the engine active set is synced so the
+  // overlay geometry re-runs against the latest rules.
 
   const hydraulicActive = activeHypothesisIds.includes('THEORY-OSIRIS-001');
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  // hypothesisTick is intentionally included so the memo re-runs once the active
+  // hypothesis set has been applied to the engine.
+  const hypothesisGeometryNodes: HypothesisGeometryNode[] = useMemo(() => {
+    if (activeHypothesisIds.length === 0) return [];
+    const context = getDefaultHypothesisContext();
+    return hypothesisEngine.getGeometryNodes(context);
+  }, [activeHypothesisIds, hypothesisTick]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const activeRules: VisualizationRule[] = [];
   if (activeHypothesisIds.length > 0) {
@@ -148,7 +162,12 @@ export function OsirisScene(): JSX.Element {
   const assetObjectIds = useMemo(() => new Set(assetNodes.keys()), [assetNodes]);
 
   return (
-    <Canvas camera={{ position: [16, -6, 22], fov: 55 }}>
+    <Canvas
+      camera={{
+        position: [16 + osirisOrigin.x, -6, 22 + osirisOrigin.z],
+        fov: 55,
+      }}
+    >
       <CameraRig />
       <ScreenshotTaker />
       <color attach="background" args={[background]} />
@@ -165,18 +184,34 @@ export function OsirisScene(): JSX.Element {
         ]}
         intensity={directionalIntensity}
       />
-      {CHAMBER_LIGHT_NODES.map((node) => (
-        <pointLight
-          key={`light-${node.id}`}
-          position={[node.position.x, node.position.y + node.size.y / 2 + 0.5, node.position.z]}
-          intensity={localIntensity}
-          distance={12}
-          decay={1.5}
-          color="#ffe4b5"
+      <group position={[osirisOrigin.x, osirisOrigin.y, osirisOrigin.z]}>
+        {CHAMBER_LIGHT_NODES.map((node) => (
+          <pointLight
+            key={`light-${node.id}`}
+            position={[node.position.x, node.position.y + node.size.y / 2 + 0.5, node.position.z]}
+            intensity={localIntensity}
+            distance={12}
+            decay={1.5}
+            color="#ffe4b5"
+          />
+        ))}
+        {/* Level 0 — Surface context (M09-T03) */}
+        <Level0Surface hiddenVisibilityLayers={hiddenVisibilityLayers} />
+        {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && <WaterPlane />}
+        {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && (
+          <WaterMesh
+            position={[-1.4, -30.4, -7.0]}
+            size={6.5}
+            elevation={waterLevel}
+            turbidity={0.3}
+            color="#0a4a6b"
+          />
+        )}
+        <EvidenceHotspots
+          hotspots={osirisHotspots}
+          visible={!hiddenVisibilityLayers.includes('Evidence')}
         />
-      ))}
-      {/* Level 0 — Surface context (M09-T03) */}
-      <Level0Surface hiddenVisibilityLayers={hiddenVisibilityLayers} />
+      </group>
       {visibleNodes.map(({ node, block, rule }) => {
         const objectId = block.objectId ?? node.metadata.objectId;
         if (objectId && assetObjectIds.has(objectId)) {
@@ -199,16 +234,8 @@ export function OsirisScene(): JSX.Element {
           <BlockoutMesh key={node.id} node={node} block={block} rule={rule} pbr={getPbr(block)} />
         );
       })}
-      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && <WaterPlane />}
-      {hydraulicActive && !hiddenVisibilityLayers.includes('Water') && (
-        <WaterMesh
-          position={[-1.4, -30.4, -7.0]}
-          size={6.5}
-          elevation={waterLevel}
-          turbidity={0.3}
-          color="#0a4a6b"
-        />
-      )}
+      {!hiddenVisibilityLayers.includes('Theory') &&
+        hypothesisGeometryNodes.map((hnode) => <HypothesisMesh key={hnode.id} node={hnode} />)}
       {!hiddenVisibilityLayers.includes('Annotations') && measurementStart && (
         <MeasurementMarker point={measurementStart} />
       )}
@@ -218,10 +245,7 @@ export function OsirisScene(): JSX.Element {
       {!hiddenVisibilityLayers.includes('Annotations') && measurementThird && (
         <MeasurementMarker point={measurementThird} />
       )}
-      <EvidenceHotspots
-        hotspots={osirisHotspots}
-        visible={!hiddenVisibilityLayers.includes('Evidence')}
-      />
+      <Compass origin={osirisOrigin} />
     </Canvas>
   );
 }

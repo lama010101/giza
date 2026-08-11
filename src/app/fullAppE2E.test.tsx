@@ -20,7 +20,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { App } from '../App';
-import { useAppStore } from '@/store/app';
+import { useAppStore, DEFAULT_CAMERA_TARGET } from '@/store/app';
 import { useAccessibilityStore } from '@/accessibility/accessibility';
 import { useLocaleStore, translate } from '@/i18n/localization';
 import { useSecurityStore, getDefaultUser } from '@/security/securityModel';
@@ -43,6 +43,7 @@ vi.mock('@react-three/fiber', () => ({
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => <div data-testid="orbit-controls" />,
   Text: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Html: ({ children }: { children: React.ReactNode }) => <div data-testid="html">{children}</div>,
 }));
 
 describe('Full Application E2E Test Suite (M12-T08)', () => {
@@ -81,10 +82,10 @@ describe('Full Application E2E Test Suite (M12-T08)', () => {
 
     it('updates camera target when switching monuments', () => {
       useAppStore.getState().setActiveMonument('osiris');
-      expect(useAppStore.getState().cameraTarget).toEqual({ x: -1.4, y: -15, z: -7 });
+      expect(useAppStore.getState().cameraTarget).toEqual(DEFAULT_CAMERA_TARGET.osiris);
 
       useAppStore.getState().setActiveMonument('great-pyramid');
-      expect(useAppStore.getState().cameraTarget).toEqual({ x: 0, y: 70, z: 0 });
+      expect(useAppStore.getState().cameraTarget).toEqual(DEFAULT_CAMERA_TARGET['great-pyramid']);
     });
   });
 

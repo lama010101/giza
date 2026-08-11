@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { Vector3 } from '@/schemas/location';
 import type { LODLevel } from '@/loaders/validators';
+import { MONUMENT_ORIGINS, localToWorld } from '@/scene/coordinateSystem';
 import { createBookmark, type Bookmark } from '@/evidence/bookmark';
 import type { MeasurementType } from '@/evidence/measurement';
 
@@ -18,9 +19,35 @@ export type AppMode =
 export type CameraMode = 'orbit' | 'walk' | 'fly' | 'teleport';
 export type Monument = 'osiris' | 'great-pyramid';
 
-export const DEFAULT_CAMERA_TARGET: Record<Monument, Vector3> = {
+export const MONUMENT_KEY: Record<Monument, keyof typeof MONUMENT_ORIGINS> = {
+  osiris: 'osiris-shaft',
+  'great-pyramid': 'great-pyramid',
+};
+
+const DEFAULT_CAMERA_TARGET_LOCAL: Record<Monument, Vector3> = {
   osiris: { x: -1.4, y: -15, z: -7 },
   'great-pyramid': { x: 0, y: 70, z: 0 },
+};
+
+const DEFAULT_CAMERA_POSITION_LOCAL: Record<Monument, Vector3> = {
+  osiris: { x: 16, y: -6, z: 22 },
+  'great-pyramid': { x: 40, y: 80, z: 80 },
+};
+
+export const DEFAULT_CAMERA_TARGET: Record<Monument, Vector3> = {
+  osiris: localToWorld(DEFAULT_CAMERA_TARGET_LOCAL.osiris, MONUMENT_KEY.osiris),
+  'great-pyramid': localToWorld(
+    DEFAULT_CAMERA_TARGET_LOCAL['great-pyramid'],
+    MONUMENT_KEY['great-pyramid'],
+  ),
+};
+
+export const DEFAULT_CAMERA_POSITION: Record<Monument, Vector3> = {
+  osiris: localToWorld(DEFAULT_CAMERA_POSITION_LOCAL.osiris, MONUMENT_KEY.osiris),
+  'great-pyramid': localToWorld(
+    DEFAULT_CAMERA_POSITION_LOCAL['great-pyramid'],
+    MONUMENT_KEY['great-pyramid'],
+  ),
 };
 export type SidePanelTab = 'scene' | 'evidence' | 'simulation' | 'hypothesis' | 'search';
 
@@ -159,8 +186,8 @@ export const useAppStore = create<AppState>()(
         bookmarkedObjectIds: [],
         bookmarks: [],
         cameraMode: 'orbit',
-        cameraTarget: { x: 0, y: 70, z: 0 },
-        cameraPosition: { x: 0, y: 70, z: 100 },
+        cameraTarget: DEFAULT_CAMERA_TARGET['great-pyramid'],
+        cameraPosition: DEFAULT_CAMERA_POSITION['great-pyramid'],
         hiddenLayers: [],
         hiddenVisibilityLayers: [],
         lod: 'LOD0',
@@ -168,7 +195,11 @@ export const useAppStore = create<AppState>()(
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
-          set({ activeMonument, cameraTarget: DEFAULT_CAMERA_TARGET[activeMonument] }),
+          set({
+            activeMonument,
+            cameraTarget: DEFAULT_CAMERA_TARGET[activeMonument],
+            cameraPosition: DEFAULT_CAMERA_POSITION[activeMonument],
+          }),
         setCameraMode: (cameraMode) => set({ cameraMode }),
         setCameraTarget: (cameraTarget) => set({ cameraTarget }),
         setCameraPosition: (cameraPosition) => set({ cameraPosition }),
@@ -267,7 +298,7 @@ export const useAppStore = create<AppState>()(
       }),
       {
         name: 'giza-session',
-        version: 2,
+        version: 3,
         partialize: (state) =>
           Object.fromEntries(PERSISTED_KEYS.map((key) => [key, state[key]])) as Partial<AppState>,
         migrate: (persisted, version) => {
@@ -285,7 +316,26 @@ export const useAppStore = create<AppState>()(
                 state.cameraTarget.y === -15 &&
                 state.cameraTarget.z === 2)
             ) {
-              state.cameraTarget = { x: 0, y: 70, z: 0 };
+              state.cameraTarget = DEFAULT_CAMERA_TARGET['great-pyramid'];
+            }
+          }
+          // v3 converts persisted camera coordinates to the new world-space
+          // plateau coordinates anchored at the Great Pyramid GPS datum.
+          if (version < 3) {
+            if (
+              state.activeMonument === 'osiris' &&
+              state.cameraPosition &&
+              state.cameraPosition.x < 25 &&
+              state.cameraPosition.z < 25
+            ) {
+              state.cameraPosition = localToWorld(state.cameraPosition, MONUMENT_KEY.osiris);
+            }
+            if (
+              state.activeMonument === 'osiris' &&
+              state.cameraTarget &&
+              state.cameraTarget.x < 0
+            ) {
+              state.cameraTarget = localToWorld(state.cameraTarget, MONUMENT_KEY.osiris);
             }
           }
           return state;

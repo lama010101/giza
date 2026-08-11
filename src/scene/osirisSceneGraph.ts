@@ -1,6 +1,7 @@
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { IDENTITY_TRANSFORM, SceneGraph, boundingBoxFromSize } from './sceneGraph';
 import type { SurveyReference } from './sceneGraph';
+import { MONUMENT_ORIGINS } from './coordinateSystem';
 
 export const OSIRIS_SCENE_ROOT_ID = 'osiris-shaft-scene';
 
@@ -64,6 +65,8 @@ const NODE_CONFIDENCE_OVERRIDE: Record<string, number> = {
 
 export function buildOsirisSceneGraph(): SceneGraph {
   const graph = new SceneGraph();
+
+  graph.setRootOrigin({ ...MONUMENT_ORIGINS['osiris-shaft'] });
 
   graph.addNode({
     id: OSIRIS_SCENE_ROOT_ID,
