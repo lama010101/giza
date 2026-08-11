@@ -1,4 +1,5 @@
 import { ModeSelector } from '@/ui/ModeSelector';
+import { TimelinePanel } from '@/ui/TimelinePanel';
 import { SidePanel } from '@/ui/SidePanel';
 import { LeftPanel } from '@/ui/LeftPanel';
 import { LightingPanel } from '@/ui/LightingPanel';
@@ -16,6 +17,7 @@ export function AppLayout(): JSX.Element {
         <h1>GIZA</h1>
         <div className="header-controls">
           <ModeSelector />
+          <TimelinePanel />
           <div className="lighting-dropdown">
             <button
               type="button"

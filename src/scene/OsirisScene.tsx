@@ -25,6 +25,7 @@ import { getVisibilityLayer } from './visibilityLayers';
 import { Compass } from './Compass';
 import { HypothesisMesh } from './HypothesisMesh';
 import { MONUMENT_ORIGINS } from './coordinateSystem';
+import { getObjectTimelinePhases } from './chronologyLayers';
 import type { HypothesisGeometryNode } from '@/theories/types';
 
 const LAYER_PBR: Record<string, { metalness: number; roughness: number }> = {
@@ -67,6 +68,7 @@ export function OsirisScene(): JSX.Element {
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
   const measurementThird = useAppStore((s) => s.measurementThird);
+  const chronologyPeriod = useAppStore((s) => s.chronologyPeriod);
 
   const ambientIntensity = useLightingStore((s) => s.ambientIntensity);
   const directionalIntensity = useLightingStore((s) => s.directionalIntensity);
@@ -79,10 +81,13 @@ export function OsirisScene(): JSX.Element {
 
   const osirisHotspots = useMemo(
     () =>
-      generateOsirisHotspots().filter(
-        (h) => !hiddenLayers.includes(h.layer as unknown as SceneLayer),
-      ),
-    [hiddenLayers],
+      generateOsirisHotspots()
+        .filter((h) => !hiddenLayers.includes(h.layer as unknown as SceneLayer))
+        .filter((h) => {
+          if (chronologyPeriod === null || !h.objectId) return true;
+          return getObjectTimelinePhases(h.objectId).includes(chronologyPeriod);
+        }),
+    [hiddenLayers, chronologyPeriod],
   );
 
   const [hypothesisTick, setHypothesisTick] = useState(0);
@@ -133,7 +138,12 @@ export function OsirisScene(): JSX.Element {
         : activeRules.find((r) => r.target === node.metadata.objectId);
       return { node, block, rule };
     })
-    .filter(({ block, rule }) => !block.overlay || rule !== undefined);
+    .filter(({ block, rule }) => !block.overlay || rule !== undefined)
+    .filter(({ node }) => {
+      const objectId = node.metadata.objectId;
+      if (!objectId || chronologyPeriod === null) return true;
+      return getObjectTimelinePhases(objectId).includes(chronologyPeriod);
+    });
 
   type OsirisBlock = (typeof osirisBlockout.nodes)[number];
 

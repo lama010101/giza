@@ -1,3 +1,6 @@
+import type { Evidence } from '@/schemas/evidence';
+import { getEvidenceByObject } from '@/evidence/repository';
+
 /**
  * Chronology layers per GIZA-03 §2.3 (M09-T17).
  *
@@ -70,6 +73,23 @@ export const CHRONOLOGY_LAYERS: ChronologyLayer[] = [
 ];
 
 /**
+ * Timeline phases exposed by the M08-T10 slider.
+ * These are the four broad historical phases used to filter knowledge
+ * and scene objects; the Middle Kingdom layer is collapsed into Old
+ * Kingdom for the UI because the current evidence set does not use it.
+ */
+export const TIMELINE_PHASE_ORDER: readonly ChronologyPeriod[] = [
+  'old-kingdom',
+  'late-period',
+  'roman',
+  'modern',
+];
+
+export const TIMELINE_PHASES = CHRONOLOGY_LAYERS.filter((layer) =>
+  TIMELINE_PHASE_ORDER.includes(layer.id),
+);
+
+/**
  * Object classification per GIZA-03 §2.5.
  * Only occupation layers and movable objects change across chronology;
  * the base geometry is continuous.
@@ -138,4 +158,77 @@ export function getChronologyConfidence(objectId: string, period: ChronologyPeri
  */
 export function filterObjectsByChronology(objectIds: string[], period: ChronologyPeriod): string[] {
   return objectIds.filter((id) => getObjectChronology(id).includes(period));
+}
+
+// ─── Timeline helpers (M08-T10) ─────────────────────────────────────────────
+
+const PERIOD_TO_EARLIEST_PHASE: Record<string, ChronologyPeriod> = {
+  'old kingdom': 'old-kingdom',
+  eocene: 'old-kingdom',
+  geological: 'old-kingdom',
+  'middle kingdom': 'late-period',
+  'new kingdom': 'late-period',
+  'late period': 'late-period',
+  roman: 'roman',
+  'roman period': 'roman',
+  medieval: 'modern',
+  modern: 'modern',
+  multiple: 'old-kingdom',
+};
+
+function normalizePeriodLabel(label: string): string {
+  return label.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function expandTimelinePhases(phase: ChronologyPeriod): ChronologyPeriod[] {
+  const index = TIMELINE_PHASE_ORDER.indexOf(phase);
+  if (index === -1) return [phase];
+  return TIMELINE_PHASE_ORDER.slice(index);
+}
+
+/**
+ * Maps a free-form period label (e.g. from an evidence chronology tag) to
+ * the set of timeline phases in which that subject would have been present.
+ * Unknown labels are treated as present in all phases so they are never lost.
+ */
+export function getTimelinePhasesForPeriod(period: string): ChronologyPeriod[] {
+  const normalized = normalizePeriodLabel(period);
+  const earliest = PERIOD_TO_EARLIEST_PHASE[normalized];
+  if (earliest) return expandTimelinePhases(earliest);
+  return [...TIMELINE_PHASE_ORDER];
+}
+
+/**
+ * Returns the timeline phases relevant to a piece of evidence, based on
+ * its chronology tags. The result is the union of each tag's phase range.
+ */
+export function getEvidenceTimelinePhases(evidence: Evidence): ChronologyPeriod[] {
+  const phases = new Set<ChronologyPeriod>();
+  for (const tag of evidence.chronologyTags) {
+    for (const phase of getTimelinePhasesForPeriod(tag.period)) {
+      phases.add(phase);
+    }
+  }
+  if (phases.size === 0) return [...TIMELINE_PHASE_ORDER];
+  return [...phases];
+}
+
+/**
+ * Returns the timeline phases for which an object should be visible. This
+ * first checks the explicit OBJECT_CHRONOLOGY map, then falls back to the
+ * chronology tags of the evidence linked to the object.
+ */
+export function getObjectTimelinePhases(objectId: string): ChronologyPeriod[] {
+  const explicit = OBJECT_CHRONOLOGY[objectId];
+  if (explicit) return explicit;
+
+  const evidence = getEvidenceByObject(objectId);
+  const phases = new Set<ChronologyPeriod>();
+  for (const ev of evidence) {
+    for (const phase of getEvidenceTimelinePhases(ev)) {
+      phases.add(phase);
+    }
+  }
+  if (phases.size === 0) return [...TIMELINE_PHASE_ORDER];
+  return [...phases];
 }

@@ -32,6 +32,18 @@ describe('EvidencePanel', () => {
     expect(screen.getByText(/Entrance opening approximately/i)).toBeInTheDocument();
   });
 
+  it('filters evidence by selected chronology period', () => {
+    useAppStore.setState({ activeMonument: 'great-pyramid', chronologyPeriod: 'modern' });
+    render(<EvidencePanel />);
+    expect(screen.getByText('Al-Mamun tunnel (modern entrance)')).toBeInTheDocument();
+  });
+
+  it('hides out-of-period evidence when a chronology period is active', () => {
+    useAppStore.setState({ activeMonument: 'great-pyramid', chronologyPeriod: 'old-kingdom' });
+    render(<EvidencePanel />);
+    expect(screen.queryByText('Al-Mamun tunnel (modern entrance)')).not.toBeInTheDocument();
+  });
+
   it('bookmarks an object and re-selects its evidence via the chip', () => {
     render(<EvidencePanel />);
     fireEvent.click(screen.getByText('Basalt sarcophagus dimensions'));

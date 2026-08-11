@@ -30,6 +30,7 @@ import { GreatPyramidLighting } from './GreatPyramidLighting';
 import { Compass } from './Compass';
 import { HypothesisMesh } from './HypothesisMesh';
 import { MONUMENT_ORIGINS } from './coordinateSystem';
+import { getObjectTimelinePhases } from './chronologyLayers';
 
 type UnifiedBlock = BlockoutNode | BlockoutNodeLOD1;
 
@@ -219,6 +220,7 @@ export function GreatPyramidScene(): JSX.Element {
   const measurementStart = useAppStore((s) => s.measurementStart);
   const measurementEnd = useAppStore((s) => s.measurementEnd);
   const measurementThird = useAppStore((s) => s.measurementThird);
+  const chronologyPeriod = useAppStore((s) => s.chronologyPeriod);
 
   const background = useLightingStore((s) => s.background);
 
@@ -274,7 +276,12 @@ export function GreatPyramidScene(): JSX.Element {
       const materialRule = activeHighlightRules.find((r) => r.target === node.metadata.objectId);
       return { node, block, rule: materialRule, visibilityRule };
     })
-    .filter(({ block, visibilityRule }) => !block.overlay || visibilityRule !== undefined);
+    .filter(({ block, visibilityRule }) => !block.overlay || visibilityRule !== undefined)
+    .filter(({ node }) => {
+      const objectId = node.metadata.objectId;
+      if (!objectId || chronologyPeriod === null) return true;
+      return getObjectTimelinePhases(objectId).includes(chronologyPeriod);
+    });
 
   const assetNodes = useMemo(() => {
     const map = new Map<
