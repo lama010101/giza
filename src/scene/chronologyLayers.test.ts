@@ -140,18 +140,36 @@ describe('Chronology Layers (M09-T17, GIZA-03 §2.3)', () => {
   });
 
   describe('getEvidenceTimelinePhases', () => {
-    it('returns all phases when evidence has no chronology tags', () => {
-      const ev = { chronologyTags: [] } as unknown as Parameters<
-        typeof getEvidenceTimelinePhases
-      >[0];
+    it('returns all phases when evidence has no chronology tags or object ids', () => {
+      const ev = {
+        chronologyTags: [],
+        objectIds: [],
+      } as unknown as Parameters<typeof getEvidenceTimelinePhases>[0];
       expect(getEvidenceTimelinePhases(ev)).toEqual(TIMELINE_PHASE_ORDER);
     });
 
     it('unions phases across multiple chronology tags', () => {
       const ev = {
         chronologyTags: [{ period: 'Old Kingdom', scope: 'construction' }],
+        objectIds: [],
       } as unknown as Parameters<typeof getEvidenceTimelinePhases>[0];
       expect(getEvidenceTimelinePhases(ev)).toEqual(TIMELINE_PHASE_ORDER);
+    });
+
+    it('falls back to linked object chronology when no chronology tags are present', () => {
+      const ev = {
+        chronologyTags: [],
+        objectIds: ['OBJ-0008'],
+      } as unknown as Parameters<typeof getEvidenceTimelinePhases>[0];
+      expect(getEvidenceTimelinePhases(ev)).toEqual(['late-period', 'roman', 'modern']);
+    });
+
+    it('maps middle kingdom evidence to the late-period timeline phase onward', () => {
+      const ev = {
+        chronologyTags: [{ period: 'Middle Kingdom', scope: 'reuse' }],
+        objectIds: [],
+      } as unknown as Parameters<typeof getEvidenceTimelinePhases>[0];
+      expect(getEvidenceTimelinePhases(ev)).toEqual(['late-period', 'roman', 'modern']);
     });
   });
 
