@@ -3,6 +3,7 @@ import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
 import { useAppStore } from '@/store/app';
 import { VirtualControls } from '@/ui/VirtualControls';
+import { MuseumOverlay } from '@/ui/MuseumOverlay';
 import { OsirisScene } from './OsirisScene';
 import { GreatPyramidScene } from './GreatPyramidScene';
 
@@ -29,6 +30,7 @@ export function Viewport(): JSX.Element {
       {activeMonument === 'great-pyramid' ? <GreatPyramidScene /> : <OsirisScene />}
       {hoveredName && <div className="viewport-overlay">{hoveredName}</div>}
       <VirtualControls />
+      <MuseumOverlay />
     </div>
   );
 }

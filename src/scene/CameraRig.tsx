@@ -22,6 +22,7 @@ import {
   applyGamepadLook,
   combinedMovementInput,
 } from './gamepad';
+import { MuseumLoop } from './MuseumLoop';
 import { TOUCH_STATE, useTouchLook } from './touchControls';
 
 const KEY_MAP: Record<string, string> = {
@@ -324,6 +325,7 @@ function CameraPositionSync(): null {
 export function CameraRig(): JSX.Element {
   const cameraMode = useAppStore((s) => s.cameraMode);
   const cameraTarget = useAppStore((s) => s.cameraTarget);
+  const mode = useAppStore((s) => s.mode);
   const { gl } = useThree();
 
   useTouchLook(cameraMode, gl.domElement);
@@ -331,11 +333,18 @@ export function CameraRig(): JSX.Element {
   return (
     <>
       <CameraPositionSync />
+      <MuseumLoop />
       {cameraMode === 'walk' && <WalkControls />}
       {cameraMode === 'fly' && <FlyControls />}
       {cameraMode === 'teleport' && <TeleportControls />}
       {cameraMode === 'orbit' && (
-        <OrbitControls makeDefault target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]} />
+        <OrbitControls
+          makeDefault
+          target={[cameraTarget.x, cameraTarget.y, cameraTarget.z]}
+          enableRotate={mode !== 'Museum'}
+          enableZoom={mode !== 'Museum'}
+          enablePan={mode !== 'Museum'}
+        />
       )}
     </>
   );

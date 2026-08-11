@@ -356,3 +356,67 @@ On some test boxes `node_modules/.vite` and `dist` are owned by root, causing `E
   - The Modern Entrance / Al-Mamun Tunnel (`OBJ-0104`) is only present in `modern`, so it disappears in `old-kingdom`.
 - For automated Playwright checks, import the store module from `/src/store/app.ts` and use `useAppStore.getState().setActiveMonument(...)`, `setChronologyPeriod(...)`, `setCameraPosition(...)`, `setCameraTarget(...)`, and `requestScreenshot()`.
 - To compare before/after renders, capture the canvas with `page.screenshot()` or read `gl.domElement.toDataURL()` after setting the camera. ImageMagick `compare -metric AE/RMSE` is useful for asserting visible differences between captures.
+
+## Museum mode end-to-end verification (PR #38)
+
+### Enabling Museum mode
+
+- Click **Museum** in the top `ModeSelector`, or run `useAppStore.getState().setMode('Museum')` from the browser console. The store is exported from `/src/store/app.ts`.
+- `AppMode` includes `'Museum'`; new state keys are `museumPaused` and `museumPresetName`.
+- Expected initial state for Great Pyramid:
+  - `mode === 'Museum'`
+  - `museumPaused === false`
+  - `cameraPosition` ≈ `{x:80, y:90, z:120}`
+  - `museumPresetName` should be `'Pyramid Exterior'` but see the known bug below.
+
+### Expected UI in Museum mode
+
+- `AppLayout.tsx` hides `app-header`, `LeftPanel`, `SidePanel`, and `BottomToolbar` when `mode === 'Museum'`.
+- `MuseumOverlay.tsx` renders a full-screen overlay with:
+  - `data-testid="museum-overlay"`
+  - `data-testid="museum-preset-name"`
+  - `data-testid="museum-pause-btn"` (toggles `Pause` ↔ `Resume`)
+  - `data-testid="museum-exit-btn"` (returns to `Explore`)
+- `CameraRig.tsx` disables `OrbitControls` interactions (`enableRotate`, `enableZoom`, `enablePan`) in Museum mode and renders `MuseumLoop`.
+
+### Great Pyramid preset sequence
+
+1. `Pyramid Exterior` — dwell 6 s, transition 2 s
+2. `King's Chamber` — dwell 8 s, transition 2 s
+3. `Queen's Chamber` — dwell 8 s, transition 2 s
+4. `Grand Gallery` — dwell 8 s, transition 2 s
+5. `Subterranean Chamber` — dwell 8 s, transition 2 s, then wrap to `Pyramid Exterior`
+
+### Osiris Shaft preset sequence
+
+1. `Osiris Shaft Surface` — dwell 6 s, transition 2 s
+2. `Chamber A` — dwell 8 s, transition 2 s
+3. `Chamber B` — dwell 8 s, transition 2 s
+4. `Chamber I` — dwell 8 s, transition 2 s
+5. `Northern Conduit` — dwell 8 s, transition 2 s
+6. `Basalt Sarcophagus` — dwell 8 s, transition 2 s, then wrap to `Osiris Shaft Surface`
+
+Osiris world-space positions are offset by `MONUMENT_ORIGINS['osiris-shaft']`: `{x:38.08404731639851, y:0, z:440.665494292256}`. The local `Osiris Shaft Surface` camera position is `{x:15, y:12, z:15}`, so the world position is `{x:53.08404731639851, y:12, z:455.665494292256}`.
+
+### Pause / resume / exit
+
+- Clicking anywhere on the viewport (window `pointerdown` / `keydown`) calls `setMuseumPaused(true)`.
+- A 10-second idle timer (`IDLE_TIMEOUT_MS = 10000`) auto-resumes the tour.
+- Clicking the overlay **Pause** button toggles `museumPaused`; **Exit** returns `mode` to `Explore` and restores the header, side panels, and bottom toolbar.
+
+### Verification workflow
+
+1. Launch `npm run dev` and open `http://localhost:5173` in a fresh browser profile (clear `giza-session` localStorage).
+2. Click **Museum** in the header.
+3. Verify chrome is hidden and the overlay shows `GIZA`, a preset name, `Pause`, and `Exit`.
+4. Wait for the camera to cycle through at least two presets. Capture `page.screenshot()` at each visible name change.
+5. Pause the tour, wait ~3 s, and capture two screenshots; assert the camera did not move.
+6. Wait another ~12 s without interaction; assert the overlay button returns to `Pause` and the camera eventually moves to the next preset.
+7. Click **Exit** and assert `mode === 'Explore'`, the overlay is removed, and all chrome is restored.
+8. Switch to the **Osiris** monument in the side panel and repeat from step 2.
+
+### Known issues / caveats
+
+- **Animation is slower than wall-clock time in low-fps / headless test environments.** `MuseumLoop` caps `dt` at `0.1` s per frame (`useFrame((_, delta) => { const dt = Math.min(delta, 0.1); ... })`). If `requestAnimationFrame` is throttled (e.g. backgrounded browser or CI runner), the virtual clock runs slower than real time. Use generous polling timeouts (30–90 s) or interact with a foreground window to keep rAF at full speed.
+
+*Historical fixes in PR #38:* the initial preset name is now set immediately when entering Museum mode, and the overlay Pause/Exit buttons stop pointer-event propagation so they do not double-trigger the viewport pause handler.
