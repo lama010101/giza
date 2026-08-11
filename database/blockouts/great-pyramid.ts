@@ -672,11 +672,11 @@ export const greatPyramidBlockout: Blockout = {
       name: 'KC North Shaft',
       position: {
         x: 7.22,
-        y: 67.02423543421865,
-        z: -19.91345008096837,
+        y: 66.85153269283218,
+        z: -20.023898091894775,
       },
       rotation: {
-        x: -0.5689773361501514,
+        x: -2.5726153174396416,
         y: 0,
         z: 0,
       },
@@ -697,11 +697,11 @@ export const greatPyramidBlockout: Blockout = {
       name: "KC North Shaft Blocking Stone ('Door')",
       position: {
         x: 7.22,
-        y: 60.25441493433804,
-        z: -9.327776792540362,
+        y: 60.08171219295158,
+        z: -9.43822480346677,
       },
       rotation: {
-        x: -0.5689773361501617,
+        x: -2.572615317439632,
         y: 0,
         z: 0,
       },
@@ -747,11 +747,11 @@ export const greatPyramidBlockout: Blockout = {
       name: 'QC North Shaft',
       position: {
         x: 0,
-        y: 46.38121205744811,
-        z: -19.543300202648897,
+        y: 46.21801140554214,
+        z: -19.675457484769364,
       },
       rotation: {
-        x: -0.6806784082777886,
+        x: -2.4609142453120048,
         y: 0,
         z: 0,
       },
@@ -797,11 +797,11 @@ export const greatPyramidBlockout: Blockout = {
       name: "QC North Shaft Blocking Stone ('Door')",
       position: {
         x: 0,
-        y: 65.13495971073327,
-        z: -42.70224985406663,
+        y: 64.97175905882732,
+        z: -42.8344071361871,
       },
       rotation: {
-        x: -0.6806784082778081,
+        x: -2.460914245311985,
         y: 0,
         z: 0,
       },

@@ -241,7 +241,9 @@ describe('generateGreatPyramidLOD1', () => {
   it('kc-north-shaft uses measurement-derived angle', () => {
     const shaft = lod1Nodes.find((n) => n.id === 'kc-north-shaft');
     expect(shaft).toBeDefined();
-    expect(shaft!.rotation?.x).toBeCloseTo(-degToRad(GP_KC_SHAFTS.north.angleDeg), 2);
+    // North shaft goes up toward -Z, so rotation.x is in (-π, -π/2):
+    // -atan2(+dy, -dz) = -(π - atan(dy/|dz|)) = angle - π.
+    expect(shaft!.rotation?.x).toBeCloseTo(degToRad(GP_KC_SHAFTS.north.angleDeg) - Math.PI, 2);
   });
 
   it('kc-south-shaft uses measurement-derived angle', () => {
