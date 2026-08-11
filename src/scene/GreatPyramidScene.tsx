@@ -302,7 +302,7 @@ export function GreatPyramidScene(): JSX.Element {
   const assetObjectIds = useMemo(() => new Set(assetNodes.keys()), [assetNodes]);
 
   return (
-    <Canvas camera={{ position: [40, 80, 80], fov: 55 }}>
+    <Canvas camera={{ position: [40, 80, 80], fov: 55 }} gl={{ preserveDrawingBuffer: true }}>
       <CameraRig />
       <ScreenshotTaker />
       <StreamingController graph={graph} onLoadedChange={handleStreamUpdate} />

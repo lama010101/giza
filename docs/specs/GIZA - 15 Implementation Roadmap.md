@@ -1,6 +1,6 @@
 # GIZA — Implementation Roadmap
 
-**Version:** 0.16 Draft
+**Version:** 0.17 Draft
 **Status:** Working Specification
 **Last update:** 2026-08-10
 
@@ -1611,3 +1611,4 @@ Release tagging follows `vX.Y.Z` per M-1-T08; spec-set tags `spec-vX.Y` track th
 | 2026-08-09 | 0.14 Draft | Closed remaining `npm audit` vulnerabilities: updated `@react-three/drei`, `@react-three/rapier`, `@playwright/test`, `lint-staged`, `vite`, `@vitejs/plugin-react`, and `vitest` to patched versions. `npm audit` now reports 0 vulnerabilities and all quality gates (`typecheck`, `lint`, `test`, `build`, `governance`) pass locally. Updated risk register R17 and `docs/audit-2026-07-31.md` exit criteria. |
 | 2026-08-10 | 0.15 Draft | PR #30: added 3D North compass (`Compass.tsx`) in Great Pyramid and Osiris scenes; anchored monument origins to exact WGS-84 GPS coordinates via `latLonToPlateauMeters` (world origin at Great Pyramid, Osiris Shaft ~440 m south); added ADR-0008 and ADR-0009; extended `THEORY-GP-003` with `getGeometryNodes` to render the hypothesized Osiris northern-conduit → Great Pyramid Subterranean Chamber conduit as an amber translucent overlay; migrated persisted camera coordinates to world space; updated `giza-e2e` SKILL.md with verification notes. All quality gates pass locally; GitHub Actions CI still blocked by account billing (R16). |
 | 2026-08-10 | 0.16 Draft | Billing restored; re-ran PR #30 CI (`quality`, `docs`, `label`) which now all pass. Closed risk register R16 and updated roadmap version. PR #30 remains open pending maintainer merge because automated merges into `master` are disallowed for AI agents. |
+| 2026-08-10 | 0.17 Draft | Closed M08-T09 Screenshot Mode: added `src/scene/screenshot.ts` orchestration (`composeScreenshot`, scale-bar/north-arrow-citation helpers), `src/scene/ScreenshotTaker.tsx` wiring, `src/ui/ScreenshotPanel.tsx` option UI, store `screenshotOptions`, CSS `body.screenshot-mode` to hide UI, and `preserveDrawingBuffer` on both scene Canvases; supports hide UI, transparent background, high resolution, orthographic camera, scale bar, north arrow, citation watermark, and PNG/WebP export; added `src/scene/screenshot.test.ts` and `src/scene/ScreenshotTaker.test.tsx`. All quality gates pass. |

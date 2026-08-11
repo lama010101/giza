@@ -11,6 +11,7 @@ import { LayerPanel } from './LayerPanel';
 import { VisibilityLayerPanel } from './VisibilityLayerPanel';
 import { SimulationPanel } from './SimulationPanel';
 import { SearchPanel } from './SearchPanel';
+import { ScreenshotPanel } from './ScreenshotPanel';
 import {
   calculateDistance,
   calculateHeight,
@@ -142,7 +143,6 @@ function ResearchSceneTools(): JSX.Element {
   const activeHypothesisIds = useAppStore((s) => s.activeHypothesisIds);
   const hiddenLayers = useAppStore((s) => s.hiddenLayers);
   const setHiddenLayers = useAppStore((s) => s.setHiddenLayers);
-  const requestScreenshot = useAppStore((s) => s.requestScreenshot);
 
   const graph = useMemo(
     () =>
@@ -235,12 +235,11 @@ function ResearchSceneTools(): JSX.Element {
             <button type="button" onClick={handleResetLayers}>
               Reset layers
             </button>
-            <button type="button" onClick={requestScreenshot}>
-              Screenshot
-            </button>
           </div>
         </div>
       )}
+
+      <ScreenshotPanel />
 
       {confidenceByHypothesis.length > 0 && (
         <div className="confidence-card" data-testid="confidence-viz">
