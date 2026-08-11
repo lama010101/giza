@@ -7,6 +7,7 @@ import {
   searchEvidence,
 } from '@/evidence/repository';
 import { useAppStore, MONUMENT_KEY } from '@/store/app';
+import { getEvidenceTimelinePhases } from '@/scene/chronologyLayers';
 import { localToWorld } from '@/scene/coordinateSystem';
 import { osirisBlockout } from '@db/blockouts/osiris-shaft';
 import { greatPyramidBlockout } from '@db/blockouts/great-pyramid';
@@ -54,13 +55,19 @@ export function EvidencePanel(): JSX.Element {
   const setSelectedEvidenceId = useAppStore((s) => s.setSelectedEvidenceId);
   const bookmarkedObjectIds = useAppStore((s) => s.bookmarkedObjectIds);
   const toggleBookmarkedObject = useAppStore((s) => s.toggleBookmarkedObject);
+  const chronologyPeriod = useAppStore((s) => s.chronologyPeriod);
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Map<string, HTMLLIElement>>(new Map());
 
   const evidenceList = useMemo(() => {
     const all = query ? searchEvidence(query) : getAllEvidence();
-    return all.filter((ev) => isEvidenceForMonument(ev, activeMonument));
-  }, [query, activeMonument]);
+    return all
+      .filter((ev) => isEvidenceForMonument(ev, activeMonument))
+      .filter(
+        (ev) =>
+          chronologyPeriod === null || getEvidenceTimelinePhases(ev).includes(chronologyPeriod),
+      );
+  }, [query, activeMonument, chronologyPeriod]);
 
   const panelData = useMemo(() => {
     return selectedEvidenceId ? getEvidencePanelData(selectedEvidenceId) : undefined;

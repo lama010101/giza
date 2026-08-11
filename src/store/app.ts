@@ -6,6 +6,7 @@ import { MONUMENT_ORIGINS, localToWorld } from '@/scene/coordinateSystem';
 import { createBookmark, type Bookmark } from '@/evidence/bookmark';
 import type { MeasurementType } from '@/evidence/measurement';
 import { DEFAULT_SCREENSHOT_OPTIONS, type ScreenshotOptions } from '@/scene/screenshot';
+import type { ChronologyPeriod } from '@/scene/chronologyLayers';
 
 export type AppMode =
   | 'Explore'
@@ -120,6 +121,7 @@ export interface AppState {
   lod: LODLevel;
   screenshotRequest: number | null;
   screenshotOptions: ScreenshotOptions;
+  chronologyPeriod: ChronologyPeriod | null;
   setLOD: (lod: LODLevel) => void;
   setMode: (mode: AppMode) => void;
   setActiveMonument: (monument: Monument) => void;
@@ -137,6 +139,7 @@ export interface AppState {
   requestScreenshot: () => void;
   clearScreenshotRequest: () => void;
   setScreenshotOptions: (options: Partial<ScreenshotOptions>) => void;
+  setChronologyPeriod: (period: ChronologyPeriod | null) => void;
   setActiveLocationId: (id: string | null) => void;
   setSelectedObjectId: (id: string | null) => void;
   setSelectedEvidenceId: (id: string | null) => void;
@@ -165,6 +168,7 @@ const PERSISTED_KEYS: (keyof AppState)[] = [
   'hiddenLayers',
   'hiddenVisibilityLayers',
   'lod',
+  'chronologyPeriod',
 ];
 
 export const useAppStore = create<AppState>()(
@@ -196,6 +200,7 @@ export const useAppStore = create<AppState>()(
         lod: 'LOD0',
         screenshotRequest: null,
         screenshotOptions: DEFAULT_SCREENSHOT_OPTIONS,
+        chronologyPeriod: null,
         setLOD: (lod) => set({ lod }),
         setMode: (mode) => set({ mode }),
         setActiveMonument: (activeMonument) =>
@@ -266,6 +271,7 @@ export const useAppStore = create<AppState>()(
         clearScreenshotRequest: () => set({ screenshotRequest: null }),
         setScreenshotOptions: (options) =>
           set((state) => ({ screenshotOptions: { ...state.screenshotOptions, ...options } })),
+        setChronologyPeriod: (chronologyPeriod) => set({ chronologyPeriod }),
         setActiveLocationId: (activeLocationId) => set({ activeLocationId }),
         setSelectedObjectId: (selectedObjectId) => set({ selectedObjectId }),
         setSelectedEvidenceId: (selectedEvidenceId) => set({ selectedEvidenceId }),

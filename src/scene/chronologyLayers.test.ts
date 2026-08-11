@@ -4,6 +4,11 @@ import {
   getObjectChronology,
   getChronologyConfidence,
   filterObjectsByChronology,
+  TIMELINE_PHASES,
+  TIMELINE_PHASE_ORDER,
+  getTimelinePhasesForPeriod,
+  getEvidenceTimelinePhases,
+  getObjectTimelinePhases,
   type ChronologyPeriod,
 } from './chronologyLayers';
 
@@ -11,6 +16,11 @@ describe('Chronology Layers (M09-T17, GIZA-03 §2.3)', () => {
   describe('CHRONOLOGY_LAYERS', () => {
     it('defines 5 chronology layers', () => {
       expect(CHRONOLOGY_LAYERS).toHaveLength(5);
+    });
+
+    it('exposes 4 timeline phases in chronological order', () => {
+      expect(TIMELINE_PHASES).toHaveLength(4);
+      expect(TIMELINE_PHASE_ORDER).toEqual(['old-kingdom', 'late-period', 'roman', 'modern']);
     });
 
     it('layers have correct IDs', () => {
@@ -104,6 +114,60 @@ describe('Chronology Layers (M09-T17, GIZA-03 §2.3)', () => {
       const allObjects = ['OBJ-0001', 'OBJ-0008', 'OBJ-0016'];
       const modern = filterObjectsByChronology(allObjects, 'modern');
       expect(modern).toHaveLength(3);
+    });
+  });
+
+  describe('getTimelinePhasesForPeriod', () => {
+    it('expands Old Kingdom to all phases (earliest)', () => {
+      expect(getTimelinePhasesForPeriod('Old Kingdom')).toEqual(TIMELINE_PHASE_ORDER);
+    });
+
+    it('maps Late Period to late-period and later', () => {
+      expect(getTimelinePhasesForPeriod('Late Period')).toEqual(['late-period', 'roman', 'modern']);
+    });
+
+    it('maps Roman to roman and modern', () => {
+      expect(getTimelinePhasesForPeriod('Roman')).toEqual(['roman', 'modern']);
+    });
+
+    it('maps Modern to modern only', () => {
+      expect(getTimelinePhasesForPeriod('Modern')).toEqual(['modern']);
+    });
+
+    it('falls back to all phases for unknown labels', () => {
+      expect(getTimelinePhasesForPeriod('Uncharted Era')).toEqual(TIMELINE_PHASE_ORDER);
+    });
+  });
+
+  describe('getEvidenceTimelinePhases', () => {
+    it('returns all phases when evidence has no chronology tags', () => {
+      const ev = { chronologyTags: [] } as unknown as Parameters<
+        typeof getEvidenceTimelinePhases
+      >[0];
+      expect(getEvidenceTimelinePhases(ev)).toEqual(TIMELINE_PHASE_ORDER);
+    });
+
+    it('unions phases across multiple chronology tags', () => {
+      const ev = {
+        chronologyTags: [{ period: 'Old Kingdom', scope: 'construction' }],
+      } as unknown as Parameters<typeof getEvidenceTimelinePhases>[0];
+      expect(getEvidenceTimelinePhases(ev)).toEqual(TIMELINE_PHASE_ORDER);
+    });
+  });
+
+  describe('getObjectTimelinePhases', () => {
+    it('uses explicit OBJECT_CHRONOLOGY when available', () => {
+      expect(getObjectTimelinePhases('OBJ-0016')).toEqual(['modern']);
+    });
+
+    it('falls back to evidence chronology for unmapped objects', () => {
+      const phases = getObjectTimelinePhases('OBJ-0104'); // Al-Mamun tunnel, Medieval
+      expect(phases).toContain('modern');
+      expect(phases).not.toContain('old-kingdom');
+    });
+
+    it('defaults unknown objects without evidence to all phases', () => {
+      expect(getObjectTimelinePhases('OBJ-9999')).toEqual(TIMELINE_PHASE_ORDER);
     });
   });
 
