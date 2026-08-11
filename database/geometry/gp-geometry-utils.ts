@@ -143,6 +143,31 @@ export function chamberCenterX(xOffset: number): number {
 }
 
 /**
+ * Derive a horizontal passage box from two floor endpoints that lie in the X-Z
+ * plane (constant Y). The box length (size.z) is the 3D distance between the
+ * endpoints and it is rotated around Y so its local +Z axis aligns with the
+ * direction from start to end. The floor face is kept at the supplied Y by
+ * offsetting the box center up by half the height.
+ */
+export function horizontalBoxFromFloorEndpoints(
+  start: Vector3,
+  end: Vector3,
+  width: number,
+  height: number,
+): { position: Vector3; rotation: Vector3; size: Vector3 } {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const len = Math.sqrt(dx * dx + dz * dz);
+  const floorMid = midpoint(start, end);
+  const angle = Math.atan2(dx, dz);
+  return {
+    position: { x: floorMid.x, y: floorMid.y + height / 2, z: floorMid.z },
+    rotation: { x: 0, y: angle, z: 0 },
+    size: { x: width, y: height, z: len },
+  };
+}
+
+/**
  * Compute the Z position of the pyramid's sloped north face at a given height.
  * The face recedes inward from the base edge as height increases.
  * At y=0 the face is at z = -baseHalfWidth.

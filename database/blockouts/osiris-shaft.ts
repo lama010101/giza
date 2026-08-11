@@ -68,7 +68,7 @@ export const osirisBlockout: Blockout = {
     {
       id: 'chamber-b',
       name: 'Chamber B',
-      position: { x: -1.125, y: -21.85, z: -10.35 },
+      position: { x: -1.125, y: -21.85, z: -6.0 },
       size: { x: 3.65, y: 2.6, z: 6.8 },
       objectId: 'OBJ-0004',
       evidenceIds: ['EV-000004'],
@@ -170,7 +170,7 @@ export const osirisBlockout: Blockout = {
     {
       id: 'niche-2-sarcophagus',
       name: 'Niche 2 Sarcophagus',
-      position: { x: 0.075, y: -21.85, z: -11.8 },
+      position: { x: 0.075, y: -21.85, z: -7.45 },
       size: { x: 0.9, y: 0.8, z: 1.9 },
       objectId: 'OBJ-0010',
       evidenceIds: ['EV-000012'],
@@ -183,7 +183,7 @@ export const osirisBlockout: Blockout = {
     {
       id: 'niche-7-sarcophagus',
       name: 'Niche 7 Sarcophagus',
-      position: { x: -2.325, y: -21.85, z: -8.8 },
+      position: { x: -2.325, y: -21.85, z: -4.45 },
       size: { x: 0.9, y: 0.8, z: 1.9 },
       objectId: 'OBJ-0011',
       evidenceIds: ['EV-000013'],
@@ -196,7 +196,7 @@ export const osirisBlockout: Blockout = {
     {
       id: 'chamber-b-east-passage',
       name: 'Chamber B Eastern Passage',
-      position: { x: 2.075, y: -21.85, z: -11.8 },
+      position: { x: 2.075, y: -21.85, z: -7.45 },
       size: { x: 2.8, y: 1.0, z: 0.8 },
       objectId: 'OBJ-0012',
       evidenceIds: ['EV-000014'],

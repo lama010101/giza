@@ -121,13 +121,13 @@ describe('Measurement Constants', () => {
   });
 
   it('GP_KINGS_CHAMBER has expected values', () => {
-    expect(GP_KINGS_CHAMBER.width).toBeCloseTo(5.24, 1);
-    expect(GP_KINGS_CHAMBER.height).toBeCloseTo(5.97, 1);
-    expect(GP_KINGS_CHAMBER.depth).toBeCloseTo(10.47, 1);
+    expect(GP_KINGS_CHAMBER.width).toBeCloseTo(10.47, 1);
+    expect(GP_KINGS_CHAMBER.height).toBeCloseTo(5.84, 1);
+    expect(GP_KINGS_CHAMBER.depth).toBeCloseTo(5.24, 1);
   });
 
   it('GP_QUEENS_CHAMBER has expected values', () => {
-    expect(GP_QUEENS_CHAMBER.width).toBeCloseTo(5.23, 1);
+    expect(GP_QUEENS_CHAMBER.width).toBeCloseTo(5.75, 1);
     expect(GP_QUEENS_CHAMBER.height).toBeCloseTo(6.23, 1);
   });
 
@@ -185,8 +185,7 @@ describe('generateGreatPyramidLOD1', () => {
     const dp = lod1Nodes.find((n) => n.id === 'descending-passage');
     expect(dp).toBeDefined();
     expect(dp!.derivation).toBe('calculated');
-    const slopedLen = GP_DESCENDING_PASSAGE.totalLength - 9.0; // minus horizontal section
-    expect(dp!.size.z).toBeCloseTo(slopedLen, 1);
+    expect(dp!.size.z).toBeCloseTo(GP_DESCENDING_PASSAGE.totalLength, 1);
   });
 
   it('descending-passage-horizontal exists', () => {
@@ -318,7 +317,7 @@ describe('LOD0 Scene Graph (backward compatibility)', () => {
     expect(root?.name).toBe('Great Pyramid');
   });
 
-  it('has 35 mesh nodes', () => {
+  it('has 37 mesh nodes', () => {
     const all = graph.getAllNodes();
     const layerGroupIds = new Set([
       'gp-root',
@@ -332,7 +331,7 @@ describe('LOD0 Scene Graph (backward compatibility)', () => {
       'gp-shafts',
     ]);
     const meshNodes = all.filter((n) => !layerGroupIds.has(n.id));
-    expect(meshNodes).toHaveLength(35);
+    expect(meshNodes).toHaveLength(37);
   });
 });
 

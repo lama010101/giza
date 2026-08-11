@@ -9,13 +9,13 @@
         "name": "Pyramid Exterior (core masonry)",
         "position": {
           "x": 0,
-          "y": 69.3,
+          "y": 69.25,
           "z": 0
         },
         "size": {
-          "x": 230.36,
-          "y": 138.6,
-          "z": 230.36
+          "x": 230.364,
+          "y": 138.5,
+          "z": 230.364
         },
         "objectId": "OBJ-0101",
         "evidenceIds": [
@@ -27,7 +27,8 @@
         ],
         "layer": "exterior",
         "color": "#c2b090",
-        "opacity": 0.15
+        "opacity": 0.15,
+        "materialId": "MAT_LocalLimestone"
       },
       {
         "id": "casing-north",
@@ -35,7 +36,7 @@
         "position": {
           "x": 0,
           "y": 5,
-          "z": -111.25
+          "z": -111.253037
         },
         "rotation": {
           "x": 0.904779,
@@ -43,7 +44,7 @@
           "z": 0
         },
         "size": {
-          "x": 230.36,
+          "x": 230.364,
           "y": 10,
           "z": 1
         },
@@ -56,7 +57,32 @@
         ],
         "layer": "exterior",
         "color": "#e8e0d0",
-        "opacity": 0.7
+        "opacity": 0.7,
+        "materialId": "MAT_TuraLimestone"
+      },
+      {
+        "id": "exterior-detail",
+        "name": "Exterior Detail (casing, sockets, wall, pyramidion)",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "objectId": "OBJ-0102",
+        "evidenceIds": [
+          "EV-100002"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "exterior",
+        "color": "#c2b090",
+        "opacity": 0.4
       },
       {
         "id": "original-entrance",
@@ -64,7 +90,7 @@
         "position": {
           "x": 7.29,
           "y": 16.97,
-          "z": -101.84
+          "z": -101.8471
         },
         "size": {
           "x": 1.05,
@@ -82,35 +108,12 @@
         "color": "#8a7a55"
       },
       {
-        "id": "modern-entrance",
-        "name": "Modern Entrance (Al-Mamun Tunnel)",
-        "position": {
-          "x": 0,
-          "y": 17,
-          "z": -101.84
-        },
-        "size": {
-          "x": 2,
-          "y": 2,
-          "z": 3
-        },
-        "objectId": "OBJ-0104",
-        "evidenceIds": [
-          "EV-100004"
-        ],
-        "sourceIds": [
-          "SRC-0103"
-        ],
-        "layer": "exterior",
-        "color": "#6b5f45"
-      },
-      {
         "id": "descending-passage",
         "name": "Descending Passage (sloped)",
         "position": {
           "x": 7.29,
-          "y": -6.51,
-          "z": -54.8
+          "y": -5.975112,
+          "z": -54.53397
         },
         "rotation": {
           "x": 0.462861,
@@ -138,8 +141,8 @@
         "name": "Descending Passage (horizontal)",
         "position": {
           "x": 7.29,
-          "y": -29.99,
-          "z": 0.78
+          "y": -29.39001,
+          "z": 0.782813
         },
         "rotation": {
           "x": 0,
@@ -168,7 +171,7 @@
         "position": {
           "x": 0.66,
           "y": -28.22,
-          "z": 5.16
+          "z": 5.177813
         },
         "size": {
           "x": 14.07,
@@ -183,16 +186,16 @@
           "SRC-0101"
         ],
         "layer": "subterranean",
-        "color": "#7a6a4a",
-        "opacity": 0.5
+        "color": "#6a5a40",
+        "opacity": 0.4
       },
       {
         "id": "subterranean-pit",
         "name": "Central Pit (Subterranean)",
         "position": {
           "x": 0.66,
-          "y": -32.52,
-          "z": 5.16
+          "y": -32.515,
+          "z": 5.177813
         },
         "size": {
           "x": 2.54,
@@ -215,8 +218,8 @@
         "name": "Ascending Passage",
         "position": {
           "x": 7.29,
-          "y": 15.02,
-          "z": -62.18
+          "y": 15.015115,
+          "z": -62.179721
         },
         "rotation": {
           "x": -0.454484,
@@ -224,7 +227,7 @@
           "z": 0
         },
         "size": {
-          "x": 1,
+          "x": 0.97,
           "y": 1.2,
           "z": 39.29
         },
@@ -240,12 +243,159 @@
         "opacity": 0.4
       },
       {
+        "id": "ascending-plug-1",
+        "name": "Ascending Passage Plug Block 1",
+        "position": {
+          "x": 7.29,
+          "y": 6.623658,
+          "z": -79.354315
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9
+      },
+      {
+        "id": "ascending-plug-2",
+        "name": "Ascending Passage Plug Block 2",
+        "position": {
+          "x": 7.29,
+          "y": 7.088997,
+          "z": -78.401917
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9
+      },
+      {
+        "id": "ascending-plug-3",
+        "name": "Ascending Passage Plug Block 3",
+        "position": {
+          "x": 7.29,
+          "y": 7.554335,
+          "z": -77.44952
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9
+      },
+      {
+        "id": "al-mamun-bypass",
+        "name": "Al-Mamun Bypass Tunnel",
+        "position": {
+          "x": 8.49,
+          "y": 7.378736,
+          "z": -77.808916
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 3.5
+        },
+        "objectId": "OBJ-0104",
+        "evidenceIds": [
+          "EV-100004",
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0103",
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#b06a4a",
+        "opacity": 0.6
+      },
+      {
+        "id": "modern-entrance",
+        "name": "Modern Entrance (Al-Mamun Tunnel)",
+        "position": {
+          "x": 8.49,
+          "y": 8.207891,
+          "z": -92.588469
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 33.230613
+        },
+        "objectId": "OBJ-0104",
+        "evidenceIds": [
+          "EV-100004"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
+        "layer": "exterior",
+        "color": "#6b5f45",
+        "opacity": 1
+      },
+      {
         "id": "grand-gallery",
         "name": "Grand Gallery",
         "position": {
           "x": 7.22,
-          "y": 36.25,
-          "z": -24.75
+          "y": 36.251312,
+          "z": -24.748245
         },
         "rotation": {
           "x": -0.458673,
@@ -273,8 +423,8 @@
         "name": "Antechamber",
         "position": {
           "x": 7.22,
-          "y": 44.8,
-          "z": 1.62
+          "y": 44.817,
+          "z": 1.615745
         },
         "size": {
           "x": 1.651,
@@ -290,7 +440,53 @@
         ],
         "layer": "kings-complex",
         "color": "#a08060",
-        "opacity": 0.5
+        "opacity": 0.4
+      },
+      {
+        "id": "great-step-passage",
+        "name": "Great Step Landing and Short Passage",
+        "position": {
+          "x": 7.22,
+          "y": 44.817,
+          "z": -0.611255
+        },
+        "size": {
+          "x": 1.651,
+          "y": 3.794,
+          "z": 1.5
+        },
+        "evidenceIds": [
+          "EV-100010"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#a08060",
+        "opacity": 0.4
+      },
+      {
+        "id": "antechamber-kc-passage",
+        "name": "Antechamber-to-King's-Chamber Passage",
+        "position": {
+          "x": 7.22,
+          "y": 43.56,
+          "z": 5.742745
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 5.3
+        },
+        "evidenceIds": [
+          "EV-100011"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#8a7050",
+        "opacity": 0.4
       },
       {
         "id": "kings-chamber",
@@ -298,7 +494,7 @@
         "position": {
           "x": 7.22,
           "y": 45.88,
-          "z": 11.02
+          "z": 11.012745
         },
         "size": {
           "x": 10.47,
@@ -320,9 +516,9 @@
         "id": "kings-sarcophagus",
         "name": "King's Chamber Sarcophagus",
         "position": {
-          "x": 2.47,
-          "y": 43.5,
-          "z": 11.02
+          "x": 2.474,
+          "y": 43.4845,
+          "z": 11.012745
         },
         "size": {
           "x": 0.978,
@@ -337,15 +533,21 @@
           "SRC-0101"
         ],
         "layer": "kings-complex",
-        "color": "#3a3a3f"
+        "color": "#3a3a3f",
+        "opacity": 1
       },
       {
         "id": "relieving-davison",
         "name": "Davison's Chamber (Relieving 1)",
         "position": {
           "x": 7.22,
-          "y": 49.35,
-          "z": 11.02
+          "y": 49.335,
+          "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.68,
@@ -368,8 +570,13 @@
         "name": "Wellington's Chamber (Relieving 2)",
         "position": {
           "x": 7.22,
-          "y": 52.32,
-          "z": 11.02
+          "y": 50.43,
+          "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.73,
@@ -392,8 +599,13 @@
         "name": "Nelson's Chamber (Relieving 3)",
         "position": {
           "x": 7.22,
-          "y": 55.5,
-          "z": 11.02
+          "y": 51.725,
+          "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.81,
@@ -416,8 +628,13 @@
         "name": "Lady Arbuthnot's Chamber (Relieving 4)",
         "position": {
           "x": 7.22,
-          "y": 58.79,
-          "z": 11.02
+          "y": 53.135,
+          "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.38,
@@ -440,8 +657,13 @@
         "name": "Campbell's Chamber (Relieving 5, with cartouches)",
         "position": {
           "x": 7.22,
-          "y": 62.65,
-          "z": 11.02
+          "y": 55.12,
+          "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.53,
@@ -464,7 +686,7 @@
         "name": "Queen's Chamber",
         "position": {
           "x": 0,
-          "y": 24.05,
+          "y": 24.305,
           "z": 6.32
         },
         "size": {
@@ -487,8 +709,8 @@
         "id": "queens-niche",
         "name": "Queen's Chamber Niche (East Wall)",
         "position": {
-          "x": 2.88,
-          "y": 23.85,
+          "x": 2.875,
+          "y": 23.535,
           "z": 6.32
         },
         "size": {
@@ -511,14 +733,19 @@
         "id": "queens-passage",
         "name": "Queen's Chamber Passage",
         "position": {
-          "x": 3.61,
-          "y": 21.78,
-          "z": -17.98
+          "x": 3.645,
+          "y": 21.775,
+          "z": -22.234992
+        },
+        "rotation": {
+          "x": 0,
+          "y": -0.139603,
+          "z": 0
         },
         "size": {
           "x": 1.05,
           "y": 1.17,
-          "z": 43.96
+          "z": 52.389663
         },
         "objectId": "OBJ-0120",
         "evidenceIds": [
@@ -529,25 +756,25 @@
         ],
         "layer": "passages",
         "color": "#c2ab7a",
-        "opacity": 0.35
+        "opacity": 0.4
       },
       {
         "id": "kc-north-shaft",
-        "name": "King's Chamber North Shaft",
+        "name": "KC North Shaft",
         "position": {
           "x": 7.22,
-          "y": 62.16,
-          "z": -21.44
+          "y": 67.024235,
+          "z": -19.91345
         },
         "rotation": {
-          "x": 0.568977,
+          "x": -0.568977,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 70.96
+          "z": 67.330615
         },
         "objectId": "OBJ-0121",
         "evidenceIds": [
@@ -557,16 +784,45 @@
           "SRC-0105"
         ],
         "layer": "shafts",
-        "color": "#6b5f45",
-        "opacity": 0.3
+        "color": "#7a6a4a",
+        "opacity": 0.5
+      },
+      {
+        "id": "kc-north-shaft-door",
+        "name": "KC North Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 7.22,
+          "y": 60.254415,
+          "z": -9.327777
+        },
+        "rotation": {
+          "x": -0.568977,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.205,
+          "y": 0.205,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0121",
+        "evidenceIds": [
+          "EV-100021"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9
       },
       {
         "id": "kc-south-shaft",
-        "name": "King's Chamber South Shaft",
+        "name": "KC South Shaft",
         "position": {
           "x": 7.22,
-          "y": 62.01,
-          "z": 32.54
+          "y": 66.568424,
+          "z": 31.256212
         },
         "rotation": {
           "x": -0.785398,
@@ -576,7 +832,7 @@
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 53.69
+          "z": 50.051693
         },
         "objectId": "OBJ-0122",
         "evidenceIds": [
@@ -586,19 +842,19 @@
           "SRC-0105"
         ],
         "layer": "shafts",
-        "color": "#6b5f45",
-        "opacity": 0.3
+        "color": "#7a6a4a",
+        "opacity": 0.5
       },
       {
         "id": "qc-north-shaft",
-        "name": "Queen's Chamber North Shaft",
+        "name": "QC North Shaft",
         "position": {
           "x": 0,
-          "y": 40.15,
-          "z": -19.54
+          "y": 46.381212,
+          "z": -19.5433
         },
         "rotation": {
-          "x": 0.680678,
+          "x": -0.680678,
           "y": 0,
           "z": 0
         },
@@ -615,16 +871,16 @@
           "SRC-0105"
         ],
         "layer": "shafts",
-        "color": "#6b5f45",
-        "opacity": 0.3
+        "color": "#7a6a4a",
+        "opacity": 0.5
       },
       {
         "id": "qc-south-shaft",
-        "name": "Queen's Chamber South Shaft",
+        "name": "QC South Shaft",
         "position": {
           "x": 0,
-          "y": 40.39,
-          "z": 31.98
+          "y": 46.623624,
+          "z": 31.983468
         },
         "rotation": {
           "x": -0.69115,
@@ -644,26 +900,84 @@
           "SRC-0105"
         ],
         "layer": "shafts",
-        "color": "#6b5f45",
-        "opacity": 0.3
+        "color": "#7a6a4a",
+        "opacity": 0.5
+      },
+      {
+        "id": "qc-north-shaft-door",
+        "name": "QC North Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 0,
+          "y": 65.13496,
+          "z": -42.70225
+        },
+        "rotation": {
+          "x": -0.680678,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.21,
+          "y": 0.21,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0123",
+        "evidenceIds": [
+          "EV-100023"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9
+      },
+      {
+        "id": "qc-south-shaft-door",
+        "name": "QC South Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 0,
+          "y": 65.618858,
+          "z": 54.944762
+        },
+        "rotation": {
+          "x": -0.69115,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.21,
+          "y": 0.21,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0124",
+        "evidenceIds": [
+          "EV-100024"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9
       },
       {
         "id": "well-shaft",
-        "name": "Well Shaft (Service Shaft)",
+        "name": "Well Shaft",
         "position": {
-          "x": 6.17,
-          "y": -2.33,
-          "z": -25.68
+          "x": 6.175,
+          "y": -2.326486,
+          "z": -25.684149
         },
         "rotation": {
-          "x": 0.983842,
+          "x": 0.983761,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.78,
           "y": 0.78,
-          "z": 65.92
+          "z": 65.921078
         },
         "objectId": "OBJ-0125",
         "evidenceIds": [
@@ -672,17 +986,18 @@
         "sourceIds": [
           "SRC-0101"
         ],
-        "layer": "passages",
-        "color": "#5a4a30",
-        "opacity": 0.3
+        "layer": "shafts",
+        "color": "#6a5a40",
+        "opacity": 0.5,
+        "materialId": "MAT_LocalLimestone"
       },
       {
         "id": "grotto",
         "name": "Grotto",
         "position": {
-          "x": 6.17,
-          "y": 0,
-          "z": -25.68
+          "x": 6.175,
+          "y": -1.542505,
+          "z": -26.008858
         },
         "size": {
           "x": 2,
@@ -698,7 +1013,8 @@
         ],
         "layer": "passages",
         "color": "#7a6a4a",
-        "opacity": 0.5
+        "opacity": 0.5,
+        "materialId": "MAT_Bedrock"
       }
     ]
   },
@@ -766,6 +1082,32 @@
         "lod": "LOD1"
       },
       {
+        "id": "exterior-detail",
+        "name": "Exterior Detail (casing, sockets, wall, pyramidion)",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "objectId": "OBJ-0102",
+        "evidenceIds": [
+          "EV-100002"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "exterior",
+        "color": "#c2b090",
+        "opacity": 0.4,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
         "id": "original-entrance",
         "name": "Original Entrance",
         "position": {
@@ -789,31 +1131,6 @@
         "color": "#8a7a55",
         "derivation": "measured",
         "lod": "LOD1"
-      },
-      {
-        "id": "modern-entrance",
-        "name": "Modern Entrance (Al-Mamun Tunnel)",
-        "position": {
-          "x": 0,
-          "y": 17,
-          "z": -101.84
-        },
-        "size": {
-          "x": 2,
-          "y": 2,
-          "z": 3
-        },
-        "objectId": "OBJ-0104",
-        "evidenceIds": [
-          "EV-100004"
-        ],
-        "sourceIds": [
-          "SRC-0103"
-        ],
-        "layer": "exterior",
-        "color": "#6b5f45",
-        "lod": "LOD1",
-        "derivation": "measured"
       },
       {
         "id": "descending-passage",
@@ -926,8 +1243,8 @@
         "layer": "subterranean",
         "color": "#5a4a30",
         "opacity": 0.6,
-        "lod": "LOD1",
-        "derivation": "inferred"
+        "derivation": "inferred",
+        "lod": "LOD1"
       },
       {
         "id": "ascending-passage",
@@ -958,6 +1275,163 @@
         "color": "#c2ab7a",
         "opacity": 0.4,
         "derivation": "calculated",
+        "lod": "LOD1"
+      },
+      {
+        "id": "ascending-plug-1",
+        "name": "Ascending Passage Plug Block 1",
+        "position": {
+          "x": 7.29,
+          "y": 6.623658,
+          "z": -79.354315
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "ascending-plug-2",
+        "name": "Ascending Passage Plug Block 2",
+        "position": {
+          "x": 7.29,
+          "y": 7.088997,
+          "z": -78.401917
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "ascending-plug-3",
+        "name": "Ascending Passage Plug Block 3",
+        "position": {
+          "x": 7.29,
+          "y": 7.554335,
+          "z": -77.44952
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 1.06
+        },
+        "objectId": "OBJ-0108",
+        "evidenceIds": [
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#5a5a5a",
+        "opacity": 0.9,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "al-mamun-bypass",
+        "name": "Al-Mamun Bypass Tunnel",
+        "position": {
+          "x": 8.49,
+          "y": 7.378736,
+          "z": -77.808916
+        },
+        "rotation": {
+          "x": -0.454484,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 3.5
+        },
+        "objectId": "OBJ-0104",
+        "evidenceIds": [
+          "EV-100004",
+          "EV-100008"
+        ],
+        "sourceIds": [
+          "SRC-0103",
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#b06a4a",
+        "opacity": 0.6,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "modern-entrance",
+        "name": "Modern Entrance (Al-Mamun Tunnel)",
+        "position": {
+          "x": 8.49,
+          "y": 8.207891,
+          "z": -92.588469
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 33.230613
+        },
+        "objectId": "OBJ-0104",
+        "evidenceIds": [
+          "EV-100004"
+        ],
+        "sourceIds": [
+          "SRC-0103"
+        ],
+        "layer": "exterior",
+        "color": "#6b5f45",
+        "opacity": 1,
+        "derivation": "measured",
         "lod": "LOD1"
       },
       {
@@ -1018,6 +1492,56 @@
         "lod": "LOD1"
       },
       {
+        "id": "great-step-passage",
+        "name": "Great Step Landing and Short Passage",
+        "position": {
+          "x": 7.22,
+          "y": 44.817,
+          "z": -0.611255
+        },
+        "size": {
+          "x": 1.651,
+          "y": 3.794,
+          "z": 1.5
+        },
+        "evidenceIds": [
+          "EV-100010"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#a08060",
+        "opacity": 0.4,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "antechamber-kc-passage",
+        "name": "Antechamber-to-King's-Chamber Passage",
+        "position": {
+          "x": 7.22,
+          "y": 43.56,
+          "z": 5.742745
+        },
+        "size": {
+          "x": 0.97,
+          "y": 1.2,
+          "z": 5.3
+        },
+        "evidenceIds": [
+          "EV-100011"
+        ],
+        "sourceIds": [
+          "SRC-0101"
+        ],
+        "layer": "passages",
+        "color": "#8a7050",
+        "opacity": 0.4,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
         "id": "kings-chamber",
         "name": "King's Chamber",
         "position": {
@@ -1047,9 +1571,9 @@
         "id": "kings-sarcophagus",
         "name": "King's Chamber Sarcophagus",
         "position": {
-          "x": 2.47,
-          "y": 43.5,
-          "z": 11.02
+          "x": 2.474,
+          "y": 43.4845,
+          "z": 11.012745
         },
         "size": {
           "x": 0.978,
@@ -1065,16 +1589,22 @@
         ],
         "layer": "kings-complex",
         "color": "#3a3a3f",
-        "lod": "LOD1",
-        "derivation": "measured"
+        "opacity": 1,
+        "derivation": "measured",
+        "lod": "LOD1"
       },
       {
         "id": "relieving-davison",
         "name": "Davison's Chamber (Relieving 1)",
         "position": {
           "x": 7.22,
-          "y": 49.35,
+          "y": 49.335,
           "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.68,
@@ -1099,8 +1629,13 @@
         "name": "Wellington's Chamber (Relieving 2)",
         "position": {
           "x": 7.22,
-          "y": 52.32,
+          "y": 50.43,
           "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.73,
@@ -1125,8 +1660,13 @@
         "name": "Nelson's Chamber (Relieving 3)",
         "position": {
           "x": 7.22,
-          "y": 55.5,
+          "y": 51.725,
           "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.81,
@@ -1151,8 +1691,13 @@
         "name": "Lady Arbuthnot's Chamber (Relieving 4)",
         "position": {
           "x": 7.22,
-          "y": 58.79,
+          "y": 53.135,
           "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.38,
@@ -1177,8 +1722,13 @@
         "name": "Campbell's Chamber (Relieving 5, with cartouches)",
         "position": {
           "x": 7.22,
-          "y": 62.65,
+          "y": 55.12,
           "z": 11.012745
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "size": {
           "x": 11.53,
@@ -1228,8 +1778,8 @@
         "id": "queens-niche",
         "name": "Queen's Chamber Niche (East Wall)",
         "position": {
-          "x": 2.88,
-          "y": 23.85,
+          "x": 2.875,
+          "y": 23.535,
           "z": 6.32
         },
         "size": {
@@ -1247,26 +1797,26 @@
         "layer": "queens-complex",
         "color": "#a38b5c",
         "opacity": 0.6,
-        "lod": "LOD1",
-        "derivation": "measured"
+        "derivation": "measured",
+        "lod": "LOD1"
       },
       {
         "id": "queens-passage",
         "name": "Queen's Chamber Passage",
         "position": {
-          "x": 3.61,
+          "x": 3.645,
           "y": 21.775,
-          "z": -17.97652
+          "z": -22.234992
         },
         "rotation": {
           "x": 0,
-          "y": 0,
+          "y": -0.139603,
           "z": 0
         },
         "size": {
           "x": 1.05,
           "y": 1.17,
-          "z": 43.96
+          "z": 52.389663
         },
         "objectId": "OBJ-0120",
         "evidenceIds": [
@@ -1275,7 +1825,7 @@
         "sourceIds": [
           "SRC-0101"
         ],
-        "layer": "queens-complex",
+        "layer": "passages",
         "color": "#c2ab7a",
         "opacity": 0.4,
         "derivation": "calculated",
@@ -1286,25 +1836,25 @@
         "name": "KC North Shaft",
         "position": {
           "x": 7.22,
-          "y": 62.160853,
-          "z": -21.440545
+          "y": 67.024235,
+          "z": -19.91345
         },
         "rotation": {
-          "x": 0.568977,
+          "x": -0.568977,
           "y": 0,
           "z": 0
         },
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 70.955971
+          "z": 67.330615
         },
         "objectId": "OBJ-0121",
         "evidenceIds": [
           "EV-100021"
         ],
         "sourceIds": [
-          "SRC-0103"
+          "SRC-0105"
         ],
         "layer": "shafts",
         "color": "#7a6a4a",
@@ -1313,12 +1863,43 @@
         "lod": "LOD1"
       },
       {
+        "id": "kc-north-shaft-door",
+        "name": "KC North Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 7.22,
+          "y": 60.254415,
+          "z": -9.327777
+        },
+        "rotation": {
+          "x": -0.568977,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.205,
+          "y": 0.205,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0121",
+        "evidenceIds": [
+          "EV-100021"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
         "id": "kc-south-shaft",
         "name": "KC South Shaft",
         "position": {
           "x": 7.22,
-          "y": 62.013296,
-          "z": 32.541084
+          "y": 66.568424,
+          "z": 31.256212
         },
         "rotation": {
           "x": -0.785398,
@@ -1328,14 +1909,14 @@
         "size": {
           "x": 0.205,
           "y": 0.205,
-          "z": 53.685859
+          "z": 50.051693
         },
         "objectId": "OBJ-0122",
         "evidenceIds": [
           "EV-100022"
         ],
         "sourceIds": [
-          "SRC-0103"
+          "SRC-0105"
         ],
         "layer": "shafts",
         "color": "#7a6a4a",
@@ -1348,11 +1929,11 @@
         "name": "QC North Shaft",
         "position": {
           "x": 0,
-          "y": 40.151212,
+          "y": 46.381212,
           "z": -19.5433
         },
         "rotation": {
-          "x": 0.680678,
+          "x": -0.680678,
           "y": 0,
           "z": 0
         },
@@ -1366,7 +1947,7 @@
           "EV-100023"
         ],
         "sourceIds": [
-          "SRC-0103"
+          "SRC-0105"
         ],
         "layer": "shafts",
         "color": "#7a6a4a",
@@ -1379,7 +1960,7 @@
         "name": "QC South Shaft",
         "position": {
           "x": 0,
-          "y": 40.393624,
+          "y": 46.623624,
           "z": 31.983468
         },
         "rotation": {
@@ -1397,12 +1978,74 @@
           "EV-100024"
         ],
         "sourceIds": [
-          "SRC-0103"
+          "SRC-0105"
         ],
         "layer": "shafts",
         "color": "#7a6a4a",
         "opacity": 0.5,
         "derivation": "calculated",
+        "lod": "LOD1"
+      },
+      {
+        "id": "qc-north-shaft-door",
+        "name": "QC North Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 0,
+          "y": 65.13496,
+          "z": -42.70225
+        },
+        "rotation": {
+          "x": -0.680678,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.21,
+          "y": 0.21,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0123",
+        "evidenceIds": [
+          "EV-100023"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9,
+        "derivation": "inferred",
+        "lod": "LOD1"
+      },
+      {
+        "id": "qc-south-shaft-door",
+        "name": "QC South Shaft Blocking Stone ('Door')",
+        "position": {
+          "x": 0,
+          "y": 65.618858,
+          "z": 54.944762
+        },
+        "rotation": {
+          "x": -0.69115,
+          "y": 0,
+          "z": 0
+        },
+        "size": {
+          "x": 0.21,
+          "y": 0.21,
+          "z": 0.2
+        },
+        "objectId": "OBJ-0124",
+        "evidenceIds": [
+          "EV-100024"
+        ],
+        "sourceIds": [
+          "SRC-0105"
+        ],
+        "layer": "shafts",
+        "color": "#9a8a6a",
+        "opacity": 0.9,
+        "derivation": "inferred",
         "lod": "LOD1"
       },
       {
@@ -1440,9 +2083,9 @@
         "id": "grotto",
         "name": "Grotto",
         "position": {
-          "x": 6.17,
-          "y": 0,
-          "z": -25.68
+          "x": 6.175,
+          "y": -1.542505,
+          "z": -26.008858
         },
         "size": {
           "x": 2,
@@ -1459,8 +2102,8 @@
         "layer": "passages",
         "color": "#7a6a4a",
         "opacity": 0.5,
-        "lod": "LOD1",
-        "derivation": "inferred"
+        "derivation": "inferred",
+        "lod": "LOD1"
       }
     ]
   },
@@ -1549,7 +2192,7 @@
         "position": {
           "x": -1.125,
           "y": -21.85,
-          "z": -10.35
+          "z": -6
         },
         "size": {
           "x": 3.65,
@@ -1662,7 +2305,26 @@
           "SRC-0002"
         ],
         "layer": "level-3",
-        "color": "#3a3a3f"
+        "color": "#3a3a3f",
+        "materialId": "MAT_Basalt"
+      },
+      {
+        "id": "sarcophagus-i-highlight",
+        "name": "Sarcophagus Highlight Overlay",
+        "position": {
+          "x": -1.4,
+          "y": -28.425,
+          "z": -6.5
+        },
+        "size": {
+          "x": 1.12,
+          "y": 0.99,
+          "z": 2.32
+        },
+        "layer": "level-3",
+        "color": "#f59e0b",
+        "opacity": 0,
+        "overlay": "highlight"
       },
       {
         "id": "northern-conduit",
@@ -1693,6 +2355,29 @@
         "color": "#6b5f45"
       },
       {
+        "id": "northern-conduit-flow",
+        "name": "Northern Conduit Flow Overlay",
+        "position": {
+          "x": -7.054,
+          "y": -30.3,
+          "z": -13.904
+        },
+        "rotation": {
+          "x": 0,
+          "y": -2.356194,
+          "z": 0
+        },
+        "size": {
+          "x": 0.48,
+          "y": 0.58,
+          "z": 6.6
+        },
+        "layer": "level-3",
+        "color": "#3b82f6",
+        "opacity": 0,
+        "overlay": "flow"
+      },
+      {
         "id": "chamber-i-water",
         "name": "Chamber I Water",
         "position": {
@@ -1716,7 +2401,7 @@
         "position": {
           "x": 0.075,
           "y": -21.85,
-          "z": -11.8
+          "z": -7.45
         },
         "size": {
           "x": 0.9,
@@ -1733,7 +2418,8 @@
         ],
         "layer": "level-2",
         "color": "#4a4a4f",
-        "opacity": 0.85
+        "opacity": 0.85,
+        "materialId": "MAT_Basalt"
       },
       {
         "id": "niche-7-sarcophagus",
@@ -1741,7 +2427,7 @@
         "position": {
           "x": -2.325,
           "y": -21.85,
-          "z": -8.8
+          "z": -4.45
         },
         "size": {
           "x": 0.9,
@@ -1758,7 +2444,8 @@
         ],
         "layer": "level-2",
         "color": "#4a4a4f",
-        "opacity": 0.85
+        "opacity": 0.85,
+        "materialId": "MAT_Basalt"
       },
       {
         "id": "chamber-b-east-passage",
@@ -1766,7 +2453,7 @@
         "position": {
           "x": 2.075,
           "y": -21.85,
-          "z": -11.8
+          "z": -7.45
         },
         "size": {
           "x": 2.8,
