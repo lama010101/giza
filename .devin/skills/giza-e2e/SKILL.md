@@ -75,6 +75,27 @@ location.reload();
 - For LOD1, the generator is in `database/geometry/gp-lod1.ts` and the scene graph is built in `src/scene/greatPyramidSceneGraph.ts`.
 - `BlockoutMesh` in `src/scene/GreatPyramidScene.tsx` maps each scene node to a `boxGeometry` and handles hover/click events.
 
+## Testing virtual touch controls
+
+- `VirtualControls` is mounted in `src/scene/Viewport.tsx` and returns `null` unless `cameraMode` is `walk` or `fly`.
+- In `walk` mode a single joystick appears at the bottom-left (`role="slider"`, `aria-label="Move"`).
+- In `fly` mode the joystick remains and two circular buttons (`Fly up`, `Fly down`) appear at the bottom-right.
+- In `orbit` or `teleport` mode the overlay is hidden.
+- `useTouchLook` only handles `pointerType === 'touch'` on the right half of the canvas, so desktop mouse hover/click on the scene still works.
+- Unit tests live in `src/ui/VirtualControls.test.tsx` and `src/scene/touchControls.test.ts`.
+
+When testing `walk`/`fly` modes:
+- `PointerLockControls` may capture the cursor after a canvas click. To avoid coordinate-mapping issues with small UI buttons, seed `cameraMode` through `giza-session` and reload, or press `Esc` to release pointer lock before clicking UI elements.
+- Example seed:
+
+```js
+localStorage.setItem(
+  'giza-session',
+  JSON.stringify({ state: { mode: 'Research', cameraMode: 'fly', activeMonument: 'great-pyramid', sidePanelTab: 'scene' }, version: 2 })
+);
+location.reload();
+```
+
 ## Known quirks
 
 - `OrbitControls` retains camera state across full page reloads if `cameraTarget` is persisted. To force the default framing, clear or reset `giza-session` and reload, or use a fresh incognito window.
